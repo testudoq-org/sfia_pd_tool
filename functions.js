@@ -101,17 +101,29 @@ function exportHTML(sfiaJson) {
     const dateStr = dd + mm + yyyy;
 
     // Generate the filename based on URL values and date
-    const filename = `PositionSummary_${urlHash}_${dateStr}.html`;
+    const filenameBase = `PositionSummary_${urlHash}`;
+    const filenameEnd = `_${dateStr}.html`;
+
+    // Ensure the filename doesn't exceed 255 characters
+    let truncatedFilename;
+    if (filenameBase.length + filenameEnd.length > 255) {
+        const availableSpace = 255 - filenameEnd.length;
+        truncatedFilename = filenameBase.slice(0, availableSpace) + filenameEnd;
+    } else {
+        truncatedFilename = filenameBase + filenameEnd;
+    }
 
     const encodedUri = encodeURI(htmlContent);
     const a = document.createElement('a');
     a.href = 'data:attachment/plain;charset=utf-8,' + encodedUri;
-    a.download = filename;
+    a.download = truncatedFilename;
 
     document.body.appendChild(a);
     a.click();
     a.remove();
 }
+
+
 
 
 
