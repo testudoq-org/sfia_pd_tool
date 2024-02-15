@@ -60,7 +60,8 @@ function addSelectionBox(index, sfiaJson, rootKey, subKey, skillKey) {
     return col;
 }
 
-function exportCSV(sfiaJson) {
+function exportCSV(event, sfiaJson) {
+    event.preventDefault();
     const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
     const data = [];
 
@@ -166,10 +167,26 @@ function renderOutput(sfiaJson) {
     window.location.href = location.protocol + '//' + location.host + location.pathname + "#/" + urlHash.join("+");
 }
 
+// ... Event listener waiting for the HTML and CSV Button event to propagate
 document.addEventListener('DOMContentLoaded', async function () {
     const sfiaJson = await fetchData("json_source-min.json");
     initializeSFIAContent(sfiaJson);
+
+    // Add event listener for CSV export
+    const exportCSVButton = document.getElementById('exportCSV');
+    exportCSVButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        exportCSV(sfiaJson);
+    });
+
+    // Add event listener for HTML export
+    const exportHTMLButton = document.getElementById('exportHTML');
+    exportHTMLButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        exportHTML(sfiaJson);
+    });
 });
+
 
 function initializeSFIAContent(sfiaJson) {
     const rootKeyPrinted = [];
