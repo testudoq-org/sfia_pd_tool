@@ -167,7 +167,7 @@ function renderOutput(sfiaJson) {
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
-    const sfiaJson = await fetchData("json_source.json");
+    const sfiaJson = await fetchData("json_source-min.json");
     initializeSFIAContent(sfiaJson);
 });
 

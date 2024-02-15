@@ -1,7 +1,9 @@
-header#top.navbar.navbar-default.navbar-static-top {
+/* Header */
+#top {
   min-height: 0;
 }
 
+/* SFIA Table */
 .sfia-table {
   width: 100%;
   max-width: 100%;
@@ -13,14 +15,14 @@ header#top.navbar.navbar-default.navbar-static-top {
 }
 
 .sfia-table thead {
-	display: table;
-	width: 100%;
+  display: table;
+  width: 100%;
 }
 
 .sfia-table tbody {
-	height: 600px;
-	display: block;
-	overflow: scroll;
+  height: 600px;
+  display: block;
+  overflow: scroll;
 }
 
 .sfia-table thead tr {
@@ -28,12 +30,10 @@ header#top.navbar.navbar-default.navbar-static-top {
   color: white;
 }
 
-.sfia-table thead th, .sfia-table tbody td {
+.sfia-table th,
+.sfia-table td {
   border-right: 1px solid grey;
   border-top: 1px solid grey;
-}
-
-.sfia-table th, .sfia-table td {
   padding: 10px 0;
   padding-left: 10px;
 }
@@ -56,46 +56,55 @@ header#top.navbar.navbar-default.navbar-static-top {
   border-top: none;
 }
 
+/* Output Section */
 #sfia-output:empty:before {
-	content: "To begin, please select a skill level";
+  content: "To begin, please select a skill level";
 }
 
 #sfia-output {
-	height: 502px;
-	overflow: scroll;
+  height: 502px;
+  overflow: scroll;
 }
 
-.sfia-table td.root_key, .sfia-table th.root_key_th {
-	width: 16%;
-	min-width: 115px;
+/* Column Widths */
+.sfia-table td.root_key,
+.sfia-table th.root_key_th {
+  width: 16%;
+  min-width: 115px;
 }
 
-.sfia-table td.sub_key, .sfia-table th.sub_key_th {
-	width: 16%;
-	min-width: 115px;
+.sfia-table td.sub_key,
+.sfia-table th.sub_key_th {
+  width: 16%;
+  min-width: 115px;
 }
 
-.sfia-table td.skill_key, .sfia-table th.skill_key_th {
-	width: 28%;
-	min-width: 210px;
+.sfia-table td.skill_key,
+.sfia-table th.skill_key_th {
+  width: 28%;
+  min-width: 210px;
 }
 
-.sfia-table td.col-checkbox, .sfia-table th.skill_level_th {
-	width: 5%;
-	min-width: 45px;
-}
-
-.sfia-table td.skill_key span {
-	margin-right: 15px;
-}
-
+.sfia-table td.col-checkbox,
 .sfia-table th.skill_level_th {
-	padding-right: 15px;
-	text-align: center;
+  width: 5%;
+  min-width: 45px;
 }
 
+/* Skill Key */
+.sfia-table td.skill_key span {
+  margin-right: 15px;
+}
+
+/* Skill Level */
+.sfia-table th.skill_level_th {
+  padding-right: 15px;
+  text-align: center;
+}
+
+/* Background Colors */
 .sfia-table td.sub_key {
-  background: rgba(255,255,255,0.25);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .sfia-table td.sub_key:empty {
@@ -103,37 +112,39 @@ header#top.navbar.navbar-default.navbar-static-top {
 }
 
 .sfia-table td.skill_key {
-  background: rgba(255,255,255,0.8);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .sfia-table td.no_select_col {
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
 }
 
+/* Checkbox Styling */
 .col-checkbox input[type=checkbox] {
   font-size: 2em;
 }
 
+/* Category Background Colors */
 .strategy_and_architecture {
-  background-color: rgb(216,48,80);
+  background-color: rgb(216, 48, 80);
 }
 
 .change_and_transformation {
-  background-color: rgb(188,81,141);
+  background-color: rgb(188, 81, 141);
 }
 
 .development_and_implementation {
-  background-color: rgb(236,193,59);
+  background-color: rgb(236, 193, 59);
 }
 
 .delivery_and_operation {
-  background-color: rgb(162,96,47);
+  background-color: rgb(162, 96, 47);
 }
 
 .skills_and_quality {
-  background-color: rgb(0,155,205);
+  background-color: rgb(0, 155, 205);
 }
 
 .relationships_and_engagement {
-  background-color: rgb(0,153,79);
+  background-color: rgb(0, 153, 79);
 }
