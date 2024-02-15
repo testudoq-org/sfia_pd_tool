@@ -61,6 +61,7 @@ function addSelectionBox(index, sfiaJson, rootKey, subKey, skillKey) {
 }
 
 function exportCSV(event, sfiaJson) {
+    console.log('Export CSV button clicked');
     event.preventDefault();
     const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
     const data = [];
@@ -89,7 +90,7 @@ function exportCSV(event, sfiaJson) {
 
 function exportHTML(sfiaJson) {
     const htmlContent = document.getElementById('sfia-output').innerHTML;
-    
+    console.log('Export HTML button clicked');
     // Get values from the URL after the #
     const urlHash = window.location.hash.replace('#/', '');
 
@@ -122,9 +123,6 @@ function exportHTML(sfiaJson) {
     a.click();
     a.remove();
 }
-
-
-
 
 
 function renderOutput(sfiaJson) {
