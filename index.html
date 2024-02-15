@@ -10,8 +10,13 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <script src="https://unpkg.com/htmx.org@1.7.0/dist/htmx.js"></script>
-    <script src="functions.js"></script>
+	<script src="functions.js"></script>
+    <script>
+        // Initialize SFIA content after the page has loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeSFIAContent();
+        });
+    </script>
 </head>
 <body>
 
@@ -27,13 +32,24 @@
     <div class="row">
 
         <div class="col-md-12">
-            <div class="panel panel-default" hx-get="/instructions">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">Instructions</h3>
                 </div>
-                <div class="panel-body">
-                    <p hx-swap="outerHTML" hx-target="#pageContent .panel-body">Loading instructions...</p>
-                </div>
+				<div class="panel-body">
+					<p>Welcome to the PD generator tool, built upon the <a href="https://www.sfia-online.org">SFIA 8 Framework</a>.</p>
+				
+					<p>To initiate PD generation, choose the desired skill set levels.</p>
+				
+					<p>Description of any skill is available by hovering over it, and for any skill level, hover over its respective checkbox.</p>
+				
+					<p>Your selected choices will be formatted and provided at the page's end. Copy and paste it into a word processor for formatting preservation.</p>
+				
+					<p>You can also export your selection as a comma-separated value (CSV) document or HTML, automatically downloaded for you. For optimal use, consider an up-to-date version of Chrome or Firefox, as some browsers may have limitations. In case of an incorrectly named file, rest assured the content remains unchanged.</p>
+				
+					<p>To save your summary for future reference, bookmark the page. The URL bookmark retains necessary information and updates your selection upon your return.</p>
+				</div>
+				
             </div>
         </div>
 
@@ -43,7 +59,7 @@
 
         <div class="col-lg-8">
             <div class="panel panel-default">
-                <table class="sfia-table" hx-get="/sfia-content">
+                <table class="sfia-table">
                     <thead>
                     <tr>
                         <th class="root_key_th">Category</th>
@@ -58,8 +74,7 @@
                         <th class="skill_level_th">7</th>
                     </tr>
                     </thead>
-                    <tbody id="sfia-content" hx-swap="outerHTML" hx-target="#sfia-content">
-                        <!-- Content will be loaded here -->
+                    <tbody id="sfia-content">
                     </tbody>
                 </table>
             </div>
@@ -71,11 +86,11 @@
                     <h3 class="panel-title">Formatted Output</h3>
                 </div>
                 <div class="panel-body">
-                    <div id="sfia-output" hx-get="/formatted-output"></div>
+                    <div id="sfia-output"></div>
                 </div>
                 <div class="panel-footer">
-                    <a href="#" class="btn btn-default navbar-btn" hx-get="/export-csv" hx-trigger="click" hx-indicator="Loading...">Export to CSV</a>
-                    <a href="#" class="btn btn-default navbar-btn" hx-get="/export-html" hx-trigger="click" hx-indicator="Loading...">Export to HTML</a>
+                    <a href="#" class="btn btn-default navbar-btn" onclick="exportCSV();event.preventDefault();">Export to CSV</a>
+                    <a href="#" class="btn btn-default navbar-btn" onclick="exportHTML();event.preventDefault();">Export to HTML</a>
                 </div>
             </div>
         </div>
