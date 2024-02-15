@@ -86,18 +86,34 @@ function exportCSV(event, sfiaJson) {
     a.remove();
 }
 
-function exportHTML() {
+
+function exportHTML(sfiaJson) {
     const htmlContent = document.getElementById('sfia-output').innerHTML;
+    
+    // Get values from the URL after the #
+    const urlHash = window.location.hash.replace('#/', '');
+
+    // Get the current date in ddmmccyy format
+    const currentDate = new Date();
+    const dd = String(currentDate.getDate()).padStart(2, '0');
+    const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const yyyy = currentDate.getFullYear();
+    const dateStr = dd + mm + yyyy;
+
+    // Generate the filename based on URL values and date
+    const filename = `PositionSummary_${urlHash}_${dateStr}.html`;
 
     const encodedUri = encodeURI(htmlContent);
     const a = document.createElement('a');
     a.href = 'data:attachment/plain;charset=utf-8,' + encodedUri;
-    a.download = 'PositionSummary.html';
+    a.download = filename;
 
     document.body.appendChild(a);
     a.click();
     a.remove();
 }
+
+
 
 function renderOutput(sfiaJson) {
     const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
