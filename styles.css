@@ -148,3 +148,20 @@
 .relationships_and_engagement {
   background-color: rgb(0, 153, 79);
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  /* Adjust styles for smaller screens here */
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+  /* Adjust styles for medium screens here */
+}
+
+@media (min-width: 992px) and (max-width: 1200px) {
+  /* Adjust styles for large screens here */
+}
+
+@media (min-width: 1200px) {
+  /* Adjust styles for extra-large screens here */
+}
