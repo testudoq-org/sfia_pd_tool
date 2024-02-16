@@ -113,8 +113,8 @@
                     </table> <!-- End of SFIA Information Table -->
 
                     <!-- Add a button for exporting HTML directly within the col-lg-8 -->
-                    <button onclick="exportHTML(event)">Export to HTML</button>
-
+                    <button class="btn btn-default navbar-btn" id="exportHTML" onclick="exportHTML(event)">Export to HTML</button>
+                    <button class="btn btn-default navbar-btn" id="exportCSV" onclick="exportCSV()">Export to CSV</button>
                 </div> <!-- End of Panel for SFIA-related Information -->
             </div> <!-- End of col-lg-8 -->
 
@@ -128,8 +128,6 @@
                         <div id="sfia-output"></div>
                     </div>
                     <div class="panel-footer">
-                        <a href="#" class="btn btn-default navbar-btn" id="exportCSV"
-                            onclick="exportCSV();event.preventDefault();">Export to CSV</a>
                     </div>
                 </div>
             </div>
