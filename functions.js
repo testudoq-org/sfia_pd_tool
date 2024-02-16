@@ -4,7 +4,7 @@ var $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, 
 
 function $buo_f() {
     var e = document.createElement("script");
-    e.src = "//browser-update.org/update.min.js";
+    e.src = "https:////browser-update.org/update.min.js";
     document.body.appendChild(e);
 }
 
@@ -88,9 +88,11 @@ function exportCSV(event, sfiaJson) {
 }
 
 
-function exportHTML(sfiaJson) {
-    const htmlContent = document.getElementById('sfia-output').innerHTML;
+function exportHTML(event, sfiaJson) {
     console.log('Export HTML button clicked');
+    event.preventDefault();  // Prevent the default action associated with the event
+    const htmlContent = document.getElementById('sfia-output').innerHTML; 
+
     // Get values from the URL after the #
     const urlHash = window.location.hash.replace('#/', '');
 
