@@ -224,20 +224,25 @@ document.addEventListener('DOMContentLoaded', async function () {
     const sfiaJson = await fetchData("json_source-min.json");
     initializeSFIAContent(sfiaJson);
 
-    // Add event listener for CSV export
+    // Log buttons to the console for debugging
     const exportCSVButton = document.getElementById('exportCSV');
+    const exportHTMLButton = document.getElementById('exportHTML');
+    console.log('Export CSV Button:', exportCSVButton);
+    console.log('Export HTML Button:', exportHTMLButton);
+
+    // Add event listener for CSV export
     exportCSVButton.addEventListener('click', function (event) {
         event.preventDefault();
         exportCSV(sfiaJson);
     });
 
     // Add event listener for HTML export
-    const exportHTMLButton = document.getElementById('exportHTML');
     exportHTMLButton.addEventListener('click', function (event) {
         event.preventDefault();
         exportHTML(sfiaJson);
     });
 });
+
 
 
 function initializeSFIAContent(sfiaJson) {
