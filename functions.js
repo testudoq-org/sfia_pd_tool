@@ -61,18 +61,38 @@ function addSelectionBox(index, sfiaJson, rootKey, subKey, skillKey) {
 }
 
 function exportCSV(event, sfiaJson) {
-    console.log('Export CSV button clicked');
-    event.preventDefault();
+    console.log('Export CSV triggered');
+    console.log('Event:', event);
+    console.log('sfiaJson:', sfiaJson);
+
     const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
     const data = [];
 
     for (const box of checkedBoxes) {
         const jsonData = JSON.parse(box.getAttribute('sfia-data'));
-        data.push([
-            `${jsonData.skill} ${sfiaJson[jsonData.category][jsonData.subCategory][jsonData.skill]["code"]}-${jsonData.level}`,
-            sfiaJson[jsonData.category][jsonData.subCategory][jsonData.skill]["description"],
-            sfiaJson[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"][jsonData.level]
-        ]);
+
+        // Check if required properties exist before accessing them
+        const categoryData = sfiaJson[jsonData.category];
+        const subCategoryData = categoryData?.[jsonData.subCategory];
+        const skillData = subCategoryData?.[jsonData.skill];
+
+        if (categoryData && subCategoryData && skillData) {
+            const skillCode = skillData["code"];
+            const skillDescription = skillData["description"];
+            const skillLevel = skillData["levels"]?.[jsonData.level];
+
+            if (skillCode && skillDescription && skillLevel) {
+                data.push([
+                    `${jsonData.skill} ${skillCode}-${jsonData.level}`,
+                    skillDescription,
+                    skillLevel
+                ]);
+            } else {
+                console.error(`Incomplete or missing data for ${jsonData.category}/${jsonData.subCategory}/${jsonData.skill}`);
+            }
+        } else {
+            console.error(`Skill data not found for ${jsonData.category}/${jsonData.subCategory}/${jsonData.skill}`);
+        }
     }
 
     const csvContent = data.map(infoArray => `"${infoArray.join('","')}"`).join("\n");
@@ -89,7 +109,8 @@ function exportCSV(event, sfiaJson) {
 
 
 function exportHTML(event, sfiaJson) {
-    console.log('Export HTML button clicked');
+    console.log('Export HTML button triggered');
+    console.log('Event:', event);
     event.preventDefault();  // Prevent the default action associated with the event
     const htmlContent = document.getElementById('sfia-output').innerHTML; 
 
