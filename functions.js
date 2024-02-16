@@ -192,8 +192,11 @@ function renderOutput(sfiaJson) {
         }
     }
 
-    window.location.href = location.protocol + '//' + location.host + location.pathname + "#/" + urlHash.join("+");
+    // Join the URL hash parts with '+', then update the hash part of the URL
+    window.location.hash = urlHash.join("+");
 }
+
+
 
 // ... Event listener waiting for the HTML and CSV Button event to propagate
 document.addEventListener('DOMContentLoaded', async function () {
