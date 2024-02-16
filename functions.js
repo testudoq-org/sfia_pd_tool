@@ -217,13 +217,8 @@ function renderOutput(sfiaJson) {
     window.location.hash = urlHash.join("+");
 }
 
-
-
-// ... Event listener waiting for the HTML and CSV Button event to propagate
-document.addEventListener('DOMContentLoaded', async function () {
-    const sfiaJson = await fetchData("json_source-min.json");
-    initializeSFIAContent(sfiaJson);
-
+// Function to set up event listeners
+function setupEventListeners(sfiaJson) {
     // Log buttons to the console for debugging
     const exportCSVButton = document.getElementById('exportCSV');
     const exportHTMLButton = document.getElementById('exportHTML');
@@ -241,6 +236,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         event.preventDefault();
         exportHTML(sfiaJson);
     });
+}
+
+// Event listener waiting for the HTML and CSV Button event to propagate
+document.addEventListener('DOMContentLoaded', async function () {
+    const sfiaJson = await fetchData("json_source-min.json");
+    initializeSFIAContent(sfiaJson);
+
+    // Call the function to set up event listeners
+    setupEventListeners(sfiaJson);
 });
 
 
