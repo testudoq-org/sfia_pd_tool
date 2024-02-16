@@ -107,12 +107,11 @@ function exportCSV(event, sfiaJson) {
     a.remove();
 }
 
-
 function exportHTML(event, sfiaJson) {
     console.log('Export HTML button triggered');
     console.log('Event:', event);
     event.preventDefault();  // Prevent the default action associated with the event
-    const htmlContent = document.getElementById('sfia-output').innerHTML; 
+    const htmlContent = document.getElementById('sfia-output').innerHTML;
 
     // Get values from the URL after the #
     const urlHash = window.location.hash.replace('#/', '');
@@ -146,7 +145,6 @@ function exportHTML(event, sfiaJson) {
     a.click();
     a.remove();
 }
-
 
 function renderOutput(sfiaJson) {
     const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
@@ -228,13 +226,13 @@ function setupEventListeners(sfiaJson) {
     // Add event listener for CSV export
     exportCSVButton.addEventListener('click', function (event) {
         event.preventDefault();
-        exportCSV(sfiaJson);
+        exportCSV(event, sfiaJson);
     });
 
     // Add event listener for HTML export
     exportHTMLButton.addEventListener('click', function (event) {
         event.preventDefault();
-        exportHTML(sfiaJson);
+        exportHTML(event, sfiaJson);
     });
 }
 
@@ -246,8 +244,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Call the function to set up event listeners
     setupEventListeners(sfiaJson);
 });
-
-
 
 function initializeSFIAContent(sfiaJson) {
     const rootKeyPrinted = [];
