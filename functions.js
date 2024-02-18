@@ -62,6 +62,7 @@ function addSelectionBox(index, sfiaJson, rootKey, subKey, skillKey) {
 
 function exportCSV(event, sfiaJson) {
     console.log('Export CSV triggered');
+    event.preventDefault();  // Prevent the default action associated with the event
     console.log('Event:', event);
     console.log('sfiaJson:', sfiaJson);
 
@@ -217,31 +218,36 @@ function renderOutput(sfiaJson) {
 
 // Function to set up event listeners
 function setupEventListeners(sfiaJson) {
-    // Log buttons to the console for debugging
-    const exportCSVButton = document.getElementById('exportCSV');
-    const exportHTMLButton = document.getElementById('exportHTML');
-    
-    // Check if buttons exist before adding event listeners
-    if (exportCSVButton) {
-        console.info('Export CSV triggered.');
-        exportCSVButton.addEventListener('click', function (event) {
-            event.preventDefault();
-            exportCSV(event, sfiaJson);
-        });
-    } else {
-        console.error('Export CSV Button not found.');
-    }
+    try {
+        // Log buttons to the console for debugging
+        const exportCSVButton = document.getElementById('exportCSV');
+        const exportHTMLButton = document.getElementById('exportHTML');
 
-    if (exportHTMLButton) {
-        console.info('Export HTML triggered.');
-        exportHTMLButton.addEventListener('click', function (event) {
-            event.preventDefault();
-            exportHTML(event, sfiaJson);
-        });
-    } else {
-        console.error('Export HTML Button not found.');
+        // Check if buttons exist before adding event listeners
+        if (exportCSVButton) {
+            console.info('Export CSV triggered.');
+            exportCSVButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                exportCSV(event, sfiaJson);
+            });
+        } else {
+            console.error('Export CSV Button not found.');
+        }
+
+        if (exportHTMLButton) {
+            console.info('Export HTML triggered.');
+            exportHTMLButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                exportHTML(event, sfiaJson);
+            });
+        } else {
+            console.error('Export HTML Button not found.');
+        }
+    } catch (error) {
+        console.error('Error setting up event listeners:', error);
     }
 }
+
 
 
 // Event listener waiting for the HTML and CSV Button event to propagate
