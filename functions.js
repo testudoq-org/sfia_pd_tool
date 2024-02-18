@@ -220,21 +220,29 @@ function setupEventListeners(sfiaJson) {
     // Log buttons to the console for debugging
     const exportCSVButton = document.getElementById('exportCSV');
     const exportHTMLButton = document.getElementById('exportHTML');
-    console.log('Export CSV Button:', exportCSVButton);
-    console.log('Export HTML Button:', exportHTMLButton);
+    
+    // Check if buttons exist before adding event listeners
+    if (exportCSVButton) {
+        console.info('Export CSV triggered.');
+        exportCSVButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            exportCSV(event, sfiaJson);
+        });
+    } else {
+        console.error('Export CSV Button not found.');
+    }
 
-    // Add event listener for CSV export
-    exportCSVButton.addEventListener('click', function (event) {
-        event.preventDefault();
-        exportCSV(event, sfiaJson);
-    });
-
-    // Add event listener for HTML export
-    exportHTMLButton.addEventListener('click', function (event) {
-        event.preventDefault();
-        exportHTML(event, sfiaJson);
-    });
+    if (exportHTMLButton) {
+        console.info('Export HTML triggered.');
+        exportHTMLButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            exportHTML(event, sfiaJson);
+        });
+    } else {
+        console.error('Export HTML Button not found.');
+    }
 }
+
 
 // Event listener waiting for the HTML and CSV Button event to propagate
 document.addEventListener('DOMContentLoaded', async function () {
