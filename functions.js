@@ -259,58 +259,69 @@ document.addEventListener('DOMContentLoaded', async function () {
     setupEventListeners(sfiaJson);
 });
 
-function initializeSFIAContent(sfiaJson) {
-    const rootKeyPrinted = [];
-    const subKeyPrinted = [];
+async function initializeSFIAContent() {
+    try {
+        const sfiaJson = await fetchData("json_source-min.json");
+        const rootKeyPrinted = [];
+        const subKeyPrinted = [];
 
-    const table = document.getElementById('sfia-content');
+        const table = document.getElementById('sfia-content');
 
-    for (const rootKey in sfiaJson) {
-        for (const subKey in sfiaJson[rootKey]) {
-            for (const skillKey in sfiaJson[rootKey][subKey]) {
-                const row = document.createElement('tr');
-                row.className += " " + rootKey.trim().replace(/ /g, "_").toLowerCase();
+        for (const rootKey in sfiaJson) {
+            console.log('Root Key:', rootKey);
 
-                const col1 = document.createElement('td');
-                if (rootKeyPrinted.indexOf(rootKey) === -1) {
-                    rootKeyPrinted.push(rootKey);
-                    col1.textContent = rootKey;
+            for (const subKey in sfiaJson[rootKey]) {
+                console.log('Sub Key:', subKey);
+
+                for (const skillKey in sfiaJson[rootKey][subKey]) {
+                    console.log('Skill Key:', skillKey);
+
+                    const row = document.createElement('tr');
+                    row.className += " " + rootKey.trim().replace(/ /g, "_").toLowerCase();
+
+                    const col1 = document.createElement('td');
+                    if (rootKeyPrinted.indexOf(rootKey) === -1) {
+                        rootKeyPrinted.push(rootKey);
+                        col1.textContent = rootKey;
+                    }
+                    col1.className += " root_key";
+                    row.appendChild(col1);
+
+                    const col2 = document.createElement('td');
+                    if (subKeyPrinted.indexOf(subKey) === -1) {
+                        subKeyPrinted.push(subKey);
+                        col2.textContent = subKey;
+                    }
+                    col2.className += " sub_key";
+                    row.appendChild(col2);
+
+                    const col3 = document.createElement('td');
+                    col3.className += " skill_key";
+                    row.appendChild(col3);
+
+                    const skillSpan = document.createElement('span');
+                    skillSpan.textContent = skillKey + " - " + sfiaJson[rootKey][subKey][skillKey]["code"];
+                    skillSpan.title = sfiaJson[rootKey][subKey][skillKey]["description"];
+                    col3.appendChild(skillSpan);
+
+                    for (let i = 1; i < 8; i++) {
+                        row.appendChild(addSelectionBox(i, sfiaJson, rootKey, subKey, skillKey));
+                    }
+
+                    table.appendChild(row);//add entire row to table.
                 }
-                col1.className += " root_key";
-                row.appendChild(col1);
-
-                const col2 = document.createElement('td');
-                if (subKeyPrinted.indexOf(subKey) === -1) {
-                    subKeyPrinted.push(subKey);
-                    col2.textContent = subKey;
-                }
-                col2.className += " sub_key";
-                row.appendChild(col2);
-
-                const col3 = document.createElement('td');
-                col3.className += " skill_key";
-                row.appendChild(col3);
-
-                const skillSpan = document.createElement('span');
-                skillSpan.textContent = skillKey + " - " + sfiaJson[rootKey][subKey][skillKey]["code"];
-                skillSpan.title = sfiaJson[rootKey][subKey][skillKey]["description"];
-                col3.appendChild(skillSpan);
-
-                for (let i = 1; i < 8; i++) {
-                    row.appendChild(addSelectionBox(i, sfiaJson, rootKey, subKey, skillKey));
-                }
-
-                table.appendChild(row);
             }
         }
-    }
 
-    if (window.location.href.split("/#/").length > 0) {
-        renderOutput(sfiaJson);
-    }
+        if (window.location.href.split("/#/").length > 0) {
+            renderOutput(sfiaJson);
+        }
 
-    const checkboxes = document.querySelectorAll('input[type=checkbox]');
-    checkboxes.forEach(function (checkbox) {
-        checkbox.addEventListener('click', () => renderOutput(sfiaJson), false);
-    });
+        const checkboxes = document.querySelectorAll('input[type=checkbox]');
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('click', () => renderOutput(sfiaJson), false);
+        });
+    } catch (error) {
+        console.error('Error initializing SFIA content:', error);
+    }
 }
