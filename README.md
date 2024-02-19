@@ -3,7 +3,7 @@
 Welcome to the SFIA POSITION DESCRIPTION Tool, an innovative generator inspired by the SFIA Framework. This tool simplifies the PD creation process, allowing you to select specific skills and proficiency levels effortlessly through user-friendly check-boxes. Explore the tool [online](https://xanpho.x10.bz/index.html#/) to experience its capabilities.
 
 **Developed by Novices Inspired:**
-This tool draws inspiration from the National Institute of Water and Atmospheric Research New Zealand, showcasing a collaborative effort to align roles with the SFIA Framework. The SFIA Foundation, a recognized authority in skills and competency frameworks, has contributed essential content to enhance the tool's effectiveness.
+This tool draws inspiration from the National Institute of Water and Atmospheric Research New Zealand [online](https://niwa.github.io/sfia-position-description-tool/#/), showcasing a collaborative effort to align roles with the SFIA Framework. The SFIA Foundation, a recognized authority in skills and competency frameworks, has contributed essential content to enhance the tool's effectiveness.
 
 **Effortless PD Creation:**
 Efficiency is at the core of this tool's design. Simply select the desired skills and proficiency levels using intuitive check-boxes. The generated list can then be easily exported for seamless integration into comprehensive PDs.
