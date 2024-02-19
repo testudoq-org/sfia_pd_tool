@@ -67,17 +67,17 @@
         </div>
 
         <div class="row">
-
+        
             <div class="col-lg-8">
                 <!-- Panel for SFIA-related Information -->
                 <div class="panel panel-default">
-
+            
                     <!-- SFIA Information Table -->
                     <table class="sfia-table">
-
+            
                         <!-- Table Caption -->
                         <caption>SFIA Information Table</caption>
-
+            
                         <!-- Table Header -->
                         <thead>
                             <!-- Header Row -->
@@ -104,19 +104,17 @@
                                 <th class="skill_level_th">7</th>
                             </tr>
                         </thead>
-
+            
                         <!-- Table Body -->
                         <tbody id="sfia-content">
                             <!-- Table content will be dynamically populated here -->
                         </tbody>
-
+            
                     </table> <!-- End of SFIA Information Table -->
-
                     <!-- Add a button for exporting HTML directly within the col-lg-8 -->
-                    <a href="#" class="btn btn-default navbar-btn" id="exportToHTML" onclick="exportHTML(event);">Export
+                    <a href="#" class="btn btn-default navbar-btn" id="exportToHTMLx" onclick="exportHTML(event);">Export
                         to HTML</a>
-                    <button class="btn btn-default navbar-btn" id="exportCSV" onclick="exportCSV()">Export to
-                        CSV</button>
+                    <a href="#" class="btn btn-default navbar-btn" id="exportCSV" onclick="exportCSV(event)">Export to CSV</a>
                     <label for="jsonVersionSelect">Select JSON Version:</label>
                     <select id="jsonVersionSelect" onchange="changeJsonVersion()">
                         <option value="version1">Version 1</option>
@@ -124,7 +122,6 @@
                     </select>
                 </div> <!-- End of Panel for SFIA-related Information -->
             </div> <!-- End of col-lg-8 -->
-
 
             <div class="col-lg-4">
                 <div class="panel panel-default">
