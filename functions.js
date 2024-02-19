@@ -156,29 +156,21 @@ function renderOutput(sfiaJson) {
     for (const box of checkedBoxes) {
         const jsonData = JSON.parse(box.getAttribute('sfia-data'));
 
-        if (typeof newArr[jsonData.category] === "undefined") {
-            newArr[jsonData.category] = {};
-        }
-        if (typeof newArr[jsonData.category][jsonData.subCategory] === "undefined") {
-            newArr[jsonData.category][jsonData.subCategory] = {};
-        }
-        if (typeof newArr[jsonData.category][jsonData.subCategory][jsonData.skill] === "undefined") {
-            newArr[jsonData.category][jsonData.subCategory][jsonData.skill] = {};
-            newArr[jsonData.category][jsonData.subCategory][jsonData.skill]["description"] = newJson[jsonData.category][jsonData.subCategory][jsonData.skill]["description"];
-            newArr[jsonData.category][jsonData.subCategory][jsonData.skill]["code"] = newJson[jsonData.category][jsonData.subCategory][jsonData.skill]["code"];
-            newArr[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"] = {};
-        }
+        newArr[jsonData.category] ??= {};
+        newArr[jsonData.category][jsonData.subCategory] ??= {};
+        newArr[jsonData.category][jsonData.subCategory][jsonData.skill] ??= {
+            description: newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.description,
+            code: newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.code,
+            levels: {},
+        };
 
-        newArr[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"][jsonData.level] = newJson[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"][jsonData.level];
+        newArr[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"][jsonData.level] = newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.levels?.[jsonData.level];
 
-        urlHash.push(newJson[jsonData.category][jsonData.subCategory][jsonData.skill]["code"] + "-" + jsonData.level);
+        urlHash.push(`${newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.code}-${jsonData.level}`);
     }
 
     const html = document.getElementById('sfia-output');
-
-    while (html.firstChild) {
-        html.removeChild(html.firstChild);
-    }
+    html.innerHTML = ''; // Clear HTML content
 
     for (const category in newArr) {
         const categoryEle = document.createElement('h1');
@@ -192,7 +184,7 @@ function renderOutput(sfiaJson) {
 
             for (const skill in newArr[category][subCategory]) {
                 const skillEle = document.createElement('h3');
-                skillEle.textContent = skill + " - " + newArr[category][subCategory][skill]["code"];
+                skillEle.textContent = `${skill} - ${newArr[category][subCategory][skill]["code"]}`;
                 html.appendChild(skillEle);
 
                 const skillDescriptionEle = document.createElement('p');
@@ -201,7 +193,7 @@ function renderOutput(sfiaJson) {
 
                 for (const level in newArr[category][subCategory][skill]["levels"]) {
                     const levelEle = document.createElement('h4');
-                    levelEle.textContent = "Level " + level;
+                    levelEle.textContent = `Level ${level}`;
                     html.appendChild(levelEle);
 
                     const levelDescriptionEle = document.createElement('p');
@@ -215,6 +207,7 @@ function renderOutput(sfiaJson) {
     // Join the URL hash parts with '+', then update the hash part of the URL
     window.location.hash = urlHash.join("+");
 }
+
 
 // Function to set up event listeners
 function setupEventListeners(sfiaJson) {
