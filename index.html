@@ -11,7 +11,7 @@
         integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <link rel="stylesheet" href="styles-min.css">
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <script src="functions.js"></script>
+    <script src="functions-min.js"></script>
 </head>
 
 <body>
@@ -58,7 +58,17 @@
 
         </div>
 
-        <div class="row">
+        <div class="container-fluid mt-3">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="myInput" class="mr-2">Search for Skills:</label>
+                    <input type="text" class="form-control" id="myInput" onkeyup="searchForText()"
+                        placeholder="Enter skill..." style="width: 300px;">
+                </div>
+            </form>
+        </div>
+
+        <div class="row mt-3">
 
             <div class="col-lg-8">
                 <!-- Panel for SFIA-related Information -->

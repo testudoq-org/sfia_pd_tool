@@ -318,3 +318,44 @@ async function initializeSFIAContent() {
         console.error('Error initializing SFIA content:', error);
     }
 }
+
+function searchForText() {
+    try {
+        // Get user input and filter value
+        const input = document.getElementById('myInput');
+        if (!input) {
+            console.error("Input element not found.");
+            return;
+        }
+        const filterValue = input.value.toUpperCase();
+
+        // Get table body and rows
+        const tableBody = document.getElementById("sfia-content");
+        if (!tableBody) {
+            console.error("Table body element not found.");
+            return;
+        }
+        const tableRows = tableBody.getElementsByTagName('tr');
+        if (!tableRows || tableRows.length === 0) {
+            console.error("No table rows found.");
+            return;
+        }
+
+        // Loop through rows and show/hide based on filter
+        for (let i = 0; i < tableRows.length; i++) {
+            const skillKey = tableRows[i].getElementsByClassName("skill_key")[0];
+            if (!skillKey) {
+                console.error(`Skill key element not found for row ${i}.`);
+                continue; // Skip this row
+            }
+            const skillText = skillKey.textContent;
+            if (skillText.toUpperCase().includes(filterValue)) {
+                tableRows[i].style.display = "";
+            } else {
+                tableRows[i].style.display = "none";
+            }
+        }
+    } catch (error) {
+        console.error("An error occurred:", error.message);
+    }
+}
