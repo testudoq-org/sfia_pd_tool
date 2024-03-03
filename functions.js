@@ -172,7 +172,10 @@ function changeJsonVersion() {
             // Handle the downloaded JSON data here
             console.log("Downloaded JSON data:", data);
 
-            // Your existing logic for handling the response...
+            // Call the function to initialize SFIA content with the new JSON data
+            initializeSFIAContent(data);
+            // Call the function to set up event listeners
+            setupEventListeners(data);
         })
         .catch(error => {
             console.error('There was a problem with the fetch request:', error);
@@ -274,34 +277,17 @@ function setupEventListeners(sfiaJson) {
     }
 }
 
-
-
-// Event listener waiting for the HTML and CSV Button event to propagate
-document.addEventListener('DOMContentLoaded', async function () {
-    const sfiaJson = await fetchData("json_source-min.json");
-    initializeSFIAContent(sfiaJson);
-
-    // Call the function to set up event listeners
-    setupEventListeners(sfiaJson);
-});
-
-async function initializeSFIAContent() {
+async function initializeSFIAContent(sfiaJson) {
     try {
-        const sfiaJson = await fetchData("json_source-min.json");
         const rootKeyPrinted = [];
         const subKeyPrinted = [];
 
         const table = document.getElementById('sfia-content');
+        table.innerHTML = ''; // Clear existing content before populating with new data
 
         for (const rootKey in sfiaJson) {
-            console.log('Root Key:', rootKey);
-
             for (const subKey in sfiaJson[rootKey]) {
-                console.log('Sub Key:', subKey);
-
                 for (const skillKey in sfiaJson[rootKey][subKey]) {
-                    console.log('Skill Key:', skillKey);
-
                     const row = document.createElement('tr');
                     row.className += " " + rootKey.trim().replace(/ /g, "_").toLowerCase();
 
@@ -334,7 +320,7 @@ async function initializeSFIAContent() {
                         row.appendChild(addSelectionBox(i, sfiaJson, rootKey, subKey, skillKey));
                     }
 
-                    table.appendChild(row);//add entire row to table.
+                    table.appendChild(row); // add entire row to table.
                 }
             }
         }
@@ -351,6 +337,7 @@ async function initializeSFIAContent() {
         console.error('Error initializing SFIA content:', error);
     }
 }
+
 
 function searchForText() {
     try {
@@ -399,33 +386,32 @@ function getCookie(name) {
 }
 
 // On page load, check if there's a stored version in the cookie
-window.onload = function () {
+window.onload = async function () {
     console.log('Window onload function triggered');
     try {
-        console.log('Window onload function triggered');
         let storedVersion = getCookie("selectedVersion");
-        if (storedVersion) {
-            console.log('Stored Version:', storedVersion);
-            // If there's a stored version, set the dropdown to it
-            if (storedVersion) {
-                dropdown.value = storedVersion;
-
-                // Trigger the changeJsonVersion function to download the selected version
-                changeJsonVersion();
-            } else {
-                // If there's no stored version, set the dropdown to the latest version
-                let latestVersion = "json_source_v8-min";
-                dropdown.value = latestVersion;
-
-                // Trigger the changeJsonVersion function to download the latest version
-                changeJsonVersion();
-            }
-        } else {
-            console.error('No stored version found.');
+        if (!storedVersion) {
+            // If there's no stored version, set the dropdown to the latest version
+            storedVersion = "json_source_v8-min";
         }
+
+        // Set the selected version in the dropdown
+        let dropdown = document.getElementById("jsonVersionSelect");
+        dropdown.value = storedVersion;
+
+        // Trigger the changeJsonVersion function to download the selected version
+        changeJsonVersion();
+
+        // Fetch the selected version JSON data
+        const sfiaJson = await fetchData(storedVersion + ".json");
+
+        // Call the function to initialize SFIA content
+        //initializeSFIAContent(sfiaJson);
+
+        // Call the function to set up event listeners
+        setupEventListeners(sfiaJson);
     } catch (error) {
         console.error('An error occurred:', error.message);
     }
-    let dropdown = document.getElementById("jsonVersionSelect");
-    console.log('Dropdown Version:', dropdown);
 };
+
