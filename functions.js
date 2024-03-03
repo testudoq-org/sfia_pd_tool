@@ -147,6 +147,39 @@ function exportHTML(event, sfiaJson) {
     a.remove();
 }
 
+function changeJsonVersion() {
+    // Get the selected value from the dropdown
+    let selectedVersion = document.getElementById("jsonVersionSelect").value;
+
+    // Set a cookie to remember the selected version
+    document.cookie = "selectedVersion=" + selectedVersion;
+
+    // Get the current host
+    let currentHost = window.location.origin;
+
+    // Construct the URL for the JSON file based on the selected version and current host
+    let jsonUrl = currentHost + "/" + selectedVersion + ".json";
+
+    // Use Fetch API for making the request
+    fetch(jsonUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Handle the downloaded JSON data here
+            console.log("Downloaded JSON data:", data);
+
+            // Your existing logic for handling the response...
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch request:', error);
+        });
+}
+
+
 function renderOutput(sfiaJson) {
     const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
     const newJson = sfiaJson;
@@ -359,3 +392,40 @@ function searchForText() {
         console.error("An error occurred:", error.message);
     }
 }
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// On page load, check if there's a stored version in the cookie
+window.onload = function () {
+    console.log('Window onload function triggered');
+    try {
+        console.log('Window onload function triggered');
+        let storedVersion = getCookie("selectedVersion");
+        if (storedVersion) {
+            console.log('Stored Version:', storedVersion);
+            // If there's a stored version, set the dropdown to it
+            if (storedVersion) {
+                dropdown.value = storedVersion;
+
+                // Trigger the changeJsonVersion function to download the selected version
+                changeJsonVersion();
+            } else {
+                // If there's no stored version, set the dropdown to the latest version
+                let latestVersion = "json_source_v8-min";
+                dropdown.value = latestVersion;
+
+                // Trigger the changeJsonVersion function to download the latest version
+                changeJsonVersion();
+            }
+        } else {
+            console.error('No stored version found.');
+        }
+    } catch (error) {
+        console.error('An error occurred:', error.message);
+    }
+    let dropdown = document.getElementById("jsonVersionSelect");
+    console.log('Dropdown Version:', dropdown);
+};
