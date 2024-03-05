@@ -1,9 +1,10 @@
 "use strict";
+let sfiaJson;  // declare sfiaJson at a higher scope
 
-var $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
+let $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
 
 function $buo_f() {
-    var e = document.createElement("script");
+    let e = document.createElement("script");
     e.src = "https:////browser-update.org/update.min.js";
     document.body.appendChild(e);
 }
@@ -183,7 +184,7 @@ function changeJsonVersion() {
 }
 
 
-function renderOutput(sfiaJson) {
+function renderOutput(sfiaJson, updateHash = true) {
     const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
     const newJson = sfiaJson;
     const newArr = {};
@@ -241,7 +242,9 @@ function renderOutput(sfiaJson) {
     }
 
     // Join the URL hash parts with '+', then update the hash part of the URL
-    window.location.hash = urlHash.join("+");
+    if (updateHash) {
+        window.location.hash = urlHash.join("+");
+    }
 }
 
 
@@ -326,7 +329,7 @@ async function initializeSFIAContent(sfiaJson) {
         }
 
         if (window.location.href.split("/#/").length > 0) {
-            renderOutput(sfiaJson);
+            renderOutput(sfiaJson, false);
         }
 
         const checkboxes = document.querySelectorAll('input[type=checkbox]');
@@ -379,6 +382,18 @@ function searchForText() {
         console.error("An error occurred:", error.message);
     }
 }
+// Update the URL with the selected checkboxes
+function updateURLWithCheckboxes() {
+    const checkboxes = document.querySelectorAll('input[type=checkbox]');
+    const selectedCheckboxes = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.getAttribute('data-code') + '-' + checkbox.getAttribute('data-level'));
+
+    const urlHash = selectedCheckboxes.join('+');
+    window.location.hash = urlHash;
+}
+
+//get cookie info
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -400,18 +415,53 @@ window.onload = async function () {
         dropdown.value = storedVersion;
 
         // Trigger the changeJsonVersion function to download the selected version
-        changeJsonVersion();
+        await changeJsonVersion();  // use await to wait for the fetch to complete
 
         // Fetch the selected version JSON data
         const sfiaJson = await fetchData(storedVersion + ".json");
 
-        // Call the function to initialize SFIA content
-        //initializeSFIAContent(sfiaJson);
-
         // Call the function to set up event listeners
         setupEventListeners(sfiaJson);
+
+        // Parse URL hash and pre-select checkboxes
+        const urlHash = window.location.hash.replace('#', '');
+        const selectedCheckboxes = urlHash.split('+');
+
+        if (selectedCheckboxes.length > 0) {
+            selectedCheckboxes.forEach(selectedCheckbox => {
+                const [code, level] = selectedCheckbox.split('-');
+                const checkbox = document.querySelector(`input[type=checkbox][data-code="${code}"][data-level="${level}"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+
+            // Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
+            renderOutput(sfiaJson);
+        } else {
+            // If there are no selected checkboxes, proceed with initializing SFIA content
+            initializeSFIAContent(sfiaJson);
+        }
+
     } catch (error) {
         console.error('An error occurred:', error.message);
     }
 };
 
+
+
+// Check if the URL hash changes (e.g., due to user interaction)
+window.addEventListener('hashchange', async function () {
+    try {
+        // Fetch the selected version JSON data
+        sfiaJson = await fetchData(storedVersion + ".json");  // update sfiaJson
+
+        // Call the function to initialize SFIA content
+        initializeSFIAContent(sfiaJson);
+
+        // Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
+        renderOutput(sfiaJson);
+    } catch (error) {
+        console.error('An error occurred:', error.message);
+    }
+});

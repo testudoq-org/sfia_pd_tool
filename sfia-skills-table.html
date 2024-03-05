@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SFIA 8 Skills Table</title>
+    <style>
+        /* Add some basic styling for better readability */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .sfia-skills-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .sfia-skills-table th,
+        .sfia-skills-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .sfia-skills-table th {
+            background-color: #f2f2f2;
+        }
+
+        .skill-code-column {
+            background-color: #e6e6e6;
+        }
+
+        /* Add styles for skill progression levels */
+        .skill-level-1 {
+            background-color: #ff0000; /* Red */
+        }
+
+        .skill-level-2 {
+            background-color: #ff4000; /* Orange-Red */
+        }
+
+        .skill-level-3 {
+            background-color: #ff8000; /* Orange */
+        }
+
+        .skill-level-4 {
+            background-color: #ffbf00; /* Yellow-Orange */
+        }
+
+        .skill-level-5 {
+            background-color: #ffff00; /* Yellow */
+        }
+
+        .skill-level-6 {
+            background-color: #bfff00; /* Yellow-Green */
+        }
+
+        .skill-level-7 {
+            background-color: #00ff00; /* Green */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Display area for the Original SFIA 8 Skills List table -->
+    <div id="originalSFIA8SkillsList"></div>
+
+    <script>
+        // Function to fetch and display the original SFIA 8 Skills List table
+        function fetchAndDisplayOriginalSFIA8SkillsList() {
+            // Replace the URL with your actual API endpoint
+            const apiUrl = "https://sfianz.zendesk.com/api/v2/help_center/en-nz/articles.json?per_page=100&include=sections,categories";
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Complete Data Set:", data); // Log the entire dataset
+
+                    const sfia8SkillsList = data.articles.find(item => item.name === "SFIA 8 Skills List");
+
+                    if (!sfia8SkillsList) {
+                        displayError("SFIA 8 Skills List not found in API response");
+                        return;
+                    }
+
+                    const originalSFIA8SkillsListDiv = document.getElementById("originalSFIA8SkillsList");
+                    const originalTable = document.createElement("table");
+                    originalTable.classList.add("sfia-skills-table");
+                    originalTable.innerHTML = sfia8SkillsList.body;
+
+                    originalSFIA8SkillsListDiv.appendChild(originalTable);
+
+                    // Call the function to append Skill Code information for each code
+                    appendAllSkillCodeInformation(data.articles);
+                })
+                .catch(error => {
+                    displayError(`Error fetching SFIA 8 Skills List: ${error.message}`);
+                });
+        }
+
+        // Function to display errors in the browser
+        function displayError(errorMessage) {
+            const errorDiv = document.createElement("div");
+            errorDiv.style.color = "red";
+            errorDiv.textContent = errorMessage;
+            document.body.appendChild(errorDiv);
+        }
+
+        // Function to append Skill Code information to the table for all codes
+        function appendAllSkillCodeInformation(articles) {
+            const originalTable = document.querySelector("#originalSFIA8SkillsList table");
+
+            if (!originalTable) {
+                displayError("Original SFIA 8 Skills List table not found");
+                return;
+            }
+
+            const tableBodyRows = originalTable.querySelectorAll("tbody tr");
+
+            const skillCodeBodies = new Map();
+
+            articles.forEach(article => {
+                const labelNames = article.label_names;
+
+                labelNames.forEach(skillCode => {
+                    if (skillCode !== "SFIA") { // Exclude SFIA from the Skill Code mapping
+                        if (!skillCodeBodies.has(skillCode)) {
+                            skillCodeBodies.set(skillCode, article.body);
+                        }
+                    }
+                });
+            });
+
+            console.log("Skill Code Bodies:", Array.from(skillCodeBodies)); // Log the skill code bodies
+
+            tableBodyRows.forEach(row => {
+                const skillCodeCell = document.createElement("td");
+
+                const skillCode = row.cells[3].textContent.trim(); // Assuming Skill Code is in the 4th column
+
+                if (skillCodeBodies.has(skillCode)) {
+                    const correspondingBody = skillCodeBodies.get(skillCode);
+
+                    if (Array.isArray(correspondingBody)) {
+                        // Loop through the array and append each entry
+                        correspondingBody.forEach(entry => {
+                            const levelMatch = entry.match(/Level (\d)/);
+                            const levelClass = levelMatch ? `skill-level-${levelMatch[1]}` : '';
+
+                            const bodyWithSkillCode = `<div class="${levelClass}"><strong>${skillCode}</strong> ${entry}</div>`;
+                            skillCodeCell.innerHTML += bodyWithSkillCode;
+                        });
+                    } else {
+                        // If it's not an array, append as is
+                        const levelMatch = correspondingBody.match(/Level (\d)/);
+                        const levelClass = levelMatch ? `skill-level-${levelMatch[1]}` : '';
+
+                        const bodyWithSkillCode = `<div class="${levelClass}"><strong>${skillCode}</strong> ${correspondingBody}</div>`;
+                        skillCodeCell.innerHTML = bodyWithSkillCode;
+                    }
+
+                    row.appendChild(skillCodeCell);
+                } else {
+                    // Append default message for Skill Code not found
+                    const notFoundMessage = `Body not found for Skill Code: ${skillCode}`;
+                    skillCodeCell.innerHTML = notFoundMessage;
+                    row.appendChild(skillCodeCell);
+                }
+            });
+
+            // Add the column header for Skill Description
+            const tableHeaderRow = originalTable.querySelector("thead tr");
+            const skillDescriptionHeader = document.createElement("th");
+            skillDescriptionHeader.textContent = "Skill Description";
+            tableHeaderRow.appendChild(skillDescriptionHeader);
+        }
+
+        // Call the function when the page loads
+        window.onload = fetchAndDisplayOriginalSFIA8SkillsList;
+    </script>
+</body>
+
+</html>
