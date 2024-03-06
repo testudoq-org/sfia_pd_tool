@@ -134,6 +134,7 @@
             document.body.appendChild(errorDiv);
         }
 
+// Appends skill code information to the SFIA 8 Skills List table based on the provided articles.
 function appendAllSkillCodeInformation(articles) {
     const originalTable = document.querySelector("#originalSFIA8SkillsList table");
 
@@ -143,6 +144,13 @@ function appendAllSkillCodeInformation(articles) {
     }
 
     const tableBodyRows = originalTable.querySelectorAll("tbody tr");
+    const skillCodeBodies = createSkillCodeBodiesMap(articles);
+
+    appendSkillCodeInformationToTable(tableBodyRows, skillCodeBodies, originalTable);
+    appendSkillDescriptionHeader(originalTable);
+}
+
+function createSkillCodeBodiesMap(articles) {
     const skillCodeBodies = new Map();
 
     articles.forEach(article => {
@@ -155,6 +163,10 @@ function appendAllSkillCodeInformation(articles) {
         });
     });
 
+    return skillCodeBodies;
+}
+
+function appendSkillCodeInformationToTable(tableBodyRows, skillCodeBodies, originalTable) {
     tableBodyRows.forEach(row => {
         const skillCodeCell = document.createElement("td");
         const skillCode = row.cells[3].textContent.trim();
@@ -177,7 +189,9 @@ function appendAllSkillCodeInformation(articles) {
             row.appendChild(skillCodeCell);
         }
     });
+}
 
+function appendSkillDescriptionHeader(originalTable) {
     const skillDescriptionHeader = document.createElement("th");
     skillDescriptionHeader.textContent = "Skill Description";
     originalTable.querySelector("thead tr").appendChild(skillDescriptionHeader);
