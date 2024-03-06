@@ -71,40 +71,60 @@
     <script>
         // Function to fetch and display the original SFIA 8 Skills List table
         function fetchAndDisplayOriginalSFIA8SkillsList() {
-            // Replace the URL with your actual API endpoint
-            const apiUrl = "https://sfianz.zendesk.com/api/v2/help_center/en-nz/articles.json?per_page=100&include=sections,categories";
+    // Define the base URL for the API endpoint
+    const baseUrl = "https://help.sfia.nz/api/v2/help_center/en-nz/articles.json?include=sections%2Ccategories&page=";
 
-            fetch(apiUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Complete Data Set:", data); // Log the entire dataset
+    // Number of pages to fetch (adjust as needed)
+    const totalPages = 2;
 
-                    const sfia8SkillsList = data.articles.find(item => item.name === "SFIA 8 Skills List");
+    // Array to store data from all pages
+    const allData = [];
 
-                    if (!sfia8SkillsList) {
-                        displayError("SFIA 8 Skills List not found in API response");
-                        return;
-                    }
+    // Function to fetch data from a specific page and append it to the array
+    const fetchDataForPage = async (page) => {
+        const apiUrl = `${baseUrl}${page}&per_page=100`;
 
-                    const originalSFIA8SkillsListDiv = document.getElementById("originalSFIA8SkillsList");
-                    const originalTable = document.createElement("table");
-                    originalTable.classList.add("sfia-skills-table");
-                    originalTable.innerHTML = sfia8SkillsList.body;
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
 
-                    originalSFIA8SkillsListDiv.appendChild(originalTable);
+            const data = await response.json();
+            allData.push(...data.articles);
 
-                    // Call the function to append Skill Code information for each code
-                    appendAllSkillCodeInformation(data.articles);
-                })
-                .catch(error => {
-                    displayError(`Error fetching SFIA 8 Skills List: ${error.message}`);
-                });
+            // If this is the last page, proceed to display the data
+            if (page === totalPages) {
+                console.log("Complete Data Set:", allData);
+
+                const sfia8SkillsList = allData.find(item => item.name === "SFIA 8 Skills List");
+
+                if (!sfia8SkillsList) {
+                    displayError("SFIA 8 Skills List not found in API response");
+                    return;
+                }
+
+                const originalSFIA8SkillsListDiv = document.getElementById("originalSFIA8SkillsList");
+                const originalTable = document.createElement("table");
+                originalTable.classList.add("sfia-skills-table");
+                originalTable.innerHTML = sfia8SkillsList.body;
+
+                originalSFIA8SkillsListDiv.appendChild(originalTable);
+
+                // Call the function to append Skill Code information for each code
+                appendAllSkillCodeInformation(allData);
+            } else {
+                // Fetch data for the next page
+                await fetchDataForPage(page + 1);
+            }
+        } catch (error) {
+            displayError(`Error fetching SFIA 8 Skills List: ${error.message}`);
         }
+    };
+
+    // Start fetching data for the first page
+    fetchDataForPage(1);
+}
 
         // Function to display errors in the browser
         function displayError(errorMessage) {
@@ -114,74 +134,54 @@
             document.body.appendChild(errorDiv);
         }
 
-        // Function to append Skill Code information to the table for all codes
-        function appendAllSkillCodeInformation(articles) {
-            const originalTable = document.querySelector("#originalSFIA8SkillsList table");
+function appendAllSkillCodeInformation(articles) {
+    const originalTable = document.querySelector("#originalSFIA8SkillsList table");
 
-            if (!originalTable) {
-                displayError("Original SFIA 8 Skills List table not found");
-                return;
+    if (!originalTable) {
+        displayError("Original SFIA 8 Skills List table not found");
+        return;
+    }
+
+    const tableBodyRows = originalTable.querySelectorAll("tbody tr");
+    const skillCodeBodies = new Map();
+
+    articles.forEach(article => {
+        const labelNames = article.label_names;
+
+        labelNames.forEach(skillCode => {
+            if (skillCode !== "SFIA" && !skillCodeBodies.has(skillCode)) {
+                skillCodeBodies.set(skillCode, article.body);
             }
+        });
+    });
 
-            const tableBodyRows = originalTable.querySelectorAll("tbody tr");
+    tableBodyRows.forEach(row => {
+        const skillCodeCell = document.createElement("td");
+        const skillCode = row.cells[3].textContent.trim();
 
-            const skillCodeBodies = new Map();
-
-            articles.forEach(article => {
-                const labelNames = article.label_names;
-
-                labelNames.forEach(skillCode => {
-                    if (skillCode !== "SFIA") { // Exclude SFIA from the Skill Code mapping
-                        if (!skillCodeBodies.has(skillCode)) {
-                            skillCodeBodies.set(skillCode, article.body);
-                        }
-                    }
-                });
+        if (skillCodeBodies.has(skillCode)) {
+            const correspondingBody = skillCodeBodies.get(skillCode);
+            const bodyContent = Array.isArray(correspondingBody) ? correspondingBody : [correspondingBody];
+            
+            bodyContent.forEach(entry => {
+                const levelMatch = entry.match(/Level (\d)/);
+                const levelClass = levelMatch ? `skill-level-${levelMatch[1]}` : '';
+                const bodyWithSkillCode = `<div class="${levelClass}"><strong>${skillCode}</strong> ${entry}</div>`;
+                skillCodeCell.innerHTML += bodyWithSkillCode;
             });
 
-            console.log("Skill Code Bodies:", Array.from(skillCodeBodies)); // Log the skill code bodies
-
-            tableBodyRows.forEach(row => {
-                const skillCodeCell = document.createElement("td");
-
-                const skillCode = row.cells[3].textContent.trim(); // Assuming Skill Code is in the 4th column
-
-                if (skillCodeBodies.has(skillCode)) {
-                    const correspondingBody = skillCodeBodies.get(skillCode);
-
-                    if (Array.isArray(correspondingBody)) {
-                        // Loop through the array and append each entry
-                        correspondingBody.forEach(entry => {
-                            const levelMatch = entry.match(/Level (\d)/);
-                            const levelClass = levelMatch ? `skill-level-${levelMatch[1]}` : '';
-
-                            const bodyWithSkillCode = `<div class="${levelClass}"><strong>${skillCode}</strong> ${entry}</div>`;
-                            skillCodeCell.innerHTML += bodyWithSkillCode;
-                        });
-                    } else {
-                        // If it's not an array, append as is
-                        const levelMatch = correspondingBody.match(/Level (\d)/);
-                        const levelClass = levelMatch ? `skill-level-${levelMatch[1]}` : '';
-
-                        const bodyWithSkillCode = `<div class="${levelClass}"><strong>${skillCode}</strong> ${correspondingBody}</div>`;
-                        skillCodeCell.innerHTML = bodyWithSkillCode;
-                    }
-
-                    row.appendChild(skillCodeCell);
-                } else {
-                    // Append default message for Skill Code not found
-                    const notFoundMessage = `Body not found for Skill Code: ${skillCode}`;
-                    skillCodeCell.innerHTML = notFoundMessage;
-                    row.appendChild(skillCodeCell);
-                }
-            });
-
-            // Add the column header for Skill Description
-            const tableHeaderRow = originalTable.querySelector("thead tr");
-            const skillDescriptionHeader = document.createElement("th");
-            skillDescriptionHeader.textContent = "Skill Description";
-            tableHeaderRow.appendChild(skillDescriptionHeader);
+            row.appendChild(skillCodeCell);
+        } else {
+            const notFoundMessage = `Body not found for Skill Code: ${skillCode}`;
+            skillCodeCell.innerHTML = notFoundMessage;
+            row.appendChild(skillCodeCell);
         }
+    });
+
+    const skillDescriptionHeader = document.createElement("th");
+    skillDescriptionHeader.textContent = "Skill Description";
+    originalTable.querySelector("thead tr").appendChild(skillDescriptionHeader);
+}
 
         // Call the function when the page loads
         window.onload = fetchAndDisplayOriginalSFIA8SkillsList;
