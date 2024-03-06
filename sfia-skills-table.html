@@ -134,7 +134,7 @@
             document.body.appendChild(errorDiv);
         }
 
-// Appends skill code information to the SFIA 8 Skills List table based on the provided articles.
+// Appends skill code information to the provided articles.
 function appendAllSkillCodeInformation(articles) {
     const originalTable = document.querySelector("#originalSFIA8SkillsList table");
 
@@ -150,6 +150,8 @@ function appendAllSkillCodeInformation(articles) {
     appendSkillDescriptionHeader(originalTable);
 }
 
+
+// Creates a map of skill code bodies based on the provided articles.
 function createSkillCodeBodiesMap(articles) {
     const skillCodeBodies = new Map();
 
@@ -166,6 +168,11 @@ function createSkillCodeBodiesMap(articles) {
     return skillCodeBodies;
 }
 
+// Appends skill code information to the given table body rows using the provided skill code bodies, and the original table. 
+// @param {HTMLCollection} tableBodyRows - The rows of the table body.
+// @param {Map} skillCodeBodies - The map of skill code bodies.
+// @param {HTMLTableElement} originalTable - The original table element.
+// @returns {void}
 function appendSkillCodeInformationToTable(tableBodyRows, skillCodeBodies, originalTable) {
     tableBodyRows.forEach(row => {
         const skillCodeCell = document.createElement("td");
@@ -191,6 +198,12 @@ function appendSkillCodeInformationToTable(tableBodyRows, skillCodeBodies, origi
     });
 }
 
+    // Appends a new header cell to the table with the text "Skill Description".
+    // 
+    // Parameters:
+    // - originalTable: The table element to which the header cell will be appended.
+    //
+    // Returns: None.
 function appendSkillDescriptionHeader(originalTable) {
     const skillDescriptionHeader = document.createElement("th");
     skillDescriptionHeader.textContent = "Skill Description";
