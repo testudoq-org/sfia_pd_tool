@@ -149,29 +149,35 @@ function exportHTML(event, sfiaJson) {
 }
 
 function changeJsonVersion() {
+    console.log('Starting changeJsonVersion function');
     // Get the selected value from the dropdown
     let selectedVersion = document.getElementById("jsonVersionSelect").value;
+    console.log('Selected version:', selectedVersion);
 
     // Set a cookie to remember the selected version
-    document.cookie = "selectedVersion=" + selectedVersion;
+    document.cookie = `selectedVersion=${selectedVersion}; SameSite=None; Secure`;
+    console.log('Cookie set to:', `selectedVersion=${selectedVersion}`);
 
     // Get the current host
     let currentHost = window.location.origin;
+    console.log('Current host:', currentHost);
 
     // Construct the URL for the JSON file based on the selected version and current host
-    let jsonUrl = currentHost + "/" + selectedVersion + ".json";
+    let jsonUrl = `json_source_${selectedVersion}-min.json`;
+    console.log('JSON URL:', jsonUrl);
 
     // Use Fetch API for making the request
     fetch(jsonUrl)
         .then(response => {
+            console.log('Response received');
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
+            console.log('Response OK');
             return response.json();
         })
         .then(data => {
-            // Handle the downloaded JSON data here
-            console.log("Downloaded JSON data:", data);
+            console.log('JSON data received:', data);
 
             // Call the function to initialize SFIA content with the new JSON data
             initializeSFIAContent(data);
@@ -179,8 +185,9 @@ function changeJsonVersion() {
             setupEventListeners(data);
         })
         .catch(error => {
-            console.error('There was a problem with the fetch request:', error);
+            console.error('Fetch request error:', error);
         });
+    console.log('End of changeJsonVersion function');
 }
 
 

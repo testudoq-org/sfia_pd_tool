@@ -10,12 +10,11 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
         integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <link rel="stylesheet" href="styles-min.css">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <script src="functions.js"></script>
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <script src="functions-min.js"></script>
 </head>
 
 <body>
-
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -23,10 +22,8 @@
             </div>
         </div>
     </nav>
-
     <div id="pageContent" class="container-fluid">
         <div class="row">
-
             <div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -35,98 +32,57 @@
                     <div class="panel-body">
                         <p>Welcome to the PD generator tool, built upon the <a href="https://www.sfia-online.org">SFIA 8
                                 Framework</a>.</p>
-
                         <p>To initiate PD generation, choose the desired skill set levels.</p>
-
                         <p>Description of any skill is available by hovering over it, and for any skill level, hover
                             over its respective checkbox.</p>
-
                         <p>Your selected choices will be formatted and provided at the page's end. Copy and paste it
                             into a word processor for formatting preservation.</p>
-
                         <p>You can also export your selection as a comma-separated value (CSV) document or HTML,
                             automatically downloaded for you. For optimal use, consider an up-to-date version of Chrome
                             or Firefox, as some browsers may have limitations. In case of an incorrectly named file,
                             rest assured the content remains unchanged.</p>
-
                         <p>To save your summary for future reference, bookmark the page. The URL bookmark retains
                             necessary information and updates your selection upon your return.</p>
                     </div>
-
                 </div>
             </div>
-
         </div>
-
         <div class="container-fluid mt-3">
             <form class="form-inline">
-                <div class="form-group">
-                    <label for="myInput" class="mr-2">Search for Skills:</label>
-                    <input type="text" class="form-control" id="myInput" onkeyup="searchForText()"
-                        placeholder="Enter skill..." style="width: 300px;">
-                </div>
+                <div class="form-group"><label for="myInput" class="mr-2">Search for Skills:</label><input type="text"
+                        class="form-control" id="myInput" onkeyup="searchForText()" placeholder="Enter skill..."
+                        style="width: 300px;"></div>
             </form>
         </div>
-
         <div class="row mt-3">
-
             <div class="col-lg-8">
-                <!-- Panel for SFIA-related Information -->
                 <div class="panel panel-default">
-
-                    <!-- SFIA Information Table -->
                     <table class="sfia-table">
-
-                        <!-- Table Caption -->
                         <caption>SFIA Information Table</caption>
-
-                        <!-- Table Header -->
                         <thead>
-                            <!-- Header Row -->
                             <tr>
-                                <!-- Category Column Header -->
                                 <th class="root_key_th">Category</th>
-                                <!-- Sub Category Column Header -->
                                 <th class="sub_key_th">Sub Category</th>
-                                <!-- Skill Set Column Header -->
                                 <th class="skill_key_th">Skill Set</th>
-                                <!-- Skill Level 1 Column Header -->
                                 <th class="skill_level_th">1</th>
-                                <!-- Skill Level 2 Column Header -->
                                 <th class="skill_level_th">2</th>
-                                <!-- Skill Level 3 Column Header -->
                                 <th class="skill_level_th">3</th>
-                                <!-- Skill Level 4 Column Header -->
                                 <th class="skill_level_th">4</th>
-                                <!-- Skill Level 5 Column Header -->
                                 <th class="skill_level_th">5</th>
-                                <!-- Skill Level 6 Column Header -->
                                 <th class="skill_level_th">6</th>
-                                <!-- Skill Level 7 Column Header -->
                                 <th class="skill_level_th">7</th>
                             </tr>
                         </thead>
-
-                        <!-- Table Body -->
-                        <tbody id="sfia-content">
-                            <!-- Table content will be dynamically populated here -->
-                        </tbody>
-
-                    </table> <!-- End of SFIA Information Table -->
-                    <!-- Add a button for exporting HTML directly within the col-lg-8 -->
-                    <a href="#" class="btn btn-default navbar-btn" id="exportToHTMLx"
-                        onclick="exportHTML(event);">Export
-                        to HTML</a>
-                    <a href="#" class="btn btn-default navbar-btn" id="exportCSV" onclick="exportCSV(event)">Export to
-                        CSV</a>
-                    <label for="jsonVersionSelect">Select JSON Version:</label>
-                    <select id="jsonVersionSelect" onchange="changeJsonVersion()">
+                        <tbody id="sfia-content"></tbody>
+                    </table><a href="#" class="btn btn-default navbar-btn" id="exportToHTMLx"
+                        onclick="exportHTML(event);">Export to HTML</a><a href="#" class="btn btn-default navbar-btn"
+                        id="exportCSV" onclick="exportCSV(event)">Export to CSV</a><label for="jsonVersionSelect">Select
+                        JSON Version:</label><select id="jsonVersionSelect" onchange="changeJsonVersion()">
                         <option value="json_source_v8-min">version 8</option>
                         <option value="json_source_v7-min">version 7</option>
                     </select>
-                </div> <!-- End of Panel for SFIA-related Information -->
-            </div> <!-- End of col-lg-8 -->
-
+                </div>
+            </div>
             <div class="col-lg-4">
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -135,20 +91,16 @@
                     <div class="panel-body">
                         <div id="sfia-output"></div>
                     </div>
-                    <div class="panel-footer">
-                    </div>
+                    <div class="panel-footer"></div>
                 </div>
             </div>
-
         </div>
     </div>
-
     <footer class="footer">
         <div class="container">
             <p class="text-muted text-center">Copyright 2024</p>
         </div>
     </footer>
-
 </body>
 
 </html>
