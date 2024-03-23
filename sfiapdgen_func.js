@@ -163,7 +163,7 @@ function changeJsonVersion() {
     console.log('Current host:', currentHost);
 
     // Construct the URL for the JSON file based on the selected version and current host
-    let jsonUrl = `json_source_${selectedVersion}-min.json`;
+    let jsonUrl = `${selectedVersion}.json`;
     console.log('JSON URL:', jsonUrl);
 
     // Use Fetch API for making the request
@@ -410,49 +410,72 @@ function getCookie(name) {
 // On page load, check if there's a stored version in the cookie
 window.onload = async function () {
     console.log('Window onload function triggered');
+    console.group('Page Load');
+
     try {
+        console.log('Checking for stored version in cookie');
         let storedVersion = getCookie("selectedVersion");
+
         if (!storedVersion) {
-            // If there's no stored version, set the dropdown to the latest version
+            console.log('No stored version found, setting to latest version');
             storedVersion = "json_source_v8-min";
         }
 
-        // Set the selected version in the dropdown
-        let dropdown = document.getElementById("jsonVersionSelect");
-        dropdown.value = storedVersion;
+        console.log(`Stored version is: ${storedVersion}`);
 
-        // Trigger the changeJsonVersion function to download the selected version
+        console.log('Updating dropdown with stored version');
+        let dropdown = document.getElementById("jsonVersionSelect");
+        if (!dropdown) {
+            console.error('Dropdown element not found');
+        } else {
+            dropdown.value = storedVersion;
+            console.log(`Dropdown value updated to ${dropdown.value}`);
+        }
+
+        console.log('Triggering changeJsonVersion function');
         await changeJsonVersion();  // use await to wait for the fetch to complete
 
-        // Fetch the selected version JSON data
-        const sfiaJson = await fetchData(storedVersion + ".json");
+        console.log('Fetching selected version JSON data');
+        console.log(`Stored version is: ${storedVersion}`);
+        const sfiaJson = await fetchData(sfia/storedVersion + ".json");
+        if (!sfiaJson) {
+            console.error('Failed to fetch JSON data');
+        } else {
+            console.log('JSON data fetched successfully');
+        }
 
-        // Call the function to set up event listeners
+        console.log('Calling setupEventListeners function');
         setupEventListeners(sfiaJson);
 
-        // Parse URL hash and pre-select checkboxes
+        console.log('Parsing URL hash and pre-selecting checkboxes');
         const urlHash = window.location.hash.replace('#', '');
         const selectedCheckboxes = urlHash.split('+');
 
         if (selectedCheckboxes.length > 0) {
-            selectedCheckboxes.forEach(selectedCheckbox => {
-                const [code, level] = selectedCheckbox.split('-');
-                const checkbox = document.querySelector(`input[type=checkbox][data-code="${code}"][data-level="${level}"]`);
-                if (checkbox) {
-                    checkbox.checked = true;
-                }
-            });
-
-            // Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
-            renderOutput(sfiaJson);
+            console.log(`Found ${selectedCheckboxes.length} selected checkboxes`);
         } else {
-            // If there are no selected checkboxes, proceed with initializing SFIA content
-            initializeSFIAContent(sfiaJson);
+            console.log('No selected checkboxes found');
         }
+
+        selectedCheckboxes.forEach(selectedCheckbox => {
+            console.log(`Processing selected checkbox ${selectedCheckbox}`);
+            const [code, level] = selectedCheckbox.split('-');
+            const checkbox = document.querySelector(`input[type=checkbox][data-code="${code}"][data-level="${level}"]`);
+            if (checkbox) {
+                console.log(`Checking checkbox for ${code}-${level}`);
+                checkbox.checked = true;
+            } else {
+                console.log(`Could not find checkbox for ${code}-${level}`);
+            }
+        });
+
+        console.log('Triggering renderOutput function');
+        renderOutput(sfiaJson);
 
     } catch (error) {
         console.error('An error occurred:', error.message);
     }
+    console.groupEnd();
 };
 
 
