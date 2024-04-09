@@ -1,7 +1,9 @@
 "use strict";
 let sfiaJson;  // declare sfiaJson at a higher scope
-
+/* //browser
 let $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
+
+
 
 function $buo_f() {
     let e = document.createElement("script");
@@ -14,6 +16,7 @@ try {
 } catch (e) {
     window.attachEvent("onload", $buo_f);
 }
+*/
 
 async function fetchData(url) {
     try {
@@ -28,16 +31,23 @@ async function fetchData(url) {
 }
 
 function checkPreselected(code, level) {
+    console.log("Checking URL hash for preselected data");
     const urlHash = window.location.href.split("/#/")[1];
-    if (urlHash && urlHash.split("+").length > 0) {
-        const hashParts = urlHash.split("+");
+    console.log(`URL hash: ${urlHash}`);
+    if (urlHash && urlHash.split("-").length > 0) {
+        console.log("URL hash found, checking for preselected data");
+        const hashParts = urlHash.split("-");
+        console.log(`Hash parts: ${hashParts}`);
         for (let i = hashParts.length - 1; i >= 0; i--) {
             const [checkCode, checkLevel] = hashParts[i].split("-");
+            console.log(`Checking code: ${checkCode}, level: ${checkLevel}`);
             if (code === checkCode && level === checkLevel) {
+                console.log(`Preselected data found: ${code}-${level}`);
                 return true;
             }
         }
     }
+    console.log("No preselected data found");
     return false;
 }
 
@@ -190,68 +200,116 @@ function changeJsonVersion() {
     console.log('End of changeJsonVersion function');
 }
 
-
+/**
+ * Render the output based on the provided SFIA JSON data.
+ *
+ * @param {Object} sfiaJson - The SFIA JSON data to render.
+ * @param {boolean} [updateHash=true] - Flag indicating whether to update the URL hash.
+ */
 function renderOutput(sfiaJson, updateHash = true) {
+    console.log('Starting renderOutput function');
+
     const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
     const newJson = sfiaJson;
-    const newArr = {};
-    const urlHash = [];
+    const newArr = [];
+    const urlHash = []; // Array to store selected skill codes and levels for updating the URL hash
+
+    // Parse the URL hash to extract selected skill codes and levels
+    const urlHashParts = window.location.hash.replace('#', '').split('-');
+    console.log('URL hash parts:', urlHashParts);
+    const filteredUrlHash = urlHashParts.filter(part => part !== 'undefined' && part !== ''); // Filter out 'undefined' and empty strings
+    console.log('Filtered URL hash parts:', filteredUrlHash);
+
+
+    for (const hashPart of filteredUrlHash) {
+        const [code, level] = hashPart.split('-');
+        if (code !== 'undefined' && level !== 'undefined') { // Check if code and level are not 'undefined'
+            urlHash.push(`${code}-${level}`);
+        }
+    }
+    console.log('URL hash:', urlHash);
 
     for (const box of checkedBoxes) {
         const jsonData = JSON.parse(box.getAttribute('sfia-data'));
 
-        newArr[jsonData.category] ??= {};
-        newArr[jsonData.category][jsonData.subCategory] ??= {};
-        newArr[jsonData.category][jsonData.subCategory][jsonData.skill] ??= {
-            description: newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.description,
-            code: newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.code,
-            levels: {},
-        };
+        if (jsonData.category && jsonData.subCategory && jsonData.skill && jsonData.level) { // Ensure all data is defined
+            newArr[jsonData.category] ??= {};
+            newArr[jsonData.category][jsonData.subCategory] ??= {};
+            newArr[jsonData.category][jsonData.subCategory][jsonData.skill] ??= {
+                description: newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.description,
+                code: newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.code,
+                levels: {},
+            };
 
-        newArr[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"][jsonData.level] = newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.levels?.[jsonData.level];
+            newArr[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"][jsonData.level] = newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.levels?.[jsonData.level];
 
-        urlHash.push(`${newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.code}-${jsonData.level}`);
+            // Check if the current checkbox corresponds to a skill code and level from the URL hash
+            if (urlHash.includes(`${jsonData.skill}-${jsonData.level}`)) {
+                box.checked = true; // Select the checkbox
+            }
+        } else {
+            console.error('Incomplete or missing data:', jsonData);
+        }
     }
 
     const html = document.getElementById('sfia-output');
     html.innerHTML = ''; // Clear HTML content
+    console.log('HTML cleared');
 
     for (const category in newArr) {
         const categoryEle = document.createElement('h1');
         categoryEle.textContent = category;
         html.appendChild(categoryEle);
+        console.log(`Created ${category} heading`);
 
         for (const subCategory in newArr[category]) {
             const subCategoryEle = document.createElement('h2');
             subCategoryEle.textContent = subCategory;
             html.appendChild(subCategoryEle);
+            console.log(`Created ${subCategory} sub-heading`);
 
             for (const skill in newArr[category][subCategory]) {
                 const skillEle = document.createElement('h3');
                 skillEle.textContent = `${skill} - ${newArr[category][subCategory][skill]["code"]}`;
                 html.appendChild(skillEle);
+                console.log(`Created ${skill} heading`);
 
                 const skillDescriptionEle = document.createElement('p');
                 skillDescriptionEle.textContent = newArr[category][subCategory][skill]["description"];
                 html.appendChild(skillDescriptionEle);
+                console.log(`Created ${skill} description`);
 
                 for (const level in newArr[category][subCategory][skill]["levels"]) {
                     const levelEle = document.createElement('h4');
                     levelEle.textContent = `Level ${level}`;
                     html.appendChild(levelEle);
+                    console.log(`Created level ${level} heading`);
 
                     const levelDescriptionEle = document.createElement('p');
                     levelDescriptionEle.textContent = newArr[category][subCategory][skill]["levels"][level];
                     html.appendChild(levelDescriptionEle);
+                    console.log(`Created level ${level} description`);
                 }
             }
         }
     }
 
-    // Join the URL hash parts with '+', then update the hash part of the URL
+    // Highlight selected checkboxes visually
+    checkedBoxes.forEach(box => {
+        box.parentNode.style.backgroundColor = 'lightblue';
+    });
+
+    // Join the URL hash parts with '-', then update the hash part of the URL
+    console.log('Value of updateHash:', updateHash);
     if (updateHash) {
-        window.location.hash = urlHash.join("+");
+        const filteredUrlHash = urlHash.filter(part => part !== 'undefined');
+        console.log('Filtered URL hash:', filteredUrlHash);
+        window.location.hash = filteredUrlHash.join("-");
+        console.log(`Updated URL hash to ${filteredUrlHash.join("-")}`);
     }
+
+
+    console.log('End of renderOutput function');
 }
 
 
@@ -391,13 +449,20 @@ function searchForText() {
 }
 // Update the URL with the selected checkboxes
 function updateURLWithCheckboxes() {
+    console.log('Updating URL with selected checkboxes');
+
     const checkboxes = document.querySelectorAll('input[type=checkbox]');
     const selectedCheckboxes = Array.from(checkboxes)
         .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.getAttribute('data-code') + '-' + checkbox.getAttribute('data-level'));
+        .map(checkbox => {
+            console.log(`Checkbox ${checkbox.getAttribute('data-code')}-${checkbox.getAttribute('data-level')} is selected`);
+            return checkbox.getAttribute('data-code') + '-' + checkbox.getAttribute('data-level');
+        });
 
-    const urlHash = selectedCheckboxes.join('+');
+    const urlHash = selectedCheckboxes.join('-');
+    console.log(`Setting URL hash to ${urlHash}`);
     window.location.hash = urlHash;
+    console.log('URL updated');
 }
 
 //get cookie info
@@ -409,11 +474,12 @@ function getCookie(name) {
 
 // On page load, check if there's a stored version in the cookie
 window.onload = async function () {
-    console.log('Window onload function triggered');
-    console.group('Page Load');
+    console.groupCollapsed('Page Load');
 
     try {
-        console.log('Checking for stored version in cookie');
+        console.log('Window onload function triggered');
+
+        console.group('Checking for stored version in cookie');
         let storedVersion = getCookie("selectedVersion");
 
         if (!storedVersion) {
@@ -421,9 +487,10 @@ window.onload = async function () {
             storedVersion = "json_source_v8-min";
         }
 
-        console.log(`Stored version is: ${storedVersion}`);
+        console.log(`Stored version: ${storedVersion}`);
+        console.groupEnd();
 
-        console.log('Updating dropdown with stored version');
+        console.group('Updating dropdown with stored version');
         let dropdown = document.getElementById("jsonVersionSelect");
         if (!dropdown) {
             console.error('Dropdown element not found');
@@ -431,46 +498,53 @@ window.onload = async function () {
             dropdown.value = storedVersion;
             console.log(`Dropdown value updated to ${dropdown.value}`);
         }
+        console.groupEnd();
 
-        console.log('Triggering changeJsonVersion function');
-        await changeJsonVersion();  // use await to wait for the fetch to complete
+        console.group('Triggering changeJsonVersion function');
+        await changeJsonVersion();
+        console.groupEnd();
 
-        console.log('Fetching selected version JSON data');
-        console.log(`Stored version is: ${storedVersion}`);
-        const sfiaJson = await fetchData(sfia/storedVersion + ".json");
+        console.group('Fetching selected version JSON data');
+        console.log(`Stored version: ${storedVersion}`);
+        const sfiaJson = await fetchData(`/${storedVersion}.json`);
         if (!sfiaJson) {
             console.error('Failed to fetch JSON data');
         } else {
             console.log('JSON data fetched successfully');
         }
+        console.groupEnd();
 
-        console.log('Calling setupEventListeners function');
+        console.group('Calling setupEventListeners function');
         setupEventListeners(sfiaJson);
+        console.groupEnd();
 
-        console.log('Parsing URL hash and pre-selecting checkboxes');
+        console.group('Parsing URL hash and pre-selecting checkboxes');
         const urlHash = window.location.hash.replace('#', '');
-        const selectedCheckboxes = urlHash.split('+');
-
-        if (selectedCheckboxes.length > 0) {
-            console.log(`Found ${selectedCheckboxes.length} selected checkboxes`);
+        if (urlHash.length === 0) {
+            console.log('No URL hash found.');
         } else {
-            console.log('No selected checkboxes found');
+            console.log('URL hash:', urlHash);
         }
+
+        const selectedCheckboxes = urlHash.split('+');
+        console.log(`Found ${selectedCheckboxes.length} selected checkboxes`);
 
         selectedCheckboxes.forEach(selectedCheckbox => {
             console.log(`Processing selected checkbox ${selectedCheckbox}`);
             const [code, level] = selectedCheckbox.split('-');
             const checkbox = document.querySelector(`input[type=checkbox][data-code="${code}"][data-level="${level}"]`);
             if (checkbox) {
-                console.log(`Checking checkbox for ${code}-${level}`);
                 checkbox.checked = true;
+                console.log(`Checked checkbox for ${code}-${level}`);
             } else {
                 console.log(`Could not find checkbox for ${code}-${level}`);
             }
         });
+        console.groupEnd();
 
-        console.log('Triggering renderOutput function');
+        console.group('Triggering renderOutput function');
         renderOutput(sfiaJson);
+        console.groupEnd();
 
     } catch (error) {
         console.error('An error occurred:', error.message);
@@ -478,6 +552,29 @@ window.onload = async function () {
     console.groupEnd();
 };
 
+
+// Check if the URL hash changes (e.g., due to user interaction)
+window.addEventListener('hashchange', async function () {
+    try {
+        // Fetch the selected version JSON data
+        let storedVersion = getCookie("selectedVersion");
+
+        if (!storedVersion) {
+            console.log('No stored version found, setting to latest version');
+            storedVersion = "json_source_v8-min";
+        }
+
+        sfiaJson = await fetchData(storedVersion + ".json");  // update sfiaJson
+
+        // Call the function to initialize SFIA content
+        initializeSFIAContent(sfiaJson);
+
+        // Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
+        renderOutput(sfiaJson);
+    } catch (error) {
+        console.error('An error occurred:', error.message);
+    }
+});
 
 
 // Check if the URL hash changes (e.g., due to user interaction)
