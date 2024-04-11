@@ -1,18 +1,22 @@
 "use strict";
 let sfiaJson;  // declare sfiaJson at a higher scope
+let storedVersion = "json_source_v8-min"; // Define storedVersion with an latest public SFIA value
 
-let $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
+// only run in live / production
+if (window.location.hostname !== '127.0.0.1') {
+    let $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
 
-function $buo_f() {
-    let e = document.createElement("script");
-    e.src = "https:////browser-update.org/update.min.js";
-    document.body.appendChild(e);
-}
+    function $buo_f() {
+        let e = document.createElement("script");
+        e.src = "https:////browser-update.org/update.min.js";
+        document.body.appendChild(e);
+    }
 
-try {
-    document.addEventListener("DOMContentLoaded", $buo_f, false);
-} catch (e) {
-    window.attachEvent("onload", $buo_f);
+    try {
+        document.addEventListener("DOMContentLoaded", $buo_f, false);
+    } catch (e) {
+        window.attachEvent("onload", $buo_f);
+    }
 }
 
 async function fetchData(url) {
@@ -453,14 +457,18 @@ window.onload = async function () {
 // Check if the URL hash changes (e.g., due to user interaction)
 window.addEventListener('hashchange', async function () {
     try {
-        // Fetch the selected version JSON data
-        sfiaJson = await fetchData(storedVersion + ".json");  // update sfiaJson
+        if (typeof storedVersion !== 'undefined') {
+            // Fetch the selected version JSON data
+            sfiaJson = await fetchData(storedVersion + ".json");  // update sfiaJson
 
-        // Call the function to initialize SFIA content
-        initializeSFIAContent(sfiaJson);
+            // Call the function to initialize SFIA content
+            initializeSFIAContent(sfiaJson);
 
-        // Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
-        renderOutput(sfiaJson);
+            // Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
+            renderOutput(sfiaJson);
+        } else {
+            console.error('storedVersion is not defined.');
+        }
     } catch (error) {
         console.error('An error occurred:', error.message);
     }
