@@ -392,40 +392,75 @@ function updateURLWithCheckboxes() {
     window.location.hash = urlHash;
 }
 
-//get cookie info
+/**
+ * Retrieves the value of a cookie by its name.
+ * @param {string} name - The name of the cookie.
+ * @returns {string|undefined} The value of the cookie, or undefined if not found.
+ */
 function getCookie(name) {
+    // Prepend a semicolon and the document's cookie value.
     const value = `; ${document.cookie}`;
+
+    // Split the value based on the cookie name and a semicolon.
     const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
+
+    // If the array has a length of 2, return the value after the cookie name.
+    // Otherwise, return undefined.
+    if (parts.length === 2) {
+        // Extract the value of the cookie by removing the trailing semicolon and any following characters.
+        return parts.pop().split(';').shift();
+    }
 }
 
-// On page load, check if there's a stored version in the cookie
+/**
+ * Sets the stored version based on the provided value.
+ * @param {string} storedVersion - The version to be stored.
+ */
+function setStoredVersion(storedVersion) {
+    // Set the selected version in the dropdown
+    let dropdown = document.getElementById("jsonVersionSelect");
+    dropdown.value = storedVersion;
+
+    // Trigger the changeJsonVersion function to download the selected version
+    changeJsonVersion();  // Remove await here
+
+    // Fetch the selected version JSON data
+    const sfiaJson = fetchData(storedVersion + ".json");  // Remove await here
+
+    // Call the function to set up event listeners
+    setupEventListeners(sfiaJson);
+}
+
+/**
+ * Window onload function that is triggered when the page finishes loading.
+ * It performs the following tasks:
+ *  - Checks if there's a stored version in the cookie
+ *  - Calls the setStoredVersion function to set the stored version
+ *  - Parses the URL hash and pre-selects checkboxes
+ *  - If there are selected checkboxes, it pre-selects them
+ *  - Otherwise, it initializes SFIA content
+ */
 window.onload = async function () {
+    // Log that the window onload function has been triggered
     console.log('Window onload function triggered');
+
     try {
+        // Get the stored version from the cookie, if any
         let storedVersion = getCookie("selectedVersion");
+
+        // If no stored version is found, set the dropdown to the latest version
         if (!storedVersion) {
-            // If there's no stored version, set the dropdown to the latest version
             storedVersion = "json_source_v8-min";
         }
 
-        // Set the selected version in the dropdown
-        let dropdown = document.getElementById("jsonVersionSelect");
-        dropdown.value = storedVersion;
-
-        // Trigger the changeJsonVersion function to download the selected version
-        await changeJsonVersion();  // use await to wait for the fetch to complete
-
-        // Fetch the selected version JSON data
-        const sfiaJson = await fetchData(storedVersion + ".json");
-
-        // Call the function to set up event listeners
-        setupEventListeners(sfiaJson);
+        // Call the setStoredVersion function to set the stored version
+        await setStoredVersion(storedVersion);
 
         // Parse URL hash and pre-select checkboxes
         const urlHash = window.location.hash.replace('#', '');
         const selectedCheckboxes = urlHash.split('+');
 
+        // If there are selected checkboxes, pre-select them
         if (selectedCheckboxes.length > 0) {
             selectedCheckboxes.forEach(selectedCheckbox => {
                 const [code, level] = selectedCheckbox.split('-');
@@ -438,24 +473,23 @@ window.onload = async function () {
             // Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
             renderOutput(sfiaJson);
         } else {
-            // If there are no selected checkboxes, proceed with initializing SFIA content
+            // If there are no selected checkboxes, initialize SFIA content
             initializeSFIAContent(sfiaJson);
         }
 
     } catch (error) {
+        // Log any errors that occur during the onload function
         console.error('An error occurred:', error.message);
     }
 };
 
-
-
 // Check if the URL hash changes (e.g., due to user interaction)
 window.addEventListener('hashchange', async function () {
     try {
-        
-        sfiaJson = await fetchData(storedVersion + ".json");  // update sfiaJson
+
         if (typeof storedVersion !== 'undefined') {
-                // Fetch the selected version JSON data
+            // Fetch the selected version JSON data
+            let sfiaJson = await fetchData(storedVersion + ".json");  // update sfiaJson
             // Call the function to initialize SFIA content
             initializeSFIAContent(sfiaJson);
 
