@@ -207,42 +207,27 @@ function changeJsonVersion() {
     console.log('[changeJsonVersion] End');
 }
 
-/**
- * Render the output based on the provided SFIA JSON data.
- *
- * @param {Object} sfiaJson - The SFIA JSON data to render.
- * @param {boolean} [updateHash=true] - Flag indicating whether to update the URL hash.
- */
-function renderOutput(sfiaJson, updateHash = true) {
-    // Array to store selected skill codes and levels for updating the URL hash
+function parseUrlHash() {
+    const urlHashParts = window.location.hash.replace('#', '').split('-');
+    const filteredUrlHash = urlHashParts.filter(part => part !== 'undefined' && part !== '');
     const urlHash = [];
 
-    // Parse the URL hash to extract selected skill codes and levels
-    const urlHashParts = window.location.hash.replace('#', '').split('-'); // Split the URL hash into parts
-    console.log('URL hash parts:', urlHashParts);
-
-    // Filter out 'undefined' and empty strings
-    const filteredUrlHash = urlHashParts.filter(part => part !== 'undefined' && part !== '');
-    console.log('Filtered URL hash parts:', filteredUrlHash);
-
-    // Generate the URL hash
     for (const hashPart of filteredUrlHash) {
-        const [code, level] = hashPart.split('-'); // Split the hash part into code and level
-        if (code !== 'undefined' && level !== 'undefined') { // Check if code and level are not 'undefined'
-            urlHash.push(`${code}-${level}`); // Add the skill code and level to the URL hash
+        const [code, level] = hashPart.split('-');
+        if (code !== 'undefined' && level !== 'undefined') {
+            urlHash.push(`${code}-${level}`);
         }
     }
-    console.log('URL hash:', urlHash);
 
-    // Create a new JSON object to store the selected data
+    return urlHash;
+}
+
+function generateOutput(sfiaJson, checkedBoxes, urlHash) {
     const newArr = {};
 
-    // Loop through the checked boxes
-    const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
     for (const box of checkedBoxes) {
         const jsonData = JSON.parse(box.getAttribute('sfia-data'));
 
-        // Ensure all data is defined
         if (jsonData.category && jsonData.subCategory && jsonData.skill && jsonData.level) {
             newArr[jsonData.category] ??= {};
             newArr[jsonData.category][jsonData.subCategory] ??= {};
@@ -252,77 +237,75 @@ function renderOutput(sfiaJson, updateHash = true) {
                 levels: {},
             };
 
-            // Add the selected skill level to the new JSON object
             newArr[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"][jsonData.level] = sfiaJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.levels?.[jsonData.level];
 
-            // Check if the current checkbox corresponds to a skill code and level from the URL hash
             if (urlHash.includes(`${jsonData.skill}-${jsonData.level}`)) {
-                box.checked = true; // Select the checkbox
+                box.checked = true;
             }
         } else {
             console.error('Incomplete or missing data:', jsonData);
         }
     }
 
-    // Clear the HTML content
-    const html = document.getElementById('sfia-output');
-    html.innerHTML = '';
-    console.log('HTML cleared');
+    return newArr;
+}
 
-    // Generate the HTML based on the new JSON object
+function renderHtml(newArr, htmlElement) {
     for (const category in newArr) {
         const categoryEle = document.createElement('h1');
         categoryEle.textContent = category;
-        html.appendChild(categoryEle);
-        console.log(`Created ${category} heading`);
+        htmlElement.appendChild(categoryEle);
 
         for (const subCategory in newArr[category]) {
             const subCategoryEle = document.createElement('h2');
             subCategoryEle.textContent = subCategory;
-            html.appendChild(subCategoryEle);
-            console.log(`Created ${subCategory} sub-heading`);
+            htmlElement.appendChild(subCategoryEle);
 
             for (const skill in newArr[category][subCategory]) {
                 const skillEle = document.createElement('h3');
                 skillEle.textContent = `${skill} - ${newArr[category][subCategory][skill]["code"]}`;
-                html.appendChild(skillEle);
-                console.log(`Created ${skill} heading`);
+                htmlElement.appendChild(skillEle);
 
                 const skillDescriptionEle = document.createElement('p');
                 skillDescriptionEle.textContent = newArr[category][subCategory][skill]["description"];
-                html.appendChild(skillDescriptionEle);
-                console.log(`Created ${skill} description`);
+                htmlElement.appendChild(skillDescriptionEle);
 
                 for (const level in newArr[category][subCategory][skill]["levels"]) {
                     const levelEle = document.createElement('h4');
                     levelEle.textContent = `Level ${level}`;
-                    html.appendChild(levelEle);
-                    console.log(`Created level ${level} heading`);
+                    htmlElement.appendChild(levelEle);
 
                     const levelDescriptionEle = document.createElement('p');
                     levelDescriptionEle.textContent = newArr[category][subCategory][skill]["levels"][level];
-                    html.appendChild(levelDescriptionEle);
-                    console.log(`Created level ${level} description`);
+                    htmlElement.appendChild(levelDescriptionEle);
                 }
             }
         }
     }
-
-    // Highlight selected checkboxes visually
-    //  checkedBoxes.forEach(box => {
-    //     box.parentNode.style.backgroundColor = 'lightblue';
-    //   });
-
-    // Join the URL hash parts with '-', then update the hash part of the URL only if updateHash is true and urlHash is not empty
-    console.log('At the end of render output,Value of updateHash:', updateHash);
-    console.log('At the end of render output, Filtered URL hash:', filteredUrlHash);
-    if (updateHash && urlHash.length > 0) {
-        window.location.hash = filteredUrlHash.join("-");
-        console.log(`At the end of render output,Updated URL hash to ${filteredUrlHash.join("-")}`);
-    }
-
-    console.log('End of renderOutput function');
 }
+
+function renderOutput(sfiaJson, updateHash = true) {
+    const urlHash = parseUrlHash();
+
+    const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
+    const newArr = generateOutput(sfiaJson, checkedBoxes, urlHash);
+
+    const html = document.getElementById('sfia-output');
+
+    renderHtml(newArr, html);
+
+    if (updateHash) {
+        const newHash = Object.keys(newArr)
+            .map(category => Object.keys(newArr[category])
+                .map(subCategory => Object.keys(newArr[category][subCategory])
+                    .map(skill => Object.keys(newArr[category][subCategory][skill].levels)
+                        .map(level => `${skill}-${level}`))))
+            .flat(3);
+
+        window.location.hash = newHash.join('-');
+    }
+}
+
 
 
 // Function to set up event listeners
@@ -362,6 +345,36 @@ function setupEventListeners(sfiaJson) {
         console.error('Error setting up event listeners:', error);
     }
 }
+
+function setupCheckboxEventListeners() {
+    const checkboxes = document.querySelectorAll('input[type=checkbox]');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const jsonData = JSON.parse(checkbox.getAttribute('sfia-data'));
+            const { category, subCategory, skill, level } = jsonData;
+
+            if (checkbox.checked) {
+                // Add the selected skill code and level to the URL hash
+                window.location.hash = `${window.location.hash ? window.location.hash + '-' : '#'}${skill}-${level}`;
+            } else {
+                // Remove the skill code and level from the URL hash
+                const urlHashParts = window.location.hash.replace('#', '').split('-');
+                const filteredHash = urlHashParts.filter(part => !(part === skill || part === `${skill}-${level}`));
+                window.location.hash = filteredHash.join('-');
+            }
+
+            // Re-render the output to update the checked state
+            renderOutput(sfiaJson);
+        });
+    });
+}
+
+// Call the setup function after the DOM content has loaded
+document.addEventListener('DOMContentLoaded', () => {
+    setupCheckboxEventListeners();
+});
+
 
 async function initializeSFIAContent(sfiaJson) {
     try {
