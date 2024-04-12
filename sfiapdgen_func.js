@@ -475,9 +475,14 @@ window.onload = async function () {
 
             // Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
             renderOutput(sfiaJson);
+            selectCheckboxesByHash();
         } else {
+  
             // If there are no selected checkboxes, initialize SFIA content
             initializeSFIAContent(sfiaJson);
+            selectCheckboxesByHash();
+            // Parse URL hash and pre-select checkboxes
+
         }
 
     } catch (error) {
@@ -485,6 +490,23 @@ window.onload = async function () {
         console.error('An error occurred:', error.message);
     }
 };
+
+function selectCheckboxesByHash() {
+    const urlHash = window.location.href.split('#')[1] || '';
+    const selectedCheckboxes = urlHash.split('+');
+
+    selectedCheckboxes.forEach(selectedCheckbox => {
+        const [code, level] = selectedCheckbox.split('-');
+        const checkbox = document.querySelector(`input[type=checkbox][data-code="${code}"][data-level="${level}"]`);
+
+        if (checkbox) {
+            checkbox.checked = true;
+        } else {
+            console.error(`Checkbox with code "${code}" and level "${level}" not found.`);
+        }
+    });
+}
+
 
 
 // Check if the URL hash changes (e.g., due to user interaction)
@@ -499,7 +521,7 @@ window.addEventListener('hashchange', async function () {
 
             // Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
             renderOutput(sfiaJson);
-            console.info('hashchange entry: storedVersion is defined.'); 
+            console.info('hashchange entry: storedVersion is defined.');
         } else {
             // Call the function to initialize SFIA content
             initializeSFIAContent(sfiaJson);
@@ -509,5 +531,4 @@ window.addEventListener('hashchange', async function () {
         console.error('An error occurred:', error.message);
     }
 });
-
 
