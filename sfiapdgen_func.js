@@ -1,5 +1,6 @@
 "use strict";
 let sfiaJson;  // declare sfiaJson at a higher scope
+
 let $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
 
 function $buo_f() {
@@ -417,15 +418,23 @@ function getCookie(name) {
  * @param {string} storedVersion - The version to be stored.
  */
 function setStoredVersion(storedVersion) {
+    // Get the stored version from the cookie, if any
+    let storedVersionFromCookie = getCookie("selectedVersion");
+
+    // If no stored version is found in the cookie, use the provided storedVersion
+    if (!storedVersionFromCookie) {
+        storedVersionFromCookie = storedVersion;
+    }
+
     // Set the selected version in the dropdown
     let dropdown = document.getElementById("jsonVersionSelect");
-    dropdown.value = storedVersion;
+    dropdown.value = storedVersionFromCookie;
 
     // Trigger the changeJsonVersion function to download the selected version
     changeJsonVersion();  // Remove await here
 
     // Fetch the selected version JSON data
-    const sfiaJson = fetchData(storedVersion + ".json");  // Remove await here
+    const sfiaJson = fetchData(storedVersionFromCookie + ".json");  // Remove await here
 
     // Call the function to set up event listeners
     setupEventListeners(sfiaJson);
@@ -434,7 +443,6 @@ function setStoredVersion(storedVersion) {
 /**
  * Window onload function that is triggered when the page finishes loading.
  * It performs the following tasks:
- *  - Checks if there's a stored version in the cookie
  *  - Calls the setStoredVersion function to set the stored version
  *  - Parses the URL hash and pre-selects checkboxes
  *  - If there are selected checkboxes, it pre-selects them
@@ -445,16 +453,8 @@ window.onload = async function () {
     console.log('Window onload function triggered');
 
     try {
-        // Get the stored version from the cookie, if any
-        let storedVersion = getCookie("selectedVersion");
-
-        // If no stored version is found, set the dropdown to the latest version
-        if (!storedVersion) {
-            storedVersion = "json_source_v8-min";
-        }
-
         // Call the setStoredVersion function to set the stored version
-        await setStoredVersion(storedVersion);
+        await setStoredVersion("json_source_v8-min");  // Provide the initial stored version
 
         // Parse URL hash and pre-select checkboxes
         const urlHash = window.location.hash.replace('#', '');
@@ -483,23 +483,28 @@ window.onload = async function () {
     }
 };
 
+
 // Check if the URL hash changes (e.g., due to user interaction)
 window.addEventListener('hashchange', async function () {
     try {
+        // Call getCookie to get the storedVersion value
+        let storedVersion = getCookie("selectedVersion");
 
         if (typeof storedVersion !== 'undefined') {
             // Fetch the selected version JSON data
-            let sfiaJson = await fetchData(storedVersion + ".json");  // update sfiaJson
-            // Call the function to initialize SFIA content
-            initializeSFIAContent(sfiaJson);
+            let sfiaJson = await fetchData(storedVersion + ".json");
 
             // Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
             renderOutput(sfiaJson);
+            console.info('hashchange entry: storedVersion is defined.'); 
         } else {
-            console.error('storedVersion is not defined yet.');
+            // Call the function to initialize SFIA content
+            initializeSFIAContent(sfiaJson);
+            console.info('hashchange entry: storedVersion is undefined.');
         }
     } catch (error) {
         console.error('An error occurred:', error.message);
     }
 });
+
 
