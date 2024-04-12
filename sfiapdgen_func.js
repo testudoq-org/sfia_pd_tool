@@ -9,10 +9,13 @@ function $buo_f() {
     document.body.appendChild(e);
 }
 
-try {
-    document.addEventListener("DOMContentLoaded", $buo_f, false);
-} catch (e) {
-    window.attachEvent("onload", $buo_f);
+// Check if the hostname is 127.0.0.1 to skip the code
+if (window.location.hostname !== '127.0.0.1') {
+    try {
+        document.addEventListener("DOMContentLoaded", $buo_f, false);
+    } catch (e) {
+        window.attachEvent("onload", $buo_f);
+    }
 }
 
 async function fetchData(url) {
