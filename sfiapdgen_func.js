@@ -62,25 +62,17 @@ async function fetchData(url) {
  * @return {boolean} True if the level is present in the URL hash, false otherwise.
  */
 function checkPreselected(code, level) {
-    // Split the URL hash and get the part after "/#/"
-    const urlHash = window.location.href.split("/#/")[1];
-    
-    // If the URL hash is present and contains more than one part,
-    // loop through each part and check if it matches the given code and level.
-    if (urlHash && urlHash.split("+").length > 0) {
-        const hashParts = urlHash.split("+");
-        for (let i = hashParts.length - 1; i >= 0; i--) {
-            // Split the hash part and get the code and level.
-            const [checkCode, checkLevel] = hashParts[i].split("-");
-            
-            // If the code and level match, return true.
-            if (code === checkCode && level === checkLevel) {
+    if (window.location.href.indexOf("#") > -1 && window.location.href.split("#").length > 0) {
+        for (var i = window.location.href.split("#")[1].split("+").length - 1; i >= 0; i--) {
+            var check_code = window.location.href.split("#")[1].split("+")[i].split("-")[0];
+            var check_level = window.location.href.split("#")[1].split("+")[i].split("-")[1];
+
+            if (code == check_code && level == check_level) {
                 return true;
             }
-        }
+        };
     }
-    
-    // Otherwise, return false.
+
     return false;
 }
 
@@ -102,7 +94,7 @@ function checkPreselected(code, level) {
 function addSelectionBox(index, sfiaJson, rootKey, subKey, skillKey) {
     // Create a table cell element
     const col = document.createElement('td');
-    
+
     // Check if the level is present in the skill's levels property
     if (sfiaJson[rootKey][subKey][skillKey]["levels"].hasOwnProperty(index)) {
         // Generate the JSON data for the checkbox input
@@ -112,10 +104,10 @@ function addSelectionBox(index, sfiaJson, rootKey, subKey, skillKey) {
             "skill": skillKey,
             "level": index
         });
-        
+
         // Check if the skill should be preselected and set the checked attribute accordingly
         const checked = checkPreselected(sfiaJson[rootKey][subKey][skillKey]["code"], index) ? "checked" : "";
-        
+
         // Generate the checkbox input with the appropriate data attributes
         col.innerHTML = `<input type='checkbox' title='${sfiaJson[rootKey][subKey][skillKey]["levels"][index]}' sfia-data='${jsonData}' ${checked}/>`;
         col.className += " select_col";
@@ -124,10 +116,10 @@ function addSelectionBox(index, sfiaJson, rootKey, subKey, skillKey) {
         col.innerHTML = "<input type='checkbox' disabled/>";
         col.className += " no_select_col";
     }
-    
+
     // Add the appropriate class to the table cell
     col.className += " col-checkbox";
-    
+
     // Return the generated table cell element
     return col;
 }
@@ -143,7 +135,7 @@ function exportCSV(event, sfiaJson) {
     console.log('Event:', event);
 
     // Prevent the default action associated with the event
-    event.preventDefault(); 
+    event.preventDefault();
 
     // Get all the checked checkboxes
     const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
@@ -211,7 +203,7 @@ function exportHTML(event, sfiaJson) {
     console.log('Event:', event);
 
     // Prevent the default action associated with the event
-    event.preventDefault(); 
+    event.preventDefault();
 
     // Get the HTML content from the specified element
     const htmlContent = document.getElementById('sfia-output').innerHTML;
@@ -300,6 +292,7 @@ function changeJsonVersion() {
  * @param {boolean} updateHash - Flag to indicate whether to update the URL hash.
  */
 function renderOutput(sfiaJson, updateHash = true) {
+
     // Get all the checked checkboxes
     const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
 
@@ -337,10 +330,12 @@ function renderOutput(sfiaJson, updateHash = true) {
 
     // Render the filtered data in the HTML
     for (const category in newArr) {
+        // Render category heading
         const categoryEle = document.createElement('h1');
         categoryEle.textContent = category;
         html.appendChild(categoryEle);
 
+        // Render sub-category headings and skill information
         for (const subCategory in newArr[category]) {
             const subCategoryEle = document.createElement('h2');
             subCategoryEle.textContent = subCategory;
@@ -355,6 +350,7 @@ function renderOutput(sfiaJson, updateHash = true) {
                 skillDescriptionEle.textContent = newArr[category][subCategory][skill]["description"];
                 html.appendChild(skillDescriptionEle);
 
+                // Render skill level information
                 for (const level in newArr[category][subCategory][skill]["levels"]) {
                     const levelEle = document.createElement('h4');
                     levelEle.textContent = `Level ${level}`;
@@ -370,11 +366,9 @@ function renderOutput(sfiaJson, updateHash = true) {
 
     // Update the URL hash if updateHash is true
     if (updateHash) {
-       window.location.hash = urlHash.join("+");
+        window.location.hash = urlHash.join("+");
     }
 }
-
-
 
 /**
  * Function to set up event listeners for exporting data and triggering rendering of the SFIA content.
@@ -476,7 +470,7 @@ async function initializeSFIAContent(sfiaJson) {
         }
 
         // Render the output if the URL contains a hash
-        if (window.location.href.split("/#/").length > 0) {
+        if (window.location.href.split("#").length > 0) {
             renderOutput(sfiaJson, false);
         }
 
@@ -617,25 +611,33 @@ window.onload = async function () {
     console.log('Window onload function triggered');
 
     try {
+        // Get the current URL
+        let currentURL = window.location.href;
+        console.info('Current URL is:', currentURL);
+
         // Call the setStoredVersion function to set the stored version
         await setStoredVersion("json_source_v8-min");  // Provide the initial stored version
 
-        // Parse URL hash and pre-select checkboxes
-        const urlHash = window.location.hash.replace('#', '');
-        const selectedCheckboxes = urlHash.split('+');
+        // Check if '/#/' is already present in the URL
+        if (currentURL.includes('#')) {
+            // The hash exists Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
+            // Parse URL hash and pre-select checkboxes
+            const urlHash = window.location.hash.replace('#', '');
+            const selectedCheckboxes = urlHash.split('+');
 
-        // If there are selected checkboxes, pre-select them
-        if (selectedCheckboxes.length > 0) {
+            // If there are selected checkboxes, pre-select them
+
             // Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
             renderOutput(sfiaJson);
             selectCheckboxesByHash();
+
+
         } else {
-  
+            // Do another thing if the hash doesn't exist
+            console.log('Hash does not exist, appending # to URL:', currentURL);
             // If there are no selected checkboxes, initialize SFIA content
             initializeSFIAContent(sfiaJson);
-            selectCheckboxesByHash();
-            // Parse URL hash and pre-select checkboxes
-
+            console.log('Hash exists in URL:', currentURL);
         }
 
     } catch (error) {
@@ -663,7 +665,7 @@ function preSelectCheckboxesAndInitialize(sfiaJson) {
         selectedCheckboxes.forEach(selectedCheckbox => {
             // Split the selected checkbox into code and level
             const [code, level] = selectedCheckbox.split('-');
-            
+
             // Find the corresponding checkbox and pre-select it
             const checkbox = document.querySelector(`input[type=checkbox][data-code="${code}"][data-level="${level}"]`);
             if (checkbox) {
