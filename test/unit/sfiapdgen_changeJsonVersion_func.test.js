@@ -2,7 +2,7 @@
 const { initializeSFIAContent, setupEventListeners } = require('./sfiapdgen_func.js');
 
 // Import the function to test
-const changeJsonVersion = require('sfiapdgen_func.js');
+const changeJsonVersion = require('./sfiapdgen_func.js');
 
 // Mock the necessary global objects and functions
 global.document = {

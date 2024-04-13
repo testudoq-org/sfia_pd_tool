@@ -54,4 +54,8 @@ module.exports = {
 
   // Specify the notifyMode option to set the notification mode
   notifyMode: 'always',
+
+  moduleNameMapper: {
+    '^sfiapdgen_func$': '<rootDir>/sfiapdgen_func.js'
+  }
 };
