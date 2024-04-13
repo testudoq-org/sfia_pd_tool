@@ -62,15 +62,22 @@ async function fetchData(url) {
  * @return {boolean} True if the level is present in the URL hash, false otherwise.
  */
 function checkPreselected(code, level) {
-    if (window.location.href.indexOf("#") > -1 && window.location.href.split("#").length > 0) {
-        for (var i = window.location.href.split("#")[1].split("+").length - 1; i >= 0; i--) {
-            var check_code = window.location.href.split("#")[1].split("+")[i].split("-")[0];
-            var check_level = window.location.href.split("#")[1].split("+")[i].split("-")[1];
+    // Check if the URL hash exists and is not empty
+    if (window.location.hash) {
+        // Get the levels from the URL hash
+        var hashLevels = window.location.hash.substring(1).split("+");
+        // Iterate through the levels in reverse order
+        for (var i = hashLevels.length - 1; i >= 0; i--) {
+            // Get the code and level from the current level
+            var hashLevel = hashLevels[i].split("-");
+            var check_code = hashLevel[0];
+            var check_level = parseInt(hashLevel[1]);
 
-            if (code == check_code && level == check_level) {
+            // Check if the current level matches the provided code and level
+            if (code === check_code && level === check_level) {
                 return true;
             }
-        };
+        }
     }
 
     return false;
