@@ -1,5 +1,4 @@
-// Wrap the code in an immediately invoked function expression (IIFE)
-(function() {
+// sfiapdgen_func.js
 "use strict";
 let sfiaJson;  // declare sfiaJson at a higher scope
 
@@ -757,22 +756,3 @@ window.addEventListener('hashchange', async function () {
     }
 });
 
-// Export the functions to make them accessible to other modules or files
-module.exports = {
-    fetchData: fetchData,
-    checkPreselected: checkPreselected,
-    addSelectionBox: addSelectionBox,
-    exportCSV: exportCSV,
-    exportHTML: exportHTML,
-    changeJsonVersion: changeJsonVersion,
-    renderOutput: renderOutput,
-    setupEventListeners: setupEventListeners,
-    initializeSFIAContent: initializeSFIAContent,
-    searchForText: searchForText,
-    updateURLWithCheckboxes: updateURLWithCheckboxes,
-    getCookie: getCookie,
-    setStoredVersion: setStoredVersion,
-    preSelectCheckboxesAndInitialize: preSelectCheckboxesAndInitialize,
-    selectCheckboxesByHash: selectCheckboxesByHash
-};
-})();
