@@ -637,7 +637,7 @@ window.onload = async function () {
             // If there are selected checkboxes, pre-select them
 
             // Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
-            renderOutput(sfiaJson);
+            renderOutput(sfiaJson, false);
             selectCheckboxesByHash();
 
 
@@ -684,7 +684,7 @@ function preSelectCheckboxesAndInitialize(sfiaJson) {
 
         // Trigger the renderOutput function or any other logic
         // needed after checkboxes are pre-selected
-        renderOutput(sfiaJson);
+        renderOutput(sfiaJson, true);
     } else {
         // If there are no selected checkboxes, initialize SFIA content
         initializeSFIAContent(sfiaJson);
