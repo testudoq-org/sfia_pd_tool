@@ -11,7 +11,7 @@
         integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <link rel="stylesheet" href="styles-min.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <script src="sfiapdgen_func-min.js"></script>
+    <script src="sfiapdgen_func.js"></script>
 </head>
 
 <body>
@@ -74,14 +74,15 @@
                             </tr>
                         </thead>
                         <tbody id="sfia-content"></tbody>
-                    </table><a href="#" class="btn btn-default navbar-btn" id="exportToHTMLx"
-                        onclick="exportHTML(event);">Export to HTML</a><a href="#" class="btn btn-default navbar-btn"
-                        id="exportCSV" onclick="exportCSV(event)">Export to CSV</a><label for="jsonVersionSelect">Select
-                        JSON Version:</label><select id="jsonVersionSelect" onchange="changeJsonVersion()">
+                    </table>
+                    <a href="#" class="btn btn-default navbar-btn" id="exportHTML" onclick="exportHTML(event);">Export to HTML</a>
+                    <a href="#" class="btn btn-default navbar-btn" id="exportCSV" onclick="exportCSV(event)">Export to CSV</a>
+                    <label for="jsonVersionSelect">Select JSON Version:</label>
+                    <select id="jsonVersionSelect" onchange="changeJsonVersion()">
                         <option value="json_source_v8-min">version 8</option>
                         <option value="json_source_v7-min">version 7</option>
                     </select>
-                </div>
+                </div>                
             </div>
             <div class="col-lg-4">
                 <div class="panel panel-default">
