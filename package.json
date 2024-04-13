@@ -1,0 +1,21 @@
+{
+  "name": "sfia",
+  "version": "1.0.0",
+  "description": "Welcome to the SFIA POSITION DESCRIPTION Tool, an innovative generator inspired by the SFIA Framework. This tool simplifies the PD creation process, allowing you to select specific skills and proficiency levels effortlessly through user-friendly check-boxes. Explore the tool [online](https://xanpho.x10.bz/index.html#/) to experience its capabilities.",
+  "main": "functions-min.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-html-reporter": "^3.10.2",
+    "node-notifier": "^10.0.1"
+  }
+}
