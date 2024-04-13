@@ -1,11 +1,11 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
     entry: {
-        javascript: './src/sfiapdgen_func.js',
-        html: './src/sfiapdgen.html'
+        javascript: './dist/sfiapdgen_func.js'
     },
     output: {
         filename: 'sfiapdgen_func.min.js',
@@ -26,7 +26,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/sfiapdgen.html', // HTML template file
+            template: './dist/sfiapdgen.html', // HTML template file
             filename: 'sfiapdgen.html', // Output HTML file
             minify: {
                 // Options to minify HTML
@@ -37,6 +37,9 @@ module.exports = {
                 removeStyleLinkTypeAttributes: true,
                 useShortDoctype: true
             }
-        })
+        }),
+        new CleanWebpackPlugin({
+            cleanOnceBeforeBuildPatterns: ['**/*', '!*.html', '!*.min.js', '!*.min.json', '!*.ico'] // Exclude HTML, *.min.js, *.ico and *.min.json files
+        })        
     ]
 };
