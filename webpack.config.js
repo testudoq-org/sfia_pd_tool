@@ -2,6 +2,7 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const JsonMinimizerPlugin = require("json-minimizer-webpack-plugin");
 
 module.exports = {
     entry: {
@@ -11,25 +12,19 @@ module.exports = {
         filename: 'sfiapdgen_func.min.js',
         path: path.resolve(__dirname, 'dist')
     },
-    optimization: {
-        minimizer: [
-            new TerserPlugin({
-                terserOptions: {
-                    // Additional options here
-                    compress: {
-                        drop_console: true, // Drop console statements
-                    },
-                    mangle: true, // Mangle variable names
-                },
-            }),
-        ],
+    module: {
+        rules: [
+            {
+                test: /\.json$/i,
+                type: "asset/resource",
+            }
+        ]
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './dist/sfiapdgen.html', // HTML template file
-            filename: 'sfiapdgen.html', // Output HTML file
+            template: './dist/sfiapdgen.html',
+            filename: 'sfiapdgen.html',
             minify: {
-                // Options to minify HTML
                 collapseWhitespace: true,
                 removeComments: true,
                 removeRedundantAttributes: true,
@@ -38,8 +33,29 @@ module.exports = {
                 useShortDoctype: true
             }
         }),
+        new JsonMinimizerPlugin({
+            test: /\.json$/i,
+            include: /(json_source_v7|json_source_v8)\.json$/i,
+            minimizerOptions: {
+                replacer: null,
+                space: 0
+            }
+        }),
         new CleanWebpackPlugin({
-            cleanOnceBeforeBuildPatterns: ['**/*', '!*.html', '!*.min.js', '!*.min.json', '!*.ico'] // Exclude HTML, *.min.js, *.ico and *.min.json files
-        })        
-    ]
+            cleanOnceBeforeBuildPatterns: ['**/*', '!*.html', '!*.min.js', '!*.json', '!*.min.json', '!*.ico']
+        })
+    ],
+    optimization: {
+        minimize: true,
+        minimizer: [
+            new TerserPlugin({
+                terserOptions: {
+                    compress: {
+                        drop_console: true,
+                    },
+                    mangle: true,
+                },
+            }),
+        ],
+    },
 };
