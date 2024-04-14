@@ -39,11 +39,16 @@ module.exports = {
                 {
                     from: './dist/*.json',
                     to: './[name].min.json'
+                },
+                // Rename .css files to .min.css
+                {
+                    from: './dist/*.css',
+                    to: './[name].min.css'
                 }
             ]
         }),
         new CleanWebpackPlugin({
-            cleanOnceBeforeBuildPatterns: ['**/*', '!*.html', '!*.min.js', '!*.min.json', '!*.ico']
+            cleanOnceBeforeBuildPatterns: ['**/*', '!*.html', '!*.min.js', '!*.min.json', '!*.ico', '!*.min.css']
         })
     ],
     optimization: {
