@@ -29,6 +29,23 @@ module.exports = function(grunt) {
                         {
                             pattern: 'sfiapdgen_func.js', // Replace 'sfiapdgen_func.js' old src filename
                             replacement: 'sfiapdgen_func.min.js'  // Replace 'sfiapdgen_func.js' with the new dist filename
+                        },
+                        {
+                            pattern: 'styles.css', // Replace 'styles.css' old filename
+                            replacement: 'styles.min.css'  // Replace 'styles.css' with the new filename
+                        }
+                    ]
+                }
+            },
+            src_to_sfia: {
+                files: {
+                    src: ['dist/*.js']
+                },
+                options: {
+                    replacements: [
+                        {
+                            pattern: /\/src\//g, // Match '/src/' globally
+                            replacement: '/sfia/' // Replace '/src/' with '/sfia/'
                         }
                     ]
                 }

@@ -267,7 +267,7 @@ function changeJsonVersion() {
     let currentHost = window.location.origin;
 
     // Construct the URL for the JSON file based on the selected version and current host
-    let jsonUrl = currentHost + "/" + selectedVersion + ".json";
+    let jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
 
     // Use Fetch API for making the request
     fetch(jsonUrl)
@@ -624,7 +624,7 @@ window.onload = async function () {
         console.info('Current URL is:', currentURL);
 
         // Call the setStoredVersion function to set the stored version
-        await setStoredVersion("json_source_v8-min");  // Provide the initial stored version
+        await setStoredVersion("json_source_v8");  // Provide the initial stored version
 
         // Check if '/#/' is already present in the URL
         if (currentURL.includes('#')) {
