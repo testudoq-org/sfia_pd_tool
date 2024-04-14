@@ -2,7 +2,7 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const JsonMinimizerPlugin = require("json-minimizer-webpack-plugin");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -33,16 +33,17 @@ module.exports = {
                 useShortDoctype: true
             }
         }),
-        new JsonMinimizerPlugin({
-            test: /\.json$/i,
-            include: /(json_source_v7|json_source_v8)\.json$/i,
-            minimizerOptions: {
-                replacer: null,
-                space: 0
-            }
+        // Rename .json files to .min.json
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: './dist/*.json',
+                    to: './[name].min.json'
+                }
+            ]
         }),
         new CleanWebpackPlugin({
-            cleanOnceBeforeBuildPatterns: ['**/*', '!*.html', '!*.min.js', '!*.json', '!*.min.json', '!*.ico']
+            cleanOnceBeforeBuildPatterns: ['**/*', '!*.html', '!*.min.js', '!*.json', '!*.ico']
         })
     ],
     optimization: {
