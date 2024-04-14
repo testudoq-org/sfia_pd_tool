@@ -43,7 +43,7 @@ module.exports = {
             ]
         }),
         new CleanWebpackPlugin({
-            cleanOnceBeforeBuildPatterns: ['**/*', '!*.html', '!*.min.js', '!*.json', '!*.ico']
+            cleanOnceBeforeBuildPatterns: ['**/*', '!*.html', '!*.min.js', '!*.min.json', '!*.ico']
         })
     ],
     optimization: {
