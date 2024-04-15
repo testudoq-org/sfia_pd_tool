@@ -1,6 +1,8 @@
 // sfiapdgen_func.js
 "use strict";
 let sfiaJson;  // declare sfiaJson at a higher scope
+let lastExportTime = 0; // Initialize lastExportTime to 0
+
 
 let $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
 
@@ -390,10 +392,22 @@ function setupEventListeners(sfiaJson) {
 
         // Check if buttons exist before adding event listeners
         if (exportCSVButton) {
-            console.info('Export CSV triggered.');
+            console.info('Export CSV button found.');
+
             // Add event listener for exporting data to CSV
             exportCSVButton.addEventListener('click', function (event) {
                 event.preventDefault();
+
+                // Check if the last export was within the last 3 seconds
+                if (new Date().getTime() - lastExportTime < 3000) {
+                    console.log('Export CSV skipped due to timeout.');
+                    return; // Return early if export is skipped
+                }
+
+                // Update the last export time
+                lastExportTime = new Date().getTime();
+
+                // Call the exportCSV function
                 exportCSV(event, sfiaJson);
             });
         } else {
@@ -401,10 +415,22 @@ function setupEventListeners(sfiaJson) {
         }
 
         if (exportHTMLButton) {
-            console.info('Export HTML triggered.');
+            console.info('Export HTML button found.');
+
             // Add event listener for exporting data to HTML
             exportHTMLButton.addEventListener('click', function (event) {
                 event.preventDefault();
+
+                // Check if the last export was within the last 3 seconds
+                if (new Date().getTime() - lastExportTime < 3000) {
+                    console.log('Export HTML skipped due to timeout.');
+                    return; // Return early if export is skipped
+                }
+
+                // Update the last export time
+                lastExportTime = new Date().getTime();
+
+                // Call the exportHTML function
                 exportHTML(event, sfiaJson);
             });
         } else {
