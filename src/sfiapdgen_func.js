@@ -269,7 +269,24 @@ function changeJsonVersion() {
     let currentHost = window.location.origin;
 
     // Construct the URL for the JSON file based on the selected version and current host
-    let jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
+    //let jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
+    // Construct the URL for the JSON file based on the selected version and current host
+let jsonUrl;
+
+if (window.location.hostname === '127.0.0.1') {
+    if (window.location.pathname.includes('/dist/')) {
+        jsonUrl = currentHost + "/dist/" + selectedVersion + ".json";
+    } else if (window.location.pathname.includes('/src/')) {
+        jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
+    } else {
+        // Default to '/src/' for localhost if neither '/dist/' nor '/src/' is found
+        jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
+    }
+} else {
+    // Production environment
+    jsonUrl = currentHost + "/sfia/" + selectedVersion + ".json";
+}
+
 
     // Use Fetch API for making the request
     fetch(jsonUrl)
