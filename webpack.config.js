@@ -36,14 +36,15 @@ module.exports = {
         // Rename .json files to .min.json
         new CopyWebpackPlugin({
             patterns: [
+                // Rename .css files to .min.css
                 {
-                    from: './dist/*.json',
-                    to: './[name].min.json'
+                    from: './dist/*.css',
+                    to: './[name].min.css'
                 }
             ]
         }),
         new CleanWebpackPlugin({
-            cleanOnceBeforeBuildPatterns: ['**/*', '!*.html', '!*.min.js', '!*.min.json', '!*.ico']
+            cleanOnceBeforeBuildPatterns: ['**/*', '!*.html', '!*.min.js', '!*.json', '!*.ico', '!*.min.css']
         })
     ],
     optimization: {

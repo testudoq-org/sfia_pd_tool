@@ -1,6 +1,8 @@
 // sfiapdgen_func.js
 "use strict";
 let sfiaJson;  // declare sfiaJson at a higher scope
+let lastExportTime = 0; // Initialize lastExportTime to 0
+
 
 let $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
 
@@ -145,6 +147,15 @@ function exportCSV(event, sfiaJson) {
     // Prevent the default action associated with the event
     event.preventDefault();
 
+    // Check if the last export was within the timeout duration
+    if (isExportSkippedDueToTimeout(3000)) {
+        console.log("Export HTML skipped due to timeout.");
+        return; // Return early to prevent multiple downloads
+    }
+
+    // Update the last export time
+    lastExportTime = new Date().getTime();
+
     // Get all the checked checkboxes
     const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
 
@@ -213,6 +224,15 @@ function exportHTML(event, sfiaJson) {
     // Prevent the default action associated with the event
     event.preventDefault();
 
+    // Check if the last export was within the timeout duration
+    if (isExportSkippedDueToTimeout(3000)) {
+        console.log("Export HTML skipped due to timeout.");
+        return; // Return early to prevent multiple downloads
+    }
+
+    // Update the last export time
+    lastExportTime = new Date().getTime();
+
     // Get the HTML content from the specified element
     const htmlContent = document.getElementById('sfia-output').innerHTML;
 
@@ -267,7 +287,24 @@ function changeJsonVersion() {
     let currentHost = window.location.origin;
 
     // Construct the URL for the JSON file based on the selected version and current host
-    let jsonUrl = currentHost + "/" + selectedVersion + ".json";
+    //let jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
+    // Construct the URL for the JSON file based on the selected version and current host
+    let jsonUrl;
+
+    if (window.location.hostname === '127.0.0.1') {
+        if (window.location.pathname.includes('/dist/')) {
+            jsonUrl = currentHost + "/dist/" + selectedVersion + ".json";
+        } else if (window.location.pathname.includes('/src/')) {
+            jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
+        } else {
+            // Default to '/src/' for localhost if neither '/dist/' nor '/src/' is found
+            jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
+        }
+    } else {
+        // Production environment
+        jsonUrl = currentHost + "/sfia/" + selectedVersion + ".json";
+    }
+
 
     // Use Fetch API for making the request
     fetch(jsonUrl)
@@ -385,37 +422,62 @@ function renderOutput(sfiaJson, updateHash = true) {
 function setupEventListeners(sfiaJson) {
     try {
         // Log buttons to the console for debugging
-        const exportCSVButton = document.getElementById('exportCSV'); // Button for exporting data to CSV
-        const exportHTMLButton = document.getElementById('exportHTML'); // Button for exporting data to HTML
+        const exportCSVButton = document.getElementById("exportCSV"); // Button for exporting data to CSV
+        const exportHTMLButton = document.getElementById("exportHTML"); // Button for exporting data to HTML
 
         // Check if buttons exist before adding event listeners
         if (exportCSVButton) {
-            console.info('Export CSV triggered.');
-            // Add event listener for exporting data to CSV
-            exportCSVButton.addEventListener('click', function (event) {
+            console.info("Export CSV button found.");
+            exportCSVButton.addEventListener("click", function (event) {
                 event.preventDefault();
+                if (new Date().getTime() - lastExportTime < 3000) {
+                    console.log("Export CSV skipped due to timeout.");
+                    return;
+                }
+                lastExportTime = new Date().getTime();
                 exportCSV(event, sfiaJson);
             });
         } else {
-            console.error('Export CSV Button not found.');
+            console.error("Export CSV Button not found.");
         }
 
         if (exportHTMLButton) {
-            console.info('Export HTML triggered.');
+            console.info("Export HTML button found.");
+
             // Add event listener for exporting data to HTML
-            exportHTMLButton.addEventListener('click', function (event) {
+            exportHTMLButton.addEventListener("click", function (event) {
                 event.preventDefault();
-                exportHTML(event, sfiaJson);
+                if (new Date().getTime() - lastExportTime < 3000) {
+                    console.log("Export HTML skipped due to timeout.");
+                    return;
+                }
+                lastExportTime = new Date().getTime();
+
+                // Perform UI updates or other necessary actions
+                // Do not call exportHTML directly from here
             });
         } else {
-            console.error('Export HTML Button not found.');
+            console.error("Export HTML Button not found.");
         }
     } catch (error) {
-        // Log error if there is an issue setting up event listeners
-        console.error('Error setting up event listeners:', error);
+        console.error(
+            "Error setting up event listeners:",
+            error
+        );
     }
 }
 
+/**
+ * Checks if the last export was within the specified timeout duration.
+ *
+ * @param {number} timeoutDuration - The timeout duration in milliseconds.
+ * @return {boolean} True if the last export was within the timeout duration, false otherwise.
+ */
+function isExportSkippedDueToTimeout(timeoutDuration) {
+    const currentTime = new Date().getTime();
+    const timeSinceLastExport = currentTime - lastExportTime;
+    return timeSinceLastExport < timeoutDuration;
+}
 
 /**
  * Initialize SFIA content by populating a table with SFIA JSON data.
@@ -624,7 +686,7 @@ window.onload = async function () {
         console.info('Current URL is:', currentURL);
 
         // Call the setStoredVersion function to set the stored version
-        await setStoredVersion("json_source_v8-min");  // Provide the initial stored version
+        await setStoredVersion("json_source_v8");  // Provide the initial stored version
 
         // Check if '/#/' is already present in the URL
         if (currentURL.includes('#')) {
@@ -691,33 +753,60 @@ function preSelectCheckboxesAndInitialize(sfiaJson) {
 }
 
 /**
- * Selects checkboxes based on the URL hash.
- *
- * This function retrieves the URL hash, splits it into an array of selected checkboxes,
- * iterates over each selected checkbox, splits it into code and level, finds the
- * corresponding checkbox and checks it. If a checkbox is not found, it logs an error.
+ * Function to set up event listeners for exporting data and triggering rendering of the SFIA content.
+ * @param {Object} sfiaJson - The SFIA JSON data.
  */
-function selectCheckboxesByHash() {
-    // Retrieve the URL hash and split it into an array of selected checkboxes
-    const urlHash = window.location.href.split('#')[1] || '';
-    const selectedCheckboxes = urlHash.split('+');
+function setupEventListeners(sfiaJson) {
+    try {
+        // Log buttons to the console for debugging
+        const exportCSVButton = document.getElementById("exportCSV"); // Button for exporting data to CSV
+        const exportHTMLButton = document.getElementById("exportHTML"); // Button for exporting data to HTML
 
-    // For each selected checkbox
-    selectedCheckboxes.forEach(selectedCheckbox => {
-        // Split the selected checkbox into code and level
-        const [code, level] = selectedCheckbox.split('-');
-
-        // Find the corresponding checkbox and check it
-        const checkbox = document.querySelector(`input[type=checkbox][data-code="${code}"][data-level="${level}"]`);
-
-        // If the checkbox is found
-        if (checkbox) {
-            checkbox.checked = true;
+        // Check if buttons exist before adding event listeners
+        if (exportCSVButton) {
+            console.info("Export CSV button found.");
+            exportCSVButton.addEventListener("click", function (event) {
+                event.preventDefault();
+                if (new Date().getTime() - lastExportTime < 3000) {
+                    console.log("Export CSV skipped due to timeout.");
+                    return;
+                }
+                lastExportTime = new Date().getTime();
+                exportCSV(event, sfiaJson);
+            });
         } else {
-            // If the checkbox is not found, log an error
-            console.error(`Checkbox with code "${code}" and level "${level}" not found.`);
+            console.error("Export CSV Button not found.");
         }
-    });
+
+        if (exportHTMLButton) {
+            console.info("Export HTML button found.");
+
+            // Remove any existing event listeners on the exportHTMLButton
+            exportHTMLButton.removeEventListener("click", function (event) {
+                // ...
+            });
+
+            // Add event listener for exporting data to HTML
+            exportHTMLButton.addEventListener("click", function (event) {
+                event.preventDefault();
+                if (new Date().getTime() - lastExportTime < 3000) {
+                    console.log("Export HTML skipped due to timeout.");
+                    return;
+                }
+                lastExportTime = new Date().getTime();
+
+                // Call the exportHTML function with the sfiaJson parameter
+                exportHTML(event, sfiaJson);
+            });
+        } else {
+            console.error("Export HTML Button not found.");
+        }
+    } catch (error) {
+        console.error(
+            "Error setting up event listeners:",
+            error
+        );
+    }
 }
 
 
