@@ -10,12 +10,12 @@ setCommonPlugins();
  * @type {CodeceptJS.MainConfig}
  */
 exports.config = {
-  tests: './test/*.test.js',
+  tests: './test/ui/*.test.js',
   output: './output',
   helpers: {
     Playwright: {
       browser: 'firefox',
-      url: 'http://localhost',
+      url: 'http://127.0.0.1:5500/src/sfiapdgen.html',
       // Use a more portable way to specify the path to Firefox executable
       // Make sure to use double backslashes in Windows paths
       executablePath: 'D:\\Program Files\\Mozilla Firefox\\firefox.exe',
@@ -24,7 +24,7 @@ exports.config = {
     }
   },
   include: {
-    I: './steps_file.js'
+    I: './steps/steps_file.js'
   },
   name: 'sfia'
 };
