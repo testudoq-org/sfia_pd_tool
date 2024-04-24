@@ -1,10 +1,13 @@
 const { setHeadlessWhen, setCommonPlugins } = require('@codeceptjs/configure');
 
 // Turn on headless mode when running with HEADLESS=true environment variable
-setHeadlessWhen(process.env.HEADLESS);
+//setHeadlessWhen(process.env.HEADLESS);
 
 // Enable all common plugins
 setCommonPlugins();
+
+// Import the EndpointHelper helper
+const { EndpointHelper } = require('./helpers/EndpointHelper.js');
 
 exports.config = {
   // Other configuration options...
