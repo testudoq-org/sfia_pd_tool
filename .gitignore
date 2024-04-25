@@ -22,6 +22,7 @@ lib-cov
 # Coverage directory used by tools like istanbul
 coverage
 *.lcov
+output
 
 # nyc test coverage
 .nyc_output
@@ -41,6 +42,9 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+node_modules*/
+node_modules_del/
+node_modules_del2/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/

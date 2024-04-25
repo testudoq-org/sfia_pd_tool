@@ -175,3 +175,8 @@
 @media (min-width: 1200px) {
   /* Adjust styles for extra-large screens here */
 }
+
+.selected {
+  background-color: #ccc;
+  color: #fff;
+}
