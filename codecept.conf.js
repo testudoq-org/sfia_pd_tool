@@ -6,18 +6,18 @@ setHeadlessWhen(process.env.HEADLESS);
 // Enable all common plugins
 setCommonPlugins();
 
-// Import the EndpointHelper helper
-//const { EndpointHelper } = require('./helpers/EndpointHelper.js');
-
 exports.config = {
   // Other configuration options...
 
   tests: './test/ui/*.test.js',
   output: './output',
   helpers: {
+    EndpointHelper: {
+      require: './test/helpers/EndpointHelper.js'
+    },
     Playwright: {
       browser: 'firefox',
-      url: 'http://127.0.0.1:5500/src/sfiapdgen.html',
+      url: '(link unavailable)',
       executablePath: 'D:\\Program Files\\Mozilla Firefox\\firefox.exe',
       show: true
     }
