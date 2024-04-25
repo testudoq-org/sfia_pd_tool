@@ -257,6 +257,7 @@ function exportHTML(event, sfiaJson) {
  * the SFIA content and event listeners with the new JSON data.
  */
 function changeJsonVersion() {
+
     // Get the selected value from the dropdown
     let selectedVersion = document.getElementById("jsonVersionSelect").value;
 
@@ -282,15 +283,35 @@ function changeJsonVersion() {
             // Handle the downloaded JSON data here
             console.log("Downloaded JSON data:", data);
 
+
+            // Mark the selected option as selected
+            const jsonVersionSelectElement = document.getElementById("jsonVersionSelect");
+            if (jsonVersionSelectElement) {
+                const options = jsonVersionSelectElement.options;
+                for (let i = 0; i < options.length; i++) {
+                    if (options[i].value === selectedVersion) {
+                        console.log("Found selected version option:", options[i]);
+                        options[i].setAttribute("data-selected", "true");
+                        console.log("Data-selected attribute set to true.");
+                    } else {
+                        options[i].removeAttribute("data-selected");
+                    }
+                }
+            } else {
+                console.error("jsonVersionSelect element not found.");
+            }
+
             // Call the function to initialize SFIA content with the new JSON data
             initializeSFIAContent(data);
             // Call the function to set up event listeners
             setupEventListeners(data);
+
         })
         .catch(error => {
             // Log any errors that occurred during the request
             console.error('There was a problem with the fetch request:', error);
         });
+
 }
 
 
