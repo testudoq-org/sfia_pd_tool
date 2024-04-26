@@ -575,6 +575,70 @@ async function initializeSFIAContent(sfiaJson) {
     }
 }
 
+/**
+ * Fetches and displays Levels of Responsibility data from the 'sfia-lors-8.json' file.
+ * This function retrieves the data, clears any existing content in the table,
+ * and then appends new rows to the table for each data item.
+ */
+async function displayLevelsOfResponsibility() {
+    try {
+        // Fetch LOR JSON data
+        const response = await fetch('json-sfia-lors-v8.json');
+        const lorJson = await response.json();
+
+        // Clear existing content in the LOR table body
+        document.getElementById('sfia-lors-content').innerHTML = '';
+
+        // Loop through LOR JSON data and build the checklist
+        lorJson.forEach((level, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td rowspan="2">${level.FIELD1}</td> <!-- Responsibility -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-1" value="${level.FIELD1}" title="${level.Autonomy}"></td> <!-- Level 1 -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-2" value="${level.FIELD1}" title="${level.Influence}"></td> <!-- Level 2 -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-3" value="${level.FIELD1}" title="${level.Complexity}"></td> <!-- Level 3 -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-4" value="${level.FIELD1}" title="${level['Business skills']}"></td> <!-- Level 4 -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-5" value="${level.FIELD1}" title="${level.Knowledge}"></td> <!-- Level 5 -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-6" value="${level.FIELD1}" title=""></td> <!-- Level 6 -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-7" value="${level.FIELD1}" title=""></td> <!-- Level 7 -->
+            `;
+            document.getElementById('sfia-lors-content').appendChild(row);
+
+            // Add a new row for the LOR categories
+            const lorCategoriesRow = document.createElement('tr');
+            lorCategoriesRow.innerHTML = `
+                <td>${level.Autonomy}</td> <!-- LOR Category 1 -->
+                <td>${level.Influence}</td> <!-- LOR Category 2 -->
+                <td>${level.Complexity}</td> <!-- LOR Category 3 -->
+                <td>${level['Business skills']}</td> <!-- LOR Category 4 -->
+                <td>${level.Knowledge}</td> <!-- LOR Category 5 -->
+                <td></td> <!-- LOR Category 6 -->
+                <td></td> <!-- LOR Category 7 -->
+            `;
+            document.getElementById('sfia-lors-content').appendChild(lorCategoriesRow);
+        });
+    } catch (error) {
+        console.error('Error fetching or displaying LOR data:', error);
+    }
+}
+
+/**
+ * Function to truncate a given text and add a tooltip for hover-over.
+ *
+ * @param {string} text - The text to be truncated.
+ * @param {number} maxLength - The maximum length of the truncated text.
+ * @return {string} The truncated text with a tooltip, or the original text if it's shorter than maxLength.
+ */
+function getTruncatedText(text, maxLength) {
+    // Check if the text is longer than the maximum length
+    if (text.length > maxLength) {
+        // If it is, truncate it and add '...' at the end, and a tooltip for hover-over
+        return text.substring(0, maxLength) + '...' +  // Truncated text
+            ' <span class="tooltiptext">' + text + '</span>'; // Tooltip
+    }
+    // If it's not, just return the original text
+    return text;
+}
 
 /**
  * Function to search for text in the SFIA table and show/hide rows based on the filter.
@@ -708,6 +772,9 @@ window.onload = async function () {
 
         // Call the setStoredVersion function to set the stored version
         await setStoredVersion("json_source_v8");  // Provide the initial stored version
+
+        // Display Levels of Responsibility data
+        displayLevelsOfResponsibility();
 
         // Check if '/#/' is already present in the URL
         if (currentURL.includes('#')) {
@@ -865,4 +932,3 @@ window.addEventListener('hashchange', async function () {
         console.error('An error occurred:', error.message);
     }
 });
-

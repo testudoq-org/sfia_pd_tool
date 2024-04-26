@@ -75,14 +75,16 @@
                         </thead>
                         <tbody id="sfia-content"></tbody>
                     </table>
-                    <a href="#" class="btn btn-default navbar-btn" id="exportHTML" onclick="exportHTML(event);">Export to HTML</a>
-                    <a href="#" class="btn btn-default navbar-btn" id="exportCSV" onclick="exportCSV(event)">Export to CSV</a>
+                    <a href="#" class="btn btn-default navbar-btn" id="exportHTML" onclick="exportHTML(event);">Export
+                        to HTML</a>
+                    <a href="#" class="btn btn-default navbar-btn" id="exportCSV" onclick="exportCSV(event)">Export to
+                        CSV</a>
                     <label for="jsonVersionSelect">Select JSON Version:</label>
                     <select id="jsonVersionSelect" onchange="changeJsonVersion()">
                         <option value="json_source_v8" data-selected="true">version 8</option>
                         <option value="json_source_v7" data-selected="false">version 7</option>
                     </select>
-                </div>                
+                </div>
             </div>
             <div class="col-lg-4">
                 <div class="panel panel-default">
@@ -96,6 +98,29 @@
                 </div>
             </div>
         </div>
+    </div>
+    <!-- New section for Levels of Responsibility -->
+    <div class="levels-of-responsibility">
+        <h2>Levels of Responsibility</h2>
+        <table class="sfia-lors-table">
+            <caption>SFIA Levels of Responsibility</caption>
+            <thead>
+                <tr>
+                    <th rowspan="2">Responsibility</th>
+                    <th colspan="7">Level</th>
+                </tr>
+                <tr>
+                    <th>1 -</th>
+                    <th>2 -</th>
+                    <th>3 -</th>
+                    <th>4 -</th>
+                    <th>5 -</th>
+                    <th>6 -</th>
+                    <th>7 -</th>
+                </tr>
+            </thead>
+            <tbody id="sfia-lors-content"></tbody>
+        </table>
     </div>
     <footer class="footer">
         <div class="container">
