@@ -360,7 +360,7 @@ function changeJsonVersion() {
 function renderOutput(sfiaJson, updateHash = true) {
 
     // Get all the checked checkboxes
-    const checkedBoxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked');
+    const sfiacheckedBoxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked');
 
     // Create a new JSON object to store the filtered data
     const newJson = sfiaJson;
@@ -369,9 +369,9 @@ function renderOutput(sfiaJson, updateHash = true) {
     // Create an array to store the URL hash parts
     const urlHash = [];
 
-    if (checkedBoxes) {
+    if (sfiacheckedBoxes) {
         // Loop through each checked checkbox
-        for (const box of checkedBoxes) {
+        for (const box of sfiacheckedBoxes) {
             // Parse the JSON data from the checkbox
             const jsonData = JSON.parse(box.getAttribute('sfia-data'));
 
@@ -613,22 +613,14 @@ async function initializeSFIAContent(sfiaJson) {
         sfiacheckboxes.forEach(function (checkbox) {
             checkbox.addEventListener('click', () => renderOutput(sfiaJson), false);
         });
-        // Add a click event listener to each LOR checkbox
-        const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
-        lorCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener('click', function () {
-                console.log('Checkbox clicked:', checkbox.id);
-                renderOutput(sfiaJson);
-            }, false);
-        });
     } catch (error) {
         console.error('Error initializing SFIA content:', error);
     }
 
-            // Render the output if the URL contains a hash
-            if (window.location.href.split("#").length > 0) {
-                renderOutput(sfiaJson, false);
-            }
+    // Render the output if the URL contains a hash
+    if (window.location.href.split("#").length > 0) {
+        renderOutput(sfiaJson, false);
+    }
 
 }
 
@@ -665,6 +657,15 @@ async function displayLevelsOfResponsibility() {
     } catch (error) {
         console.error('Error fetching or displaying LOR data:', error);
     }
+    
+        // Add a click event listener to each LOR checkbox
+        const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
+        lorCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('click', function () {
+                console.log('Checkbox clicked:', checkbox.id);
+                renderOutput(sfiaJson);
+            }, false);
+        });
 }
 /**
  * Function to truncate a given text and add a tooltip for hover-over.
