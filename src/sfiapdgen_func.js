@@ -608,14 +608,9 @@ async function initializeSFIAContent(sfiaJson) {
             }
         }
 
-        // Render the output if the URL contains a hash
-        if (window.location.href.split("#").length > 0) {
-            renderOutput(sfiaJson, false);
-        }
-
         // Add a click event listener to each checkbox
-        const checkboxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]');
-        checkboxes.forEach(function (checkbox) {
+        const sfiacheckboxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]');
+        sfiacheckboxes.forEach(function (checkbox) {
             checkbox.addEventListener('click', () => renderOutput(sfiaJson), false);
         });
         // Add a click event listener to each LOR checkbox
@@ -630,6 +625,10 @@ async function initializeSFIAContent(sfiaJson) {
         console.error('Error initializing SFIA content:', error);
     }
 
+            // Render the output if the URL contains a hash
+            if (window.location.href.split("#").length > 0) {
+                renderOutput(sfiaJson, false);
+            }
 
 }
 
