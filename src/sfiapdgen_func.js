@@ -395,6 +395,7 @@ function renderOutput(sfiaJson, updateHash = true) {
     const html = document.getElementById('sfia-output');
     html.innerHTML = ''; // Clear HTML content
 
+    console.log('Rendering Levels of Responsibility descriptions');
     try {
         // Add the selected Levels of Responsibility descriptions
         const lorDescriptions = [];
@@ -402,27 +403,40 @@ function renderOutput(sfiaJson, updateHash = true) {
 
         // Check if checkedLorBoxes is not null or undefined
         if (checkedLorBoxes) {
+            console.log(`Found ${checkedLorBoxes.length} checked Levels of Responsibility boxes`);
             for (const box of checkedLorBoxes) {
                 const lorId = box.id.replace('lor-', '');
                 const lorCategory = lorId.split('-')[0];
                 const lorLevel = lorId.split('-')[1];
 
                 // Check if sfiaJson is not null or undefined and if lorCategory exists in sfiaJson
-                if (sfiaJson && sfiaJson.find((lor) => lor.Responsibility === lorCategory)) {
-                    const lorDescription = sfiaJson.find((lor) => lor.Responsibility === lorCategory)[lorLevel];
+                if (sfiaJson && sfiaJson.filter((lor) => lor.Responsibility === lorCategory).length > 0) {
+                    console.log(`Found Levels of Responsibility data for ${lorCategory}`);
+                    const lorDescription = sfiaJson.filter((lor) => lor.Responsibility === lorCategory)[lorLevel];
 
                     // Check if lorDescription is not null or undefined
                     if (lorDescription) {
+                        console.log(`Found Levels of Responsibility description for ${lorCategory} Level ${lorLevel}: ${lorDescription}`);
                         lorDescriptions.push(`<p>${lorCategory} - Level ${lorLevel}: ${lorDescription}</p>`);
+                    } else {
+                        console.log(`No Levels of Responsibility description found for ${lorCategory} Level ${lorLevel}`);
                     }
+                } else {
+                    console.log(`No Levels of Responsibility data found for ${lorCategory}`);
                 }
             }
+        } else {
+            console.log('No Levels of Responsibility boxes found');
         }
+
 
         const lorDescriptionEle = document.createElement('div');
         if (lorDescriptions.length > 0) {
+            console.log(`Rendering ${lorDescriptions.length} Levels of Responsibility descriptions`);
             lorDescriptionEle.innerHTML = lorDescriptions.join('');
             html.insertBefore(lorDescriptionEle, html.firstChild);
+        } else {
+            console.log('No Levels of Responsibility descriptions to render');
         }
     } catch (error) {
         console.error('Error rendering Levels of Responsibility descriptions:', error);
@@ -600,14 +614,17 @@ async function initializeSFIAContent(sfiaJson) {
         }
 
         // Add a click event listener to each checkbox
-        const checkboxes = document.querySelectorAll('input[type=checkbox]');
+        const checkboxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]');
         checkboxes.forEach(function (checkbox) {
             checkbox.addEventListener('click', () => renderOutput(sfiaJson), false);
         });
         // Add a click event listener to each LOR checkbox
         const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
         lorCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener('click', () => renderOutput(sfiaJson), false);
+            checkbox.addEventListener('click', function () {
+                console.log('Checkbox clicked:', checkbox.id);
+                renderOutput(sfiaJson);
+            }, false);
         });
     } catch (error) {
         console.error('Error initializing SFIA content:', error);
@@ -815,7 +832,7 @@ window.onload = async function () {
 
             // Trigger the renderOutput function or any other logic needed after checkboxes are pre-selected
             renderOutput(sfiaJson, false);
-            selectCheckboxesByHash();
+            //selectCheckboxesByHash();
 
 
         } else {
@@ -872,6 +889,11 @@ function preSelectCheckboxesAndInitialize(sfiaJson) {
  * Function to set up event listeners for exporting data and triggering rendering of the SFIA content.
  * @param {Object} sfiaJson - The SFIA JSON data.
  */
+/**
+ * Function to set up event listeners for exporting data and triggering rendering of the SFIA content.
+ * Also, set up event listeners for both SFIA and LOR checkboxes.
+ * @param {Object} sfiaJson - The SFIA JSON data.
+ */
 function setupEventListeners(sfiaJson) {
     try {
         // Log buttons to the console for debugging
@@ -917,6 +939,21 @@ function setupEventListeners(sfiaJson) {
         } else {
             console.error("Export HTML Button not found.");
         }
+
+        // Add event listeners for SFIA checkboxes
+        const checkboxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]');
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('click', () => renderOutput(sfiaJson), false);
+        });
+
+        // Add event listeners for LOR checkboxes
+        const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
+        lorCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('click', function () {
+                console.log('Checkbox clicked:', checkbox.id);
+                renderOutput(sfiaJson);
+            }, false);
+        });
     } catch (error) {
         console.error(
             "Error setting up event listeners:",
@@ -924,8 +961,6 @@ function setupEventListeners(sfiaJson) {
         );
     }
 }
-
-
 
 /**
  * Listens for hash change events and performs the following tasks:

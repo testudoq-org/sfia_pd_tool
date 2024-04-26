@@ -6,14 +6,16 @@
       "type": "msedge",
       "request": "launch",
       "url": "http://127.0.0.1:5500/src/sfiapdgen.html#BPTS-3+BSMO-4",
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}",
+      "outFiles": ["${workspaceFolder}/src/*.js"]
     },
     {
       "name": "Launch Edge against root URL",
       "type": "msedge",
       "request": "launch",
       "url": "http://127.0.0.1:5500/src/sfiapdgen.html",
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}",
+      "outFiles": ["${workspaceFolder}/src/*.js"]
     }
   ]
 }
