@@ -941,8 +941,8 @@ function setupEventListeners(sfiaJson) {
         }
 
         // Add event listeners for SFIA checkboxes
-        const checkboxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]');
-        checkboxes.forEach(function (checkbox) {
+        const sfiacheckboxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]');
+        sfiacheckboxes.forEach(function (checkbox) {
             checkbox.addEventListener('click', () => renderOutput(sfiaJson), false);
         });
 

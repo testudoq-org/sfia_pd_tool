@@ -19,6 +19,7 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@linthtml/linthtml": "^0.9.6",
         "clean-webpack-plugin": "^4.0.0",
         "copy-webpack-plugin": "^12.0.2",
         "ftp": "^0.3.10",
