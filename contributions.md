@@ -16,7 +16,19 @@ Thank you for considering contributing to our project! We appreciate your intere
     npm install
     ```
 
-3. **Run Initial Setup**: Run any initial setup commands provided by the project. This may include database migrations, environment configurations, or other setup tasks.
+3. **Install Grunt Watch**: Install the `grunt-contrib-watch` module as a development dependency:
+
+    ```bash
+    npm install grunt-contrib-watch --save-dev
+    ```
+
+4. **Install Grunt grunt-exec**: Install the `grunt-runt-exec` module as a development dependency:
+
+    ```bash
+    npm install grunt-exec --save-dev
+    ```
+
+5. **Run Initial Setup**: Run any initial setup commands provided by the project. This may include database migrations, environment configurations, or other setup tasks.
 
 ## Running Tests
 

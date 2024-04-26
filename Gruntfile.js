@@ -1,14 +1,12 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         clean: {
-            minFiles: ['dist/**/*.*min.*'] // Update to clean the 'dist' directory instead of 'src'
+            minFiles: ['dist/**/*.*min.*']
         },
         copy: {
             main: {
                 files: [
-                    // Copy HTML, CSS, JSON, and ICO files
                     { expand: true, cwd: 'src', src: ['**/*.html', '**/*.css', '**/*.json', '**/*.ico'], dest: 'dist/', filter: 'isFile' },
-                    // Copy JS files excluding those with ".min." in their names
                     { expand: true, cwd: 'src', src: ['**/*.js', '!**/*.min.*'], dest: 'dist/', filter: 'isFile' }
                 ]
             }
@@ -20,8 +18,8 @@ module.exports = function (grunt) {
                     'dist/sfiapdgen_func.js': 'dist/sfiapdgen_func.js',
                 },
                 options: {
-                    replacements: [
-                       //  {
+                    replacements: [                                             
+                        //  {
                         // pattern: '/src/', // Replace '/src/' with '/sfia/'
                         //   replacement: '/sfia/' // Replace '/src/' with '/sfia/'
                         // },
@@ -37,17 +35,27 @@ module.exports = function (grunt) {
                         //     pattern: 'let jsonUrl = currentHost + "/src/" + selectedVersion + ".json";', // Replace the old jsonUrl pattern
                         //    replacement: 'let jsonUrl = currentHost + "/sfia/" + selectedVersion + ".json";'  // Replace with the new jsonUrl pattern
                         //}
-
                     ]
                 }
             }
         },
         watch: {
             options: {
-                debounceDelay: 1000 // Add a delay of 1 second (1000 milliseconds)
+                debounceDelay: 1000
             },
             files: ['src/**/*'],
-            tasks: ['delayedBuild'] // Run the delayed build task
+            tasks: ['delayedBuild']
+        },
+        exec: {
+            codeceptjsLocal: {
+                cmd: 'npx codeceptjs run --config=codecept.local.conf.js'
+            },
+            codeceptjsDist: {
+                cmd: 'npx codeceptjs run --config=codecept.dist.conf.js'
+            },
+            codeceptjsProduction: {
+                cmd: 'npx codeceptjs run --config=codecept.production.conf.js'
+            }
         }
     });
 
@@ -55,23 +63,25 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-string-replace');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-exec');
 
-    // Define a custom task to run clean before copy
     grunt.registerTask('build', ['clean', 'copy', 'string-replace']);
 
-    // Define a custom task for delayed build
+    grunt.registerTask('testLocal', ['exec:codeceptjsLocal', 'copy']); // Added 'copy' task as dependency
+
+    grunt.registerTask('testDist', ['exec:codeceptjsDist']); // TODO 'ftp-copy' task as dependency
+    grunt.registerTask('testProduction', ['exec:codeceptjsProduction']); // removed  'copy' task as dependency
+
     grunt.registerTask('delayedBuild', function () {
         var done = this.async();
         setTimeout(function () {
             grunt.task.run('build');
             done();
-        }, 1000); // Add a delay of 1 second (1000 milliseconds)
+        }, 1000);
     });
 
-    // Set the default task
-    grunt.registerTask('default', ['build']);
+    grunt.registerTask('default', ['testLocal']);
 
-    // Custom task for debugging
     grunt.registerTask('debug', 'Debug task', function () {
         grunt.log.writeln('Replacements have been made successfully.');
     });
