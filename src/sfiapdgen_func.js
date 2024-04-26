@@ -579,6 +579,7 @@ async function initializeSFIAContent(sfiaJson) {
  * Fetches and displays Levels of Responsibility data from the 'sfia-lors-8.json' file.
  * This function retrieves the data, clears any existing content in the table,
  * and then appends new rows to the table for each data item.
+ * adds a tool tip to each of the checkboxes based onthe description attribute of the lor
  */
 async function displayLevelsOfResponsibility() {
     try {
@@ -590,38 +591,24 @@ async function displayLevelsOfResponsibility() {
         document.getElementById('sfia-lors-content').innerHTML = '';
 
         // Loop through LOR JSON data and build the checklist
-        lorJson.forEach((level, index) => {
+        lorJson.forEach((responsibility, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td rowspan="2">${level.FIELD1}</td> <!-- Responsibility -->
-                <td><input type="checkbox" id="lor-checkbox-${index}-1" value="${level.FIELD1}" title="${level.Autonomy}"></td> <!-- Level 1 -->
-                <td><input type="checkbox" id="lor-checkbox-${index}-2" value="${level.FIELD1}" title="${level.Influence}"></td> <!-- Level 2 -->
-                <td><input type="checkbox" id="lor-checkbox-${index}-3" value="${level.FIELD1}" title="${level.Complexity}"></td> <!-- Level 3 -->
-                <td><input type="checkbox" id="lor-checkbox-${index}-4" value="${level.FIELD1}" title="${level['Business skills']}"></td> <!-- Level 4 -->
-                <td><input type="checkbox" id="lor-checkbox-${index}-5" value="${level.FIELD1}" title="${level.Knowledge}"></td> <!-- Level 5 -->
-                <td><input type="checkbox" id="lor-checkbox-${index}-6" value="${level.FIELD1}" title=""></td> <!-- Level 6 -->
-                <td><input type="checkbox" id="lor-checkbox-${index}-7" value="${level.FIELD1}" title=""></td> <!-- Level 7 -->
+                <td rowspan="2">${responsibility.Responsibility}</td> <!-- Responsibility -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-1" value="${responsibility['1 -']}" title="${responsibility['1 -']}"></td> <!-- Level 1 -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-2" value="${responsibility['2 -']}" title="${responsibility['2 -']}"></td> <!-- Level 2 -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-3" value="${responsibility['3 -']}" title="${responsibility['3 -']}"></td> <!-- Level 3 -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-4" value="${responsibility['4 -']}" title="${responsibility['4 -']}"></td> <!-- Level 4 -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-5" value="${responsibility['5 -']}" title="${responsibility['5 -']}"></td> <!-- Level 5 -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-6" value="${responsibility['6 -']}" title="${responsibility['6 -']}"></td> <!-- Level 6 -->
+                <td><input type="checkbox" id="lor-checkbox-${index}-7" value="${responsibility['7 -']}" title="${responsibility['7 -']}"></td> <!-- Level 7 -->
             `;
             document.getElementById('sfia-lors-content').appendChild(row);
-
-            // Add a new row for the LOR categories
-            const lorCategoriesRow = document.createElement('tr');
-            lorCategoriesRow.innerHTML = `
-                <td>${level.Autonomy}</td> <!-- LOR Category 1 -->
-                <td>${level.Influence}</td> <!-- LOR Category 2 -->
-                <td>${level.Complexity}</td> <!-- LOR Category 3 -->
-                <td>${level['Business skills']}</td> <!-- LOR Category 4 -->
-                <td>${level.Knowledge}</td> <!-- LOR Category 5 -->
-                <td></td> <!-- LOR Category 6 -->
-                <td></td> <!-- LOR Category 7 -->
-            `;
-            document.getElementById('sfia-lors-content').appendChild(lorCategoriesRow);
         });
     } catch (error) {
         console.error('Error fetching or displaying LOR data:', error);
     }
 }
-
 /**
  * Function to truncate a given text and add a tooltip for hover-over.
  *

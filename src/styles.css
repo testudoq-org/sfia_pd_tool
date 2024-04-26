@@ -180,3 +180,43 @@
   background-color: #ccc;
   color: #fff;
 }
+
+/* Styling for the SFIA Levels of Responsibility table */
+.sfia-lors-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center; /* Center text horizontally */
+}
+
+/* Styling for table headers */
+.sfia-lors-table thead th {
+  background-color: #f2f2f2;
+  padding: 10px;
+  border: 1px solid #ddd;
+  font-weight: bold;
+}
+
+/* Styling for table cells */
+.sfia-lors-table tbody td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  vertical-align: middle; /* Center text vertically */
+}
+
+/* Styling for tooltips */
+.tooltiptext {
+  visibility: hidden;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  font-size: 12px;
+}
+
+/* Show tooltip when hovering over a checkbox */
+.sfia-lors-table input[type="checkbox"]:hover + .tooltiptext {
+  visibility: visible;
+}
