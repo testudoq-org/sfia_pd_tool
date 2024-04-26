@@ -119,7 +119,7 @@ function addSelectionBox(index, sfiaJson, rootKey, subKey, skillKey) {
         const checked = checkPreselected(sfiaJson[rootKey][subKey][skillKey]["code"], index) ? "checked" : "";
 
         // Generate the checkbox input with the appropriate data attributes
-        col.innerHTML = `<input type='checkbox' title='${sfiaJson[rootKey][subKey][skillKey]["levels"][index]}' sfia-data='${jsonData}' ${checked}/>`;
+        col.innerHTML = `<input type='checkbox' id="sfia-checkbox-${sfiaJson[rootKey][subKey][skillKey]["code"]}" title='${sfiaJson[rootKey][subKey][skillKey]["levels"][index]}' sfia-data='${jsonData}' ${checked}/>`;
         col.className += " select_col";
     } else {
         // Generate a disabled checkbox if the level is not present
@@ -360,7 +360,7 @@ function changeJsonVersion() {
 function renderOutput(sfiaJson, updateHash = true) {
 
     // Get all the checked checkboxes
-    const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
+    const checkedBoxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked');
 
     // Create a new JSON object to store the filtered data
     const newJson = sfiaJson;
@@ -369,30 +369,64 @@ function renderOutput(sfiaJson, updateHash = true) {
     // Create an array to store the URL hash parts
     const urlHash = [];
 
-    // Loop through each checked checkbox
-    for (const box of checkedBoxes) {
-        // Parse the JSON data from the checkbox
-        const jsonData = JSON.parse(box.getAttribute('sfia-data'));
+    if (checkedBoxes) {
+        // Loop through each checked checkbox
+        for (const box of checkedBoxes) {
+            // Parse the JSON data from the checkbox
+            const jsonData = JSON.parse(box.getAttribute('sfia-data'));
 
-        // Create a nested structure in newArr based on the JSON data
-        newArr[jsonData.category] ??= {};
-        newArr[jsonData.category][jsonData.subCategory] ??= {};
-        newArr[jsonData.category][jsonData.subCategory][jsonData.skill] ??= {
-            description: newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.description,
-            code: newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.code,
-            levels: {},
-        };
+            // Create a nested structure in newArr based on the JSON data
+            newArr[jsonData.category] ??= {};
+            newArr[jsonData.category][jsonData.subCategory] ??= {};
+            newArr[jsonData.category][jsonData.subCategory][jsonData.skill] ??= {
+                description: newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.description,
+                code: newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.code,
+                levels: {},
+            };
 
-        // Add the skill level data to newArr
-        newArr[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"][jsonData.level] = newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.levels?.[jsonData.level];
+            // Add the skill level data to newArr
+            newArr[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"][jsonData.level] = newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.levels?.[jsonData.level];
 
-        // Add the skill code and level to the URL hash array
-        urlHash.push(`${newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.code}-${jsonData.level}`);
+            // Add the skill code and level to the URL hash array
+            urlHash.push(`${newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.code}-${jsonData.level}`);
+        }
     }
-
     // Get the HTML element to render the output
     const html = document.getElementById('sfia-output');
     html.innerHTML = ''; // Clear HTML content
+
+    try {
+        // Add the selected Levels of Responsibility descriptions
+        const lorDescriptions = [];
+        const checkedLorBoxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]:checked');
+
+        // Check if checkedLorBoxes is not null or undefined
+        if (checkedLorBoxes) {
+            for (const box of checkedLorBoxes) {
+                const lorId = box.id.replace('lor-', '');
+                const lorCategory = lorId.split('-')[0];
+                const lorLevel = lorId.split('-')[1];
+
+                // Check if sfiaJson is not null or undefined and if lorCategory exists in sfiaJson
+                if (sfiaJson && sfiaJson.find((lor) => lor.Responsibility === lorCategory)) {
+                    const lorDescription = sfiaJson.find((lor) => lor.Responsibility === lorCategory)[lorLevel];
+
+                    // Check if lorDescription is not null or undefined
+                    if (lorDescription) {
+                        lorDescriptions.push(`<p>${lorCategory} - Level ${lorLevel}: ${lorDescription}</p>`);
+                    }
+                }
+            }
+        }
+
+        const lorDescriptionEle = document.createElement('div');
+        if (lorDescriptions.length > 0) {
+            lorDescriptionEle.innerHTML = lorDescriptions.join('');
+            html.insertBefore(lorDescriptionEle, html.firstChild);
+        }
+    } catch (error) {
+        console.error('Error rendering Levels of Responsibility descriptions:', error);
+    }
 
     // Render the filtered data in the HTML
     for (const category in newArr) {
@@ -570,9 +604,16 @@ async function initializeSFIAContent(sfiaJson) {
         checkboxes.forEach(function (checkbox) {
             checkbox.addEventListener('click', () => renderOutput(sfiaJson), false);
         });
+        // Add a click event listener to each LOR checkbox
+        const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
+        lorCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('click', () => renderOutput(sfiaJson), false);
+        });
     } catch (error) {
         console.error('Error initializing SFIA content:', error);
     }
+
+
 }
 
 /**
