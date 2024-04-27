@@ -768,7 +768,7 @@ function searchForText() {
  * joins them with '+' as a separator. The resulting string is then set as the URL
  * hash.
  */
-function updateURLWithCheckboxes() {
+function updateURLWithSfiaCheckboxes() {
     // Retrieve all checkboxes on the page.
     const checkboxes = document.querySelectorAll('input[type=checkbox]');
 
@@ -829,57 +829,6 @@ function setStoredVersion(storedVersion) {
     // Call the function to set up event listeners
     setupEventListeners(sfiaJson);
 }
-
-/**
- * Window onload function that is triggered when the page finishes loading.
- * It performs the following tasks:
- *  - Calls the setStoredVersion function to set the stored version
- *  - Parses the URL hash and pre-selects checkboxes
- *  - If there are selected checkboxes, it pre-selects them
- *  - Otherwise, it initializes SFIA content
- */
-window.onload = async function () {
-    // Log that the window onload function has been triggered
-    console.log('Window onload function triggered');
-
-    try {
-        // Get the current URL
-        let currentURL = window.location.href;
-        console.info('Current URL is:', currentURL);
-
-        // Call the setStoredVersion function to set the stored version
-        await setStoredVersion("json_source_v8");  // Provide the initial stored version
-
-
-        // Check if '/#/' is already present in the URL
-        if (currentURL.includes('#')) {
-            // The hash exists Trigger the renderSfiaOutput function or any other logic needed after checkboxes are pre-selected
-            // Parse URL hash and pre-select checkboxes
-            const urlHash = window.location.hash.replace('#', '');
-            const selectedCheckboxes = urlHash.split('+');
-
-            // If there are selected checkboxes, pre-select them
-
-            // Trigger the renderSfiaOutput function or any other logic needed after checkboxes are pre-selected
-            renderSfiaOutput(sfiaJson, false);
-            //selectCheckboxesByHash();
-
-
-        } else {
-            // Do another thing if the hash doesn't exist
-            console.log('Hash does not exist, appending # to URL:', currentURL);
-            // If there are no selected checkboxes, initialize SFIA content
-            initializeSFIAContent(sfiaJson);
-            // Display Levels of Responsibility data
-            await displayLevelsOfResponsibility();
-            console.log('Hash exists in URL:', currentURL);
-        }
-
-    } catch (error) {
-        // Log any errors that occur during the onload function
-        console.error('An error occurred:', error.message);
-    }
-};
 
 /**
  * Pre-selects checkboxes based on the URL hash and triggers
@@ -1027,3 +976,54 @@ window.addEventListener('hashchange', async function () {
         console.error('An error occurred:', error.message);
     }
 });
+
+/**
+ * Window onload function that is triggered when the page finishes loading.
+ * It performs the following tasks:
+ *  - Calls the setStoredVersion function to set the stored version
+ *  - Parses the URL hash and pre-selects checkboxes
+ *  - If there are selected checkboxes, it pre-selects them
+ *  - Otherwise, it initializes SFIA content
+ */
+window.onload = async function () {
+    // Log that the window onload function has been triggered
+    console.log('Window onload function triggered');
+
+    try {
+        // Get the current URL
+        let currentURL = window.location.href;
+        console.info('Current URL is:', currentURL);
+
+        // Call the setStoredVersion function to set the stored version
+        await setStoredVersion("json_source_v8");  // Provide the initial stored version
+
+
+        // Check if '/#/' is already present in the URL
+        if (currentURL.includes('#')) {
+            // The hash exists Trigger the renderSfiaOutput function or any other logic needed after checkboxes are pre-selected
+            // Parse URL hash and pre-select checkboxes
+            const urlHash = window.location.hash.replace('#', '');
+            const selectedCheckboxes = urlHash.split('+');
+
+            // If there are selected checkboxes, pre-select them
+
+            // Trigger the renderSfiaOutput function or any other logic needed after checkboxes are pre-selected
+            renderSfiaOutput(sfiaJson, false);
+            //selectCheckboxesByHash();
+
+
+        } else {
+            // Do another thing if the hash doesn't exist
+            console.log('Hash does not exist, appending # to URL:', currentURL);
+            // If there are no selected checkboxes, initialize SFIA content
+            initializeSFIAContent(sfiaJson);
+            // Display Levels of Responsibility data
+            await displayLevelsOfResponsibility();
+            console.log('Hash exists in URL:', currentURL);
+        }
+
+    } catch (error) {
+        // Log any errors that occur during the onload function
+        console.error('An error occurred:', error.message);
+    }
+};
