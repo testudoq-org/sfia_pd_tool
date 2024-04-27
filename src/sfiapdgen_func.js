@@ -1,6 +1,7 @@
 // sfiapdgen_func.js
 "use strict";
-let sfiaJson;  // declare sfiaJson at a higher scope
+let sfiaJson;  // declare at a higher scope
+let lorJson;  // declare at a higher scope
 let lastExportTime = 0; // Initialize lastExportTime to 0
 
 
@@ -634,7 +635,7 @@ async function displayLevelsOfResponsibility() {
     try {
         // Fetch LOR JSON data
         const response = await fetch('json-sfia-lors-v8.json');
-        const lorJson = await response.json();
+         lorJson = await response.json();
 
         // Clear existing content in the LOR table body
         document.getElementById('sfia-lors-content').innerHTML = '';
