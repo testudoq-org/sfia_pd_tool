@@ -760,28 +760,29 @@ function searchForText() {
         console.error("An error occurred:", error.message);
     }
 }
+
 /**
- * Updates the URL with the selected checkboxes.
+ * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
  * 
- * This function retrieves all checkboxes on the page, filters them to only include
- * the checked ones, retrieves their 'data-code' and 'data-level' attributes, and
- * joins them with '+' as a separator. The resulting string is then set as the URL
- * hash.
+ * This function retrieves all LoR checkboxes on the page, filters them to only include
+ * the checked ones, retrieves their 'id' attribute, and joins them with '+' as a separator.
+ * The resulting string is then set as the URL hash.
  */
-function updateURLWithSfiaCheckboxes() {
-    // Retrieve all checkboxes on the page.
-    const checkboxes = document.querySelectorAll('input[type=checkbox]');
-
+function updateURLWithLorCheckboxes() {
+    // Retrieve all LoR checkboxes on the page.
+    const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
+  
     // Filter the checkboxes to only include the checked ones.
-    const selectedCheckboxes = Array.from(checkboxes)
-        .filter(checkbox => checkbox.checked)
-        // Retrieve the 'data-code' and 'data-level' attributes of each checked checkbox.
-        .map(checkbox => checkbox.getAttribute('data-code') + '-' + checkbox.getAttribute('data-level'));
-
-    // Join the selected checkboxes with '+' as a separator and set it as the URL hash.
-    const urlHash = selectedCheckboxes.join('+');
+    const selectedLorCheckboxes = Array.from(lorCheckboxes)
+      .filter(checkbox => checkbox.checked)
+      // Retrieve the 'id' attribute of each checked LoR checkbox.
+      .map(checkbox => checkbox.id);
+  
+    // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
+    const urlHash = selectedLorCheckboxes.join('+');
     window.location.hash = urlHash;
-}
+  }
+  
 
 /**
  * Retrieves the value of a cookie by its name.
