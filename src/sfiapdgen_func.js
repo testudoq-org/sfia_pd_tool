@@ -683,19 +683,21 @@ async function displayLevelsOfResponsibility() {
             <td><input type="checkbox" id="lor-checkbox-${index}-7" value="${responsibility['7 -']}" title="${responsibility['7 -']}"></td> <!-- Level 7 -->
         `;
             document.getElementById('sfia-lors-content').appendChild(row);
+
+            // Add a click event listener to each LOR checkbox
+            const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
+            lorCheckboxes.forEach(function (checkbox) {
+                checkbox.addEventListener('click', function () {
+                    console.log('Checkbox clicked:', checkbox.id);
+                    renderLorOutput(lorJson);
+                }, false);
+            });
         });
     } catch (error) {
         console.error('Error fetching or displaying LOR data:', error);
     }
-    
-        // Add a click event listener to each LOR checkbox
-        const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
-        lorCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener('click', function () {
-                console.log('Checkbox clicked:', checkbox.id);
-                renderSfiaOutput(sfiaJson);
-            }, false);
-        });
+
+
 }
 /**
  * Function to truncate a given text and add a tooltip for hover-over.
@@ -848,8 +850,6 @@ window.onload = async function () {
         // Call the setStoredVersion function to set the stored version
         await setStoredVersion("json_source_v8");  // Provide the initial stored version
 
-        // Display Levels of Responsibility data
-        displayLevelsOfResponsibility();
 
         // Check if '/#/' is already present in the URL
         if (currentURL.includes('#')) {
@@ -870,6 +870,8 @@ window.onload = async function () {
             console.log('Hash does not exist, appending # to URL:', currentURL);
             // If there are no selected checkboxes, initialize SFIA content
             initializeSFIAContent(sfiaJson);
+            // Display Levels of Responsibility data
+            await displayLevelsOfResponsibility();
             console.log('Hash exists in URL:', currentURL);
         }
 
@@ -981,7 +983,7 @@ function setupEventListeners(sfiaJson) {
         lorCheckboxes.forEach(function (checkbox) {
             checkbox.addEventListener('click', function () {
                 console.log('Checkbox clicked:', checkbox.id);
-                renderSfiaOutput(sfiaJson);
+                renderLorOutput(lorJson);
             }, false);
         });
     } catch (error) {
