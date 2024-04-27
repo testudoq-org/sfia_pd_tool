@@ -1,7 +1,6 @@
 // sfiapdgen_func.js
 "use strict";
-let sfiaJson;  // declare at a higher scope
-let lorJson;  // declare at a higher scope
+let sfiaJson;  // declare sfiaJson at a higher scope
 let lastExportTime = 0; // Initialize lastExportTime to 0
 
 
@@ -352,66 +351,6 @@ function changeJsonVersion() {
 
 }
 
-/**
-* Render the output HTML based on the selected checkboxes and the provided LOR JSON data.
-* @param {Object} lorJson - The LOR JSON data.
-* @param {boolean} updateHash - Flag to indicate whether to update the URL hash.
-*/
-function renderLorOutput(lorJson, updateHash = true) {//Render Levels of Responsibility descriptions
-
-    try {
-        // Add the selected Levels of Responsibility descriptions
-        const lorDescriptions = [];
-        const checkedLorBoxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]:checked');
-
-        // Check if checkedLorBoxes is not null or undefined
-        if (checkedLorBoxes) {
-            console.log(`Found ${checkedLorBoxes.length} checked Levels of Responsibility boxes`);
-            for (const box of checkedLorBoxes) {
-                const lorId = box.id.replace('lor-', '');
-                const lorCategory = lorId.split('-')[0];
-                const lorLevel = lorId.split('-')[1];
-
-                // Check if sfiaJson is not null or undefined and if lorCategory exists in sfiaJson
-                if (sfiaJson && sfiaJson.filter((lor) => lor.Responsibility === lorCategory).length > 0) {
-                    console.log(`Found Levels of Responsibility data for ${lorCategory}`);
-                    const lorDescription = sfiaJson.filter((lor) => lor.Responsibility === lorCategory)[lorLevel];
-
-                    // Check if lorDescription is not null or undefined
-                    if (lorDescription) {
-                        console.log(`Found Levels of Responsibility description for ${lorCategory} Level ${lorLevel}: ${lorDescription}`);
-                        lorDescriptions.push(`<p>${lorCategory} - Level ${lorLevel}: ${lorDescription}</p>`);
-                    } else {
-                        console.log(`No Levels of Responsibility description found for ${lorCategory} Level ${lorLevel}`);
-                    }
-                } else {
-                    console.log(`No Levels of Responsibility data found for ${lorCategory}`);
-                }
-            }
-        } else {
-            console.log('No Levels of Responsibility boxes found');
-        }
-
-
-        const lorDescriptionEle = document.createElement('div');
-        if (lorDescriptions.length > 0) {
-            console.log(`Rendering ${lorDescriptions.length} Levels of Responsibility descriptions`);
-            lorDescriptionEle.innerHTML = lorDescriptions.join('');
-            html.insertBefore(lorDescriptionEle, html.firstChild);
-        } else {
-            console.log('No Levels of Responsibility descriptions to render');
-        }
-    } catch (error) {
-        console.error('Error rendering Levels of Responsibility descriptions:', error);
-    }
-
-
-
-    // Update the URL hash if updateHash is true
-    if (updateHash) {
-        window.location.hash = urlHash.join("+");
-    }
-}
 
 /**
  * Render the output HTML based on the selected checkboxes and the provided SFIA JSON data.
@@ -452,7 +391,6 @@ function renderSfiaOutput(sfiaJson, updateHash = true) {
             urlHash.push(`${newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.code}-${jsonData.level}`);
         }
     }
-
     // Get the HTML element to render the output
     const html = document.getElementById('sfia-output');
     html.innerHTML = ''; // Clear HTML content
@@ -492,7 +430,81 @@ function renderSfiaOutput(sfiaJson, updateHash = true) {
             }
         }
     }
+
+    // Update the URL hash if updateHash is true
+    if (updateHash) {
+        window.location.hash = urlHash.join("+");
+    }
 }
+
+/**
+ * Render the output HTML based on the selected LOR checkboxes and the provided LOR JSON data.
+ * @param {Object} lorJson - The LOR JSON data.
+ * @param {boolean} updateHash - Flag to indicate whether to update the URL hash.
+ */
+function renderLorOutput(lorJson, updateHash = true) {
+    // Get all the checked LOR checkboxes
+    const lorCheckedBoxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]:checked');
+
+    // Create a new JSON object to store the filtered data
+    const newJson = {};
+    const newArr = {};
+
+    // Create an array to store the URL hash parts
+    const urlHash = [];
+
+    if (lorCheckedBoxes) {
+        // Loop through each checked LOR checkbox
+        for (const box of lorCheckedBoxes) {
+            const lorId = box.id.replace('lor-', '');
+            const lorCategory = lorId.split('-')[0];
+            const lorLevel = lorId.split('-')[1];
+
+            // Check if lorCategory exists in lorJson
+            if (lorJson[lorCategory]) {
+                // Create a new object for the selected LOR
+                const selectedLor = {
+                    Responsibility: lorCategory,
+                    Level: lorLevel,
+                    Description: lorJson[lorCategory][lorLevel]
+                };
+
+                // Add the selected LOR to the new JSON object
+                newJson[lorCategory] = selectedLor;
+
+                // Add the LOR code and level to the URL hash array
+                urlHash.push(`${lorCategory}-${lorLevel}`);
+            }
+        }
+    }
+
+    // Get the HTML element to render the LOR output
+    const lorOutput = document.getElementById('lor-output');
+    lorOutput.innerHTML = ''; // Clear HTML content
+
+    // Render the filtered data in the HTML
+    for (const category in newJson) {
+        // Render category heading
+        const categoryEle = document.createElement('h1');
+        categoryEle.textContent = category;
+        lorOutput.appendChild(categoryEle);
+
+        // Render LOR information
+        const lorEle = document.createElement('div');
+        lorEle.innerHTML = `
+            <h2>${category}</h2>
+            <p>Level: ${newJson[category].Level}</p>
+            <p>Description: ${newJson[category].Description}</p>
+        `;
+        lorOutput.appendChild(lorEle);
+    }
+
+    // Update the URL hash if updateHash is true
+    if (updateHash) {
+        window.location.hash = urlHash.join("+");
+    }
+}
+
 
 /**
  * Function to set up event listeners for exporting data and triggering rendering of the SFIA content.
@@ -623,6 +635,14 @@ async function initializeSFIAContent(sfiaJson) {
         sfiacheckboxes.forEach(function (checkbox) {
             checkbox.addEventListener('click', () => renderSfiaOutput(sfiaJson), false);
         });
+
+
+
+
+
+
+
+
     } catch (error) {
         console.error('Error initializing SFIA content:', error);
     }
@@ -644,7 +664,7 @@ async function displayLevelsOfResponsibility() {
     try {
         // Fetch LOR JSON data
         const response = await fetch('json-sfia-lors-v8.json');
-        lorJson = await response.json();
+        const lorJson = await response.json();
 
         // Clear existing content in the LOR table body
         document.getElementById('sfia-lors-content').innerHTML = '';
@@ -667,15 +687,15 @@ async function displayLevelsOfResponsibility() {
     } catch (error) {
         console.error('Error fetching or displaying LOR data:', error);
     }
-
-    // Add a click event listener to each LOR checkbox
-    const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
-    lorCheckboxes.forEach(function (checkbox) {
-        checkbox.addEventListener('click', function () {
-            console.log('Checkbox clicked:', checkbox.id);
-            renderLorOutput(sfiaJson);
-        }, false);
-    });
+    
+        // Add a click event listener to each LOR checkbox
+        const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
+        lorCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('click', function () {
+                console.log('Checkbox clicked:', checkbox.id);
+                renderSfiaOutput(sfiaJson);
+            }, false);
+        });
 }
 /**
  * Function to truncate a given text and add a tooltip for hover-over.
@@ -842,7 +862,6 @@ window.onload = async function () {
 
             // Trigger the renderSfiaOutput function or any other logic needed after checkboxes are pre-selected
             renderSfiaOutput(sfiaJson, false);
-            renderLorOutput(lorJson, false);
             //selectCheckboxesByHash();
 
 
@@ -890,7 +909,6 @@ function preSelectCheckboxesAndInitialize(sfiaJson) {
         // Trigger the renderSfiaOutput function or any other logic
         // needed after checkboxes are pre-selected
         renderSfiaOutput(sfiaJson, true);
-        renderLorOutput(sfiaJson, true); /*
     } else {
         // If there are no selected checkboxes, initialize SFIA content
         initializeSFIAContent(sfiaJson);
@@ -901,111 +919,109 @@ function preSelectCheckboxesAndInitialize(sfiaJson) {
  * Function to set up event listeners for exporting data and triggering rendering of the SFIA content.
  * @param {Object} sfiaJson - The SFIA JSON data.
  */
-        /**
-         * Function to set up event listeners for exporting data and triggering rendering of the SFIA content.
-         * Also, set up event listeners for both SFIA and LOR checkboxes.
-         * @param {Object} sfiaJson - The SFIA JSON data.
-         */
-        function setupEventListeners(sfiaJson) {
-            try {
-                // Log buttons to the console for debugging
-                const exportCSVButton = document.getElementById("exportCSV"); // Button for exporting data to CSV
-                const exportHTMLButton = document.getElementById("exportHTML"); // Button for exporting data to HTML
+/**
+ * Function to set up event listeners for exporting data and triggering rendering of the SFIA content.
+ * Also, set up event listeners for both SFIA and LOR checkboxes.
+ * @param {Object} sfiaJson - The SFIA JSON data.
+ */
+function setupEventListeners(sfiaJson) {
+    try {
+        // Log buttons to the console for debugging
+        const exportCSVButton = document.getElementById("exportCSV"); // Button for exporting data to CSV
+        const exportHTMLButton = document.getElementById("exportHTML"); // Button for exporting data to HTML
 
-                // Check if buttons exist before adding event listeners
-                if (exportCSVButton) {
-                    console.info("Export CSV button found.");
-                    exportCSVButton.addEventListener("click", function (event) {
-                        event.preventDefault();
-                        if (new Date().getTime() - lastExportTime < 3000) {
-                            console.log("Export CSV skipped due to timeout.");
-                            return;
-                        }
-                        lastExportTime = new Date().getTime();
-                        exportCSV(event, sfiaJson);
-                    });
-                } else {
-                    console.error("Export CSV Button not found.");
+        // Check if buttons exist before adding event listeners
+        if (exportCSVButton) {
+            console.info("Export CSV button found.");
+            exportCSVButton.addEventListener("click", function (event) {
+                event.preventDefault();
+                if (new Date().getTime() - lastExportTime < 3000) {
+                    console.log("Export CSV skipped due to timeout.");
+                    return;
                 }
-
-                if (exportHTMLButton) {
-                    console.info("Export HTML button found.");
-
-                    // Remove any existing event listeners on the exportHTMLButton
-                    exportHTMLButton.removeEventListener("click", function (event) {
-                        // ...
-                    });
-
-                    // Add event listener for exporting data to HTML
-                    exportHTMLButton.addEventListener("click", function (event) {
-                        event.preventDefault();
-                        if (new Date().getTime() - lastExportTime < 3000) {
-                            console.log("Export HTML skipped due to timeout.");
-                            return;
-                        }
-                        lastExportTime = new Date().getTime();
-
-                        // Call the exportHTML function with the sfiaJson parameter
-                        exportHTML(event, sfiaJson);
-                    });
-                } else {
-                    console.error("Export HTML Button not found.");
-                }
-
-                // Add event listeners for SFIA checkboxes
-                const sfiacheckboxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]');
-                sfiacheckboxes.forEach(function (checkbox) {
-                    checkbox.addEventListener('click', () => renderSfiaOutput(sfiaJson), false);
-                });
-
-                // Add event listeners for LOR checkboxes
-                const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
-                lorCheckboxes.forEach(function (checkbox) {
-                    checkbox.addEventListener('click', function () {
-                        console.log('Checkbox clicked:', checkbox.id);
-                        renderLorOutput(sfiaJson);
-                    }, false);
-                });
-            } catch (error) {
-                console.error(
-                    "Error setting up event listeners:",
-                    error
-                );
-            }
+                lastExportTime = new Date().getTime();
+                exportCSV(event, sfiaJson);
+            });
+        } else {
+            console.error("Export CSV Button not found.");
         }
 
-        /**
-         * Listens for hash change events and performs the following tasks:
-         *  - Retrieves the storedVersion value from a cookie
-         *  - If the storedVersion is defined, it fetches the selected version JSON data
-         *  - Calls the preSelectCheckboxesAndInitialize function or initializes SFIA content
-         *
-         * @event hashchange
-         */
-        window.addEventListener('hashchange', async function () {
-            try {
-                // Retrieve the storedVersion value from a cookie
-                let storedVersion = getCookie("selectedVersion");
+        if (exportHTMLButton) {
+            console.info("Export HTML button found.");
 
-                // If the storedVersion is defined
-                if (typeof storedVersion !== 'undefined') {
-                    // Fetch the selected version JSON data
-                    let sfiaJson = await fetchData(storedVersion + ".json");
+            // Remove any existing event listeners on the exportHTMLButton
+            exportHTMLButton.removeEventListener("click", function (event) {
+                // ...
+            });
 
-                    // Call the preSelectCheckboxesAndInitialize function
-                    // to pre-select checkboxes and initialize SFIA content
-                    preSelectCheckboxesAndInitialize(sfiaJson);
-
-                    console.info('hashchange entry: storedVersion is defined.');
-                } else {
-                    // Call the function to initialize SFIA content
-                    initializeSFIAContent(sfiaJson);
-                    console.info('hashchange entry: storedVersion is undefined.');
+            // Add event listener for exporting data to HTML
+            exportHTMLButton.addEventListener("click", function (event) {
+                event.preventDefault();
+                if (new Date().getTime() - lastExportTime < 3000) {
+                    console.log("Export HTML skipped due to timeout.");
+                    return;
                 }
-            } catch (error) {
-                // Log any errors that occur during hash change handling
-                console.error('An error occurred:', error.message);
-            }
+                lastExportTime = new Date().getTime();
+
+                // Call the exportHTML function with the sfiaJson parameter
+                exportHTML(event, sfiaJson);
+            });
+        } else {
+            console.error("Export HTML Button not found.");
+        }
+
+        // Add event listeners for SFIA checkboxes
+        const sfiacheckboxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]');
+        sfiacheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('click', () => renderSfiaOutput(sfiaJson), false);
         });
-    };
-};
+
+        // Add event listeners for LOR checkboxes
+        const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
+        lorCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('click', function () {
+                console.log('Checkbox clicked:', checkbox.id);
+                renderSfiaOutput(sfiaJson);
+            }, false);
+        });
+    } catch (error) {
+        console.error(
+            "Error setting up event listeners:",
+            error
+        );
+    }
+}
+
+/**
+ * Listens for hash change events and performs the following tasks:
+ *  - Retrieves the storedVersion value from a cookie
+ *  - If the storedVersion is defined, it fetches the selected version JSON data
+ *  - Calls the preSelectCheckboxesAndInitialize function or initializes SFIA content
+ *
+ * @event hashchange
+ */
+window.addEventListener('hashchange', async function () {
+    try {
+        // Retrieve the storedVersion value from a cookie
+        let storedVersion = getCookie("selectedVersion");
+
+        // If the storedVersion is defined
+        if (typeof storedVersion !== 'undefined') {
+            // Fetch the selected version JSON data
+            let sfiaJson = await fetchData(storedVersion + ".json");
+
+            // Call the preSelectCheckboxesAndInitialize function
+            // to pre-select checkboxes and initialize SFIA content
+            preSelectCheckboxesAndInitialize(sfiaJson);
+
+            console.info('hashchange entry: storedVersion is defined.');
+        } else {
+            // Call the function to initialize SFIA content
+            initializeSFIAContent(sfiaJson);
+            console.info('hashchange entry: storedVersion is undefined.');
+        }
+    } catch (error) {
+        // Log any errors that occur during hash change handling
+        console.error('An error occurred:', error.message);
+    }
+});
