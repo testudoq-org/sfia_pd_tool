@@ -697,13 +697,13 @@ async function initializeLorContent() {
             const row = document.createElement('tr');
             row.innerHTML = `
             <td>${responsibility.Responsibility}</td> <!-- Responsibility -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-1" value="${responsibility['1 -']}" title="${responsibility['1 -']}"></td> <!-- Level 1 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-2" value="${responsibility['2 -']}" title="${responsibility['2 -']}"></td> <!-- Level 2 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-3" value="${responsibility['3 -']}" title="${responsibility['3 -']}"></td> <!-- Level 3 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-4" value="${responsibility['4 -']}" title="${responsibility['4 -']}"></td> <!-- Level 4 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-5" value="${responsibility['5 -']}" title="${responsibility['5 -']}"></td> <!-- Level 5 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-6" value="${responsibility['6 -']}" title="${responsibility['6 -']}"></td> <!-- Level 6 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-7" value="${responsibility['7 -']}" title="${responsibility['7 -']}"></td> <!-- Level 7 -->
+            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-1" title="${responsibility['1 -']}"></td> <!-- Level 1 -->
+            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-2" title="${responsibility['2 -']}"></td> <!-- Level 2 -->
+            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-3" title="${responsibility['3 -']}"></td> <!-- Level 3 -->
+            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-4" title="${responsibility['4 -']}"></td> <!-- Level 4 -->
+            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-5" title="${responsibility['5 -']}"></td> <!-- Level 5 -->
+            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-6" title="${responsibility['6 -']}"></td> <!-- Level 6 -->
+            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-7" title="${responsibility['7 -']}"></td> <!-- Level 7 -->
         `;
             document.getElementById('sfia-lors-content').appendChild(row);
 
