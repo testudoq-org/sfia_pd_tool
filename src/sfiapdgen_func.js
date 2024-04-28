@@ -969,7 +969,8 @@ window.addEventListener('hashchange', async function () {
             console.info('hashchange entry: storedVersion is defined.');
         } else {
             // Call the function to initialize SFIA content
-            initializeSFIAContent(sfiaJson);
+            await initializeSFIAContent(sfiaJson);
+            // Call the function to initalize LOR content
             console.info('hashchange entry: storedVersion is undefined.');
         }
     } catch (error) {
