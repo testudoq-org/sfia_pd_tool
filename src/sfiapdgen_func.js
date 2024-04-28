@@ -987,8 +987,6 @@ window.onload = async function () {
 
             // Trigger the renderSfiaOutput function or any other logic needed after checkboxes are pre-selected
             renderSfiaOutput(sfiaJson, false);
-            //selectCheckboxesByHash();
-
 
         } else {
             // Do another thing if the hash doesn't exist
