@@ -470,11 +470,14 @@ function renderLorOutput(lorJson, updateHash = true) {
             Description: lorJson[lorCategory][lorLevel]
           };
   
+          // Extract the "AUTO-1" value from the checkbox
+          const lorValue = box.value;
+  
           // Add the selected LoR to the new JSON object
           newJson[lorCategory] = selectedLor;
   
-          // Add the LOR responsibility and level to the URL hash array
-          urlHash.push(`${lorCategory}-${lorLevel}`);
+          // Add the LOR responsibility, level, and value to the URL hash array
+          urlHash.push(`${lorCategory}-${lorLevel}-${lorValue}`);
         }
       }
     }
@@ -496,6 +499,7 @@ function renderLorOutput(lorJson, updateHash = true) {
         <h2>${category}</h2>
         <p>Level: ${newJson[category].Level}</p>
         <p>Description: ${newJson[category].Description}</p>
+        <p>Value: ${lorValue}</p> <!-- Add the extracted value -->
       `;
       lorOutput.appendChild(lorEle);
     }
@@ -505,6 +509,7 @@ function renderLorOutput(lorJson, updateHash = true) {
       window.location.hash = urlHash.join("+");
     }
   }
+  
 
 /**
  * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
@@ -658,13 +663,6 @@ async function initializeSFIAContent(sfiaJson) {
         sfiacheckboxes.forEach(function (checkbox) {
             checkbox.addEventListener('click', () => renderSfiaOutput(sfiaJson), false);
         });
-
-
-
-
-
-
-
 
     } catch (error) {
         console.error('Error initializing SFIA content:', error);
@@ -971,6 +969,7 @@ window.addEventListener('hashchange', async function () {
             // Call the function to initialize SFIA content
             await initializeSFIAContent(sfiaJson);
             // Call the function to initalize LOR content
+            await initializeLorContent(sfiaJson);
             console.info('hashchange entry: storedVersion is undefined.');
         }
     } catch (error) {
