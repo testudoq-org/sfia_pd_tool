@@ -660,7 +660,7 @@ async function initializeSFIAContent(sfiaJson) {
  * and then appends new rows to the table for each data item.
  * adds a tool tip to each of the checkboxes based onthe description attribute of the lor
  */
-async function initializeLevelsOfResponsibilityContent() {
+async function initializeLorContent() {
     try {
         // Fetch LOR JSON data
         const response = await fetch('json-sfia-lors-v8.json');
@@ -992,9 +992,9 @@ window.onload = async function () {
             // Do another thing if the hash doesn't exist
             console.log('Hash does not exist, appending # to URL:', currentURL);
             // If there are no selected checkboxes, initialize SFIA content
-            initializeSFIAContent(sfiaJson);
+            await initializeSFIAContent(sfiaJson);
             // Display Levels of Responsibility data
-            await initializeLevelsOfResponsibilityContent();
+            await initializeLorContent();
             console.log('Hash exists in URL:', currentURL);
         }
 
