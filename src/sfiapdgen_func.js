@@ -835,7 +835,7 @@ function setStoredVersion(storedVersion) {
  * Selects checkboxes based on the URL hash and triggers
  * the renderSfiaOutput function or any other logic needed after
  * checkboxes are pre-selected. If no checkboxes are selected,
- * it initializes SFIA content. ** THIS IS NOT BEING USED **
+ * it initializes SFIA content. ** THIS IS BEING USED TO PRESELECT FROM HASH ****
  *
  * @param {Object} sfiaJson - The SFIA JSON data.
  */
@@ -948,7 +948,7 @@ function setupEventListeners(sfiaJson) {
  * Listens for hash change events and performs the following tasks:
  *  - Retrieves the storedVersion value from a cookie
  *  - If the storedVersion is defined, it fetches the selected version JSON data
- *  - Calls the preSelectSfiaCheckboxesAndInitialize function or initializes SFIA content
+ *  - Calls the SelectSfiaCheckboxesAndInitialize function or initializes SFIA content
  *
  * @event hashchange
  */
@@ -962,9 +962,9 @@ window.addEventListener('hashchange', async function () {
             // Fetch the selected version JSON data
             let sfiaJson = await fetchData(storedVersion + ".json");
 
-            // Call the preSelectSfiaCheckboxesAndInitialize function
+            // Call the SelectSfiaCheckboxesAndInitialize function
             // to pre-select checkboxes and initialize SFIA content
-            preSelectSfiaCheckboxesAndInitialize(sfiaJson);
+            SelectSfiaCheckboxesAndInitialize(sfiaJson);
 
             console.info('hashchange entry: storedVersion is defined.');
         } else {
