@@ -58,7 +58,7 @@ async function fetchData(url) {
 }
 
 /**
- * Checks if a specific skill level is present in the URL hash.
+ * Checks if a specific sfia skill level is present in the URL hash.
  *
  * @param {string} code - The code of the skill.
  * @param {number} level - The level of the skill.
