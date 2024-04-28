@@ -832,14 +832,14 @@ function setStoredVersion(storedVersion) {
 }
 
 /**
- * Pre-selects checkboxes based on the URL hash and triggers
+ * Selects checkboxes based on the URL hash and triggers
  * the renderSfiaOutput function or any other logic needed after
  * checkboxes are pre-selected. If no checkboxes are selected,
- * it initializes SFIA content.
+ * it initializes SFIA content. ** THIS IS NOT BEING USED **
  *
  * @param {Object} sfiaJson - The SFIA JSON data.
  */
-function preSelectSfiaCheckboxesAndInitialize(sfiaJson) {
+function SelectSfiaCheckboxesAndInitialize(sfiaJson) {
     // Parse URL hash and pre-select checkboxes
     const urlHash = window.location.hash.replace('#', '');
     const selectedCheckboxes = urlHash.split('+');
