@@ -64,7 +64,7 @@ async function fetchData(url) {
  * @param {number} level - The level of the skill.
  * @return {boolean} True if the level is present in the URL hash, false otherwise.
  */
-function checkPreselected(code, level) {
+function checkSfiaPreselected(code, level) {
     // Check if the URL hash exists and is not empty
     if (window.location.hash) {
         // Get the levels from the URL hash
@@ -101,7 +101,7 @@ function checkPreselected(code, level) {
  * @param {string} skillKey - The key for the skill.
  * @return {HTMLElement} The table cell element with the checkbox.
  */
-function addSelectionBox(index, sfiaJson, rootKey, subKey, skillKey) {
+function addSfiaSelectionBox(index, sfiaJson, rootKey, subKey, skillKey) {
     // Create a table cell element
     const col = document.createElement('td');
 
@@ -116,7 +116,7 @@ function addSelectionBox(index, sfiaJson, rootKey, subKey, skillKey) {
         });
 
         // Check if the skill should be preselected and set the checked attribute accordingly
-        const checked = checkPreselected(sfiaJson[rootKey][subKey][skillKey]["code"], index) ? "checked" : "";
+        const checked = checkSfiaPreselected(sfiaJson[rootKey][subKey][skillKey]["code"], index) ? "checked" : "";
 
         // Generate the checkbox input with the appropriate data attributes
         col.innerHTML = `<input type='checkbox' id="sfia-checkbox-${sfiaJson[rootKey][subKey][skillKey]["code"]}" title='${sfiaJson[rootKey][subKey][skillKey]["levels"][index]}' sfia-data='${jsonData}' ${checked}/>`;
@@ -622,7 +622,7 @@ async function initializeSFIAContent(sfiaJson) {
 
                     // Add the selection boxes to the row
                     for (let i = 1; i < 8; i++) {
-                        row.appendChild(addSelectionBox(i, sfiaJson, rootKey, subKey, skillKey));
+                        row.appendChild(addSfiaSelectionBox(i, sfiaJson, rootKey, subKey, skillKey));
                     }
 
                     table.appendChild(row); // add entire row to table.
