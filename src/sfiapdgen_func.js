@@ -1,6 +1,7 @@
 // sfiapdgen_func.js
 "use strict";
 let sfiaJson;  // declare sfiaJson at a higher scope
+let lorJson; // declare lorJson at a higher scope
 let lastExportTime = 0; // Initialize lastExportTime to 0
 
 
@@ -444,72 +445,79 @@ function renderSfiaOutput(sfiaJson, updateHash = true) {
  * @param {boolean} updateHash - Flag to indicate whether to update the URL hash.
  */
 function renderLorOutput(lorJson, updateHash = true) {
-    // Get all the checked LoR checkboxes
-    const lorCheckedBoxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]:checked');
-  
-    // Create a new JSON object to store the filtered data
-    const newJson = {};
-    const newArr = {};
-  
-    // Create an array to store the URL hash parts
+    console.log("Entering renderLorOutput function");
+
+    const newLorJson = []; // Changed from `const newLorJson = {};` to an array `[]`
     const urlHash = [];
-  
-    if (lorCheckedBoxes) {
-      // Loop through each checked LoR checkbox
-      for (const box of lorCheckedBoxes) {
-        const lorId = box.id.split('-'); // Split the id to get responsibility and level
-        const lorCategory = lorId[0];
-        const lorLevel = lorId[1];
-  
-        // Check if lorCategory exists in lorJson
-        if (lorJson[lorCategory]) {
-          // Create a new object for the selected LoR
-          const selectedLor = {
-            Responsibility: lorCategory,
-            Level: lorLevel,
-            Description: lorJson[lorCategory][lorLevel]
-          };
-  
-          // Extract the "AUTO-1" value from the checkbox
-          const lorValue = box.value;
-  
-          // Add the selected LoR to the new JSON object
-          newJson[lorCategory] = selectedLor;
-  
-          // Add the LOR responsibility, level, and value to the URL hash array
-          urlHash.push(`${lorCategory}-${lorLevel}-${lorValue}`);
+    const lorCheckedBoxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]:checked');
+
+    console.log("lorJson:", lorJson);
+    console.log("updateHash:", updateHash);
+    console.log("lorCheckedBoxes:", lorCheckedBoxes);
+
+    for (const box of lorCheckedBoxes) {
+        console.log("box:", box);
+
+        const lorId = box.id.split('-');
+        const lorCategory = lorId[3];
+        const lorLevel = lorId[4];
+        const lorValue = box.value;
+        const lorDescription = box.title;
+
+        console.log("lorId:", lorId);
+        console.log("lorCategory:", lorCategory);
+        console.log("lorLevel:", lorLevel);
+        console.log("lorValue:", lorValue);
+        console.log("lorDescription:", lorDescription);
+
+        //Clear newLorJson and push lorCategory, lorLevel, lorValue and lorDescription to newLorJson
+
+        if (lorCategory && lorLevel) {
+            // Add the LOR value to URL
+            urlHash.push(`${lorCategory}-${lorLevel}`);
+
+            //Push lorCategory, lorLevel, lorValue and lorDescription to newLorJson
+            newLorJson.push({
+                lorCategory,
+                lorLevel,
+                lorValue,
+                lorDescription
+            });
         }
-      }
     }
-  
-    // Get the HTML element to render the LoR output
+
+    console.log("newLorJson:", newLorJson);
+
     const lorOutput = document.getElementById('lor-output');
-    lorOutput.innerHTML = ''; // Clear HTML content
-  
-    // Render the filtered data in the HTML
-    for (const category in newJson) {
-      // Render category heading
-      const categoryEle = document.createElement('h1');
-      categoryEle.textContent = category;
-      lorOutput.appendChild(categoryEle);
-  
-      // Render LoR information
-      const lorEle = document.createElement('div');
-      lorEle.innerHTML = `
-        <h2>${category}</h2>
-        <p>Level: ${newJson[category].Level}</p>
-        <p>Description: ${newJson[category].Description}</p>
-        <p>Value: ${lorValue}</p> <!-- Add the extracted value -->
-      `;
-      lorOutput.appendChild(lorEle);
+    lorOutput.innerHTML = '';
+
+    for (const { lorId, lorCategory, lorLevel, lorDescription } of newLorJson) {
+        console.log("category:", lorCategory);
+        const categoryEle = document.createElement('h1');
+        categoryEle.textContent = lorCategory;
+        lorOutput.appendChild(categoryEle);
+
+        const lorEle = document.createElement('div');
+        // Use lorId, lorCategory, lorLevel, and lorDescription in innerHTML
+        lorEle.innerHTML = `
+              <h2>${lorCategory}</h2>
+              <p>Level: ${lorLevel}</p>
+              <p>Description: ${lorCategory}</p>
+          `;
+        lorOutput.appendChild(lorEle);
     }
-  
-    // Update the URL hash if updateHash is true
+
+    console.log("urlHash:", urlHash);
+
     if (updateHash) {
-      window.location.hash = urlHash.join("+");
+        console.log("Updating URL hash");
+        window.location.hash = urlHash.join("+");
     }
-  }
-  
+
+    console.log("Exiting renderLorOutput function");
+}
+
+
 
 /**
  * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
@@ -521,18 +529,18 @@ function renderLorOutput(lorJson, updateHash = true) {
 function updateURLWithLorCheckboxes() {
     // Retrieve all LoR checkboxes on the page.
     const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
-  
+
     // Filter the checkboxes to only include the checked ones.
     const selectedLorCheckboxes = Array.from(lorCheckboxes)
-      .filter(checkbox => checkbox.checked)
-      // Retrieve the 'id' attribute of each checked LoR checkbox.
-      .map(checkbox => checkbox.id);
-  
+        .filter(checkbox => checkbox.checked)
+        // Retrieve the 'id' attribute of each checked LoR checkbox.
+        .map(checkbox => checkbox.id);
+
     // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
     const urlHash = selectedLorCheckboxes.join('+');
     window.location.hash = urlHash;
-  }
-  
+}
+
 
 /**
  * Function to set up event listeners for exporting data and triggering rendering of the SFIA content.
@@ -685,7 +693,7 @@ async function initializeLorContent() {
     try {
         // Fetch LOR JSON data
         const response = await fetch('json-sfia-lors-v8.json');
-        const lorJson = await response.json();
+        lorJson = await response.json();
 
         // Clear existing content in the LOR table body
         document.getElementById('sfia-lors-content').innerHTML = '';
@@ -695,13 +703,13 @@ async function initializeLorContent() {
             const row = document.createElement('tr');
             row.innerHTML = `
             <td>${responsibility.Responsibility}</td> <!-- Responsibility -->
-            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-1" title="${responsibility['1 -']}"></td> <!-- Level 1 -->
-            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-2" title="${responsibility['2 -']}"></td> <!-- Level 2 -->
-            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-3" title="${responsibility['3 -']}"></td> <!-- Level 3 -->
-            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-4" title="${responsibility['4 -']}"></td> <!-- Level 4 -->
-            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-5" title="${responsibility['5 -']}"></td> <!-- Level 5 -->
-            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-6" title="${responsibility['6 -']}"></td> <!-- Level 6 -->
-            <td><input type="checkbox" id="lor-checkbox-${responsibility.Responsibility}-${index}" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-7" title="${responsibility['7 -']}"></td> <!-- Level 7 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-1" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-1" title="${responsibility['1 -']}"></td> <!-- Level 1 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-2" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-2" title="${responsibility['2 -']}"></td> <!-- Level 2 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-3" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-3" title="${responsibility['3 -']}"></td> <!-- Level 3 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-4" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-4" title="${responsibility['4 -']}"></td> <!-- Level 4 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-5" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-5" title="${responsibility['5 -']}"></td> <!-- Level 5 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-6" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-6" title="${responsibility['6 -']}"></td> <!-- Level 6 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-7" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-7" title="${responsibility['7 -']}"></td> <!-- Level 7 -->
         `;
             document.getElementById('sfia-lors-content').appendChild(row);
 
@@ -710,14 +718,17 @@ async function initializeLorContent() {
             lorCheckboxes.forEach(function (checkbox) {
                 checkbox.addEventListener('click', function () {
                     console.log('Checkbox clicked:', checkbox.id);
-                    renderLorOutput(lorJson);
+                    renderLorOutput(lorJson, false);
                 }, false);
             });
         });
     } catch (error) {
         console.error('Error fetching or displaying LOR data:', error);
     }
-
+    // Render the output if the URL contains a hash
+    if (window.location.href.split("#").length > 0) {
+        renderLorOutput(lorJson, false);
+    }
 
 }
 /**
@@ -780,7 +791,7 @@ function searchForText() {
     } catch (error) {
         console.error("An error occurred:", error.message);
     }
-}  
+}
 
 /**
  * Retrieves the value of a cookie by its name.
@@ -830,6 +841,48 @@ function setStoredVersion(storedVersion) {
 }
 
 /**
+ * Selects checkboxes based on the URL hash and triggers the renderLorOutput function or
+ * any other logic needed after checkboxes are pre-selected. If no checkboxes are 
+ * selected, it initializes LoR content.
+ * 
+ * @param {Object} lorJson - The LoR JSON data.
+ */
+function selectLorCheckboxesAndInitialize(lorJson) {
+    // Parse URL hash and pre-select checkboxes
+    // Remove the '#' character from the beginning of the hash
+    const urlHash = window.location.hash.replace('#', '');
+
+    // Split the URL hash into an array of selected checkboxes
+    const selectedCheckboxes = urlHash.split('+');
+
+    // If there are selected checkboxes
+    if (selectedCheckboxes.length > 0) {
+        // Iterate over each selected checkbox
+        selectedCheckboxes.forEach(selectedCheckbox => {
+            // Split the selected checkbox into responsibility and level
+            const [responsibility, level] = selectedCheckbox.split('-');
+
+            // Find the corresponding checkbox and pre-select it
+            const checkbox = document.querySelector(`input[type=checkbox][id^="lor-${responsibility}-${level}"]`);
+
+            // If the checkbox exists, pre-select it
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+
+        // Trigger the renderLorOutput function or any other logic
+        // needed after checkboxes are pre-selected
+        renderLorOutput(lorJson, true);
+    } else {
+        // If there are no selected checkboxes, initialize LoR content
+        initializeLorContent(lorJson);
+    }
+}
+
+
+
+/**
  * Selects checkboxes based on the URL hash and triggers
  * the renderSfiaOutput function or any other logic needed after
  * checkboxes are pre-selected. If no checkboxes are selected,
@@ -859,9 +912,12 @@ function SelectSfiaCheckboxesAndInitialize(sfiaJson) {
         // Trigger the renderSfiaOutput function or any other logic
         // needed after checkboxes are pre-selected
         renderSfiaOutput(sfiaJson, true);
+
+   
     } else {
         // If there are no selected checkboxes, initialize SFIA content
         initializeSFIAContent(sfiaJson);
+
     }
 }
 
@@ -929,10 +985,7 @@ function setupEventListeners(sfiaJson) {
         // Add event listeners for LOR checkboxes
         const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
         lorCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener('click', function () {
-                console.log('Checkbox clicked:', checkbox.id);
-                renderLorOutput(lorJson);
-            }, false);
+            checkbox.addEventListener('click', () => renderLorOutput(lorJson), false);
         });
     } catch (error) {
         console.error(
@@ -955,21 +1008,31 @@ window.addEventListener('hashchange', async function () {
         // Retrieve the storedVersion value from a cookie
         let storedVersion = getCookie("selectedVersion");
 
-        // If the storedVersion is defined
-        if (typeof storedVersion !== 'undefined') {
-            // Fetch the selected version JSON data
-            let sfiaJson = await fetchData(storedVersion + ".json");
+// If the storedVersion is defined
+if (typeof storedVersion !== 'undefined') {
+    // Fetch the selected version JSON data
+    let sfiaJson = await fetchData(storedVersion + ".json");
 
-            // Call the SelectSfiaCheckboxesAndInitialize function
-            // to pre-select checkboxes and initialize SFIA content
-            SelectSfiaCheckboxesAndInitialize(sfiaJson);
+    // Check if SFIA content has already been initialized
+    if (!sfiaJson) {
+        // Call the SelectSfiaCheckboxesAndInitialize function
+        // to pre-select checkboxes and initialize SFIA content
+       await  SelectSfiaCheckboxesAndInitialize(sfiaJson);
 
-            console.info('hashchange entry: storedVersion is defined.');
+        // Call the selectLorCheckboxesAndInitialize function
+        // to pre-select LoR checkboxes and initialize LoR content
+       await selectLorCheckboxesAndInitialize(lorJson);
+
+        console.info('hashchange entry: storedVersion is defined.');
+    } else {
+        // SFIA content has already been initialized, no need to call SelectSfiaCheckboxesAndInitialize
+        console.log('SFIA content has already been initialized.');
+    }
         } else {
             // Call the function to initialize SFIA content
             await initializeSFIAContent(sfiaJson);
             // Call the function to initalize LOR content
-            await initializeLorContent(sfiaJson);
+            await initializeLorContent(lorJson);
             console.info('hashchange entry: storedVersion is undefined.');
         }
     } catch (error) {
