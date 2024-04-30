@@ -47,6 +47,9 @@ module.exports = function (grunt) {
             tasks: ['delayedBuild']
         },
         exec: {
+            codeceptjsLocalSpecific: {
+                cmd: 'npx codeceptjs run --config=codecept.local.conf.js --grep="check_levels_of_responsibility.local.test.js"'
+            },
             codeceptjsLocal: {
                 cmd: 'npx codeceptjs run --config=codecept.local.conf.js'
             },
@@ -66,6 +69,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-exec');
 
     grunt.registerTask('build', ['clean', 'copy', 'string-replace']);
+
+    grunt.registerTask('testSpecificFile', ['exec:codeceptjsLocalSpecific']);
 
     grunt.registerTask('testLocal', ['exec:codeceptjsLocal', 'copy']); // Added 'copy' task as dependency
 
