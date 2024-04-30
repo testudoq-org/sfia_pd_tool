@@ -447,76 +447,151 @@ function renderSfiaOutput(sfiaJson, updateHash = true) {
 function renderLorOutput(lorJson, updateHash = true) {
     console.log("Entering renderLorOutput function");
 
-    const newLorJson = []; // Changed from `const newLorJson = {};` to an array `[]`
-    const urlHash = [];
-    const lorCheckedBoxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]:checked');
-
-    console.log("lorJson:", lorJson);
-    console.log("updateHash:", updateHash);
-    console.log("lorCheckedBoxes:", lorCheckedBoxes);
-
-    for (const box of lorCheckedBoxes) {
-        console.log("box:", box);
-
-        const lorId = box.id.split('-');
-        const lorCategory = lorId[3];
-        const lorLevel = lorId[4];
-        const lorValue = box.value;
-        const lorDescription = box.title;
-
-        console.log("lorId:", lorId);
-        console.log("lorCategory:", lorCategory);
-        console.log("lorLevel:", lorLevel);
-        console.log("lorValue:", lorValue);
-        console.log("lorDescription:", lorDescription);
-
-        //Clear newLorJson and push lorCategory, lorLevel, lorValue and lorDescription to newLorJson
-
-        if (lorCategory && lorLevel) {
-            // Add the LOR value to URL
-            urlHash.push(`${lorCategory}-${lorLevel}`);
-
-            //Push lorCategory, lorLevel, lorValue and lorDescription to newLorJson
-            newLorJson.push({
-                lorCategory,
-                lorLevel,
-                lorValue,
-                lorDescription
-            });
-        }
-    }
-
+    // Extract checked LoR data from the page
+    const newLorJson = extractCheckedLorData();
     console.log("newLorJson:", newLorJson);
 
-    const lorOutput = document.getElementById('lor-output');
-    lorOutput.innerHTML = '';
+    console.log("Clearing lor-output element");
+    clearLorOutput();
 
-    for (const { lorId, lorCategory, lorLevel, lorDescription } of newLorJson) {
-        console.log("category:", lorCategory);
-        const categoryEle = document.createElement('h1');
-        categoryEle.textContent = lorCategory;
-        lorOutput.appendChild(categoryEle);
+    console.log("Rendering LoR data to lor-output element");
+    renderLorData(newLorJson);
 
-        const lorEle = document.createElement('div');
-        // Use lorId, lorCategory, lorLevel, and lorDescription in innerHTML
-        lorEle.innerHTML = `
-              <h2>${lorCategory}</h2>
-              <p>Level: ${lorLevel}</p>
-              <p>Description: ${lorCategory}</p>
-          `;
-        lorOutput.appendChild(lorEle);
-    }
-
+    console.log("Generating URL hash");
+    const urlHash = generateUrlHash(newLorJson);
     console.log("urlHash:", urlHash);
 
+    console.log("Updating URL hash if necessary");
     if (updateHash) {
         console.log("Updating URL hash");
-        window.location.hash = urlHash.join("+");
+        updateUrlHash(newLorJson);
     }
 
     console.log("Exiting renderLorOutput function");
 }
 
+/**
+ * Extract checked Levels of Responsibility (LoR) data from the page.
+ * 
+ * @returns {Array} - Array containing checked LoR data objects.
+ */
+function extractCheckedLorData() {
+    console.log("Entering extractCheckedLorData function");
+
+    // Initialize an empty array to store the checked LoR data
+    const newLorJson = [];
+
+    console.log("Initialized newLorJson array");
+
+    // Select all checked LoR checkboxes on the page
+    const lorCheckedBoxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]:checked');
+
+    console.log(`Found ${lorCheckedBoxes.length} checked LoR checkboxes`);
+
+    // Loop through each checked LoR checkbox
+    for (const box of lorCheckedBoxes) {
+        // Extract the LoR information from the checkbox ID and value
+        const [, , lorCategory, lorLevel] = box.id.split('-');
+        const lorValue = box.value;
+        const lorDescription = box.title;
+
+        console.log(`Extracted data from checkbox ${box.id}: ${lorCategory}-${lorLevel}: ${lorValue}. Title: ${lorDescription}`);
+
+        // Add the LoR data to the newLorJson array
+        newLorJson.push({
+            lorCategory,
+            lorLevel,
+            lorValue,
+            lorDescription
+        });
+    }
+
+    console.log(`Returning ${newLorJson.length} checked LoR data items`);
+
+    // Return the array containing checked LoR data
+    return newLorJson;
+}
+
+/**
+ * Clear the content of the lor-output element.
+ */
+function clearLorOutput() {
+    const lorOutput = document.getElementById('lor-output');
+    lorOutput.innerHTML = '';
+}
+
+/**
+ * Render LoR data to lor-output element.
+ * 
+ * @param {Array} newLorJson - Array containing LoR data objects.
+ */
+function renderLorData(newLorJson) {
+    console.log("Entering renderLorData function");
+    const lorOutput = document.getElementById('lor-output');
+
+    // Loop through the newLorJson array and append the LoR data to the lorOutput element
+    for (const { lorCategory, lorLevel, lorDescription } of newLorJson) {
+        console.log(`Rendering data for ${lorCategory} at level ${lorLevel}`);
+
+        // Create a new element for the LoR category
+        const categoryEle = document.createElement('h1');
+        categoryEle.textContent = lorCategory;
+        console.log(`Created category element for ${lorCategory}`);
+        lorOutput.appendChild(categoryEle);
+
+        // Create a new element for the LoR
+        const lorEle = document.createElement('div');
+        lorEle.innerHTML = `
+              <h2>${lorCategory}</h2>
+              <p>Level: ${lorLevel}</p>
+              <p>Description: ${lorDescription}</p>
+          `;
+        console.log(`Created LoR element for ${lorCategory}`);
+        lorOutput.appendChild(lorEle);
+    }
+    console.log("Exiting renderLorData function");
+}
+
+/**
+ * Generate URL hash based on LoR data.
+ * 
+ * @param {Array} newLorJson - Array containing LoR data objects.
+ * @returns {string} - URL hash string.
+ */
+function generateUrlHash(newLorJson) {
+    console.log("Entering generateUrlHash function");
+    // Initialize an empty array to store LoR category-level pairs
+    const urlHash = [];
+
+    console.log("newLorJson:", newLorJson);
+
+    // Loop through the newLorJson array and add LoR category-level pairs to the urlHash array
+    for (const { lorCategory, lorLevel } of newLorJson) {
+        console.log(`Adding ${lorCategory}-${lorLevel} to urlHash`);
+        urlHash.push(`${lorCategory}-${lorLevel}`);
+    }
+
+    console.log("urlHash:", urlHash);
+
+    // Return the URL hash string
+    const urlHashStr = urlHash.join("+");
+    console.log("Returning urlHashStr:", urlHashStr);
+    return urlHashStr;
+}
+
+/**
+ * Update URL hash based on LoR data.
+ * 
+ * @param {Array} newLorJson - Array containing LoR data objects.
+ */
+function updateUrlHash(newLorJson) {
+    console.log("Entering updateUrlHash function");
+    console.log("newLorJson:", newLorJson);
+    const urlHashStr = generateUrlHash(newLorJson);
+    console.log("Generated urlHashStr:", urlHashStr);
+    window.location.hash = urlHashStr;
+    console.log("URL hash updated to:", urlHashStr);
+}
 
 
 /**
