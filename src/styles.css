@@ -180,3 +180,99 @@
   background-color: #ccc;
   color: #fff;
 }
+
+/* Styling for the SFIA Levels of Responsibility table */
+.sfia-lors-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center; /* Center text horizontally */
+}
+
+/* Styling for table headers */
+.sfia-lors-table thead th {
+  background-color: #f2f2f2;
+  padding: 10px;
+  border: 1px solid #ddd;
+  font-weight: bold;
+}
+
+/* Styling for table cells */
+.sfia-lors-table tbody td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  vertical-align: middle; /* Center text vertically */
+}
+
+/* Styling for tooltips */
+.tooltiptext {
+  visibility: hidden;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  font-size: 12px;
+}
+
+/* Show tooltip when hovering over a checkbox */
+.sfia-lors-table input[type="checkbox"]:hover + .tooltiptext {
+  visibility: visible;
+}
+
+/* Sticky footer CSS */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px; /* Adjust this value based on your footer height */
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px; /* Adjust this value based on your footer height */
+  background-color: #f5f5f5; /* Adjust as needed */
+}
+
+/* Other styles for the footer */
+.footer p {
+  margin: 20px 0;
+}
+
+.lor-output-container {
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.lor-category {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.lor-item {
+  background-color: #fff;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.05);
+}
+
+.lor-title {
+  color: #007bff;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.lor-level,
+.lor-description {
+  color: #333;
+  font-size: 16px;
+  margin-bottom: 0;
+}

@@ -9,7 +9,7 @@ setCommonPlugins();
 exports.config = {
   // Other configuration options...
 
-  tests: './test/ui/*.test.js',
+  tests: './test/ui/*.prod.test.js',
   output: './output',
   helpers: {
     EndpointHelper: {

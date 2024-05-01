@@ -2,106 +2,138 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SFIA POSITION DESCRIPTION Generator</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-        integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <script src="sfiapdgen_func.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SFIA POSITION DESCRIPTION Generator</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+		integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+		integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	<link rel="stylesheet" href="styles.css">
+	<link rel="icon" type="image/x-icon" href="favicon.ico" />
+	<script src="sfiapdgen_func.js"></script>
 </head>
 
 <body>
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <h1>SFIA POSITION DESCRIPTION Generator</h1>
-            </div>
-        </div>
-    </nav>
-    <div id="pageContent" class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Instructions</h3>
-                    </div>
-                    <div class="panel-body">
-                        <p>Welcome to the PD generator tool, built upon the <a href="https://www.sfia-online.org">SFIA 8
-                                Framework</a>.</p>
-                        <p>To initiate PD generation, choose the desired skill set levels.</p>
-                        <p>Description of any skill is available by hovering over it, and for any skill level, hover
-                            over its respective checkbox.</p>
-                        <p>Your selected choices will be formatted and provided at the page's end. Copy and paste it
-                            into a word processor for formatting preservation.</p>
-                        <p>You can also export your selection as a comma-separated value (CSV) document or HTML,
-                            automatically downloaded for you. For optimal use, consider an up-to-date version of Chrome
-                            or Firefox, as some browsers may have limitations. In case of an incorrectly named file,
-                            rest assured the content remains unchanged.</p>
-                        <p>To save your summary for future reference, bookmark the page. The URL bookmark retains
-                            necessary information and updates your selection upon your return.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container-fluid mt-3">
-            <form class="form-inline">
-                <div class="form-group"><label for="myInput" class="mr-2">Search for Skills:</label><input type="text"
-                        class="form-control" id="myInput" onkeyup="searchForText()" placeholder="Enter skill..."
-                        style="width: 300px;"></div>
-            </form>
-        </div>
-        <div class="row mt-3">
-            <div class="col-lg-8">
-                <div class="panel panel-default">
-                    <table class="sfia-table">
-                        <caption>SFIA Information Table</caption>
-                        <thead>
-                            <tr>
-                                <th class="root_key_th">Category</th>
-                                <th class="sub_key_th">Sub Category</th>
-                                <th class="skill_key_th">Skill Set</th>
-                                <th class="skill_level_th">1</th>
-                                <th class="skill_level_th">2</th>
-                                <th class="skill_level_th">3</th>
-                                <th class="skill_level_th">4</th>
-                                <th class="skill_level_th">5</th>
-                                <th class="skill_level_th">6</th>
-                                <th class="skill_level_th">7</th>
-                            </tr>
-                        </thead>
-                        <tbody id="sfia-content"></tbody>
-                    </table>
-                    <a href="#" class="btn btn-default navbar-btn" id="exportHTML" onclick="exportHTML(event);">Export to HTML</a>
-                    <a href="#" class="btn btn-default navbar-btn" id="exportCSV" onclick="exportCSV(event)">Export to CSV</a>
-                    <label for="jsonVersionSelect">Select JSON Version:</label>
-                    <select id="jsonVersionSelect" onchange="changeJsonVersion()">
-                        <option value="json_source_v8" data-selected="true">version 8</option>
-                        <option value="json_source_v7" data-selected="false">version 7</option>
-                    </select>
-                </div>                
-            </div>
-            <div class="col-lg-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Formatted Output</h3>
-                    </div>
-                    <div class="panel-body">
-                        <div id="sfia-output"></div>
-                    </div>
-                    <div class="panel-footer"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <footer class="footer">
-        <div class="container">
-            <p class="text-muted text-center">Copyright 2024</p>
-        </div>
-    </footer>
+	<nav class="navbar navbar-default">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<h1>SFIA POSITION DESCRIPTION Generator</h1>
+			</div>
+		</div>
+	</nav>
+	<div id="pageContent" class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">Instructions</h3>
+					</div>
+					<div class="panel-body">
+						<p>Welcome to the PD generator tool, built upon the <a href="https://www.sfia-online.org">SFIA 8
+								Framework</a>.</p>
+						<p>To initiate PD generation, choose the desired skill set levels.</p>
+						<p>Description of any skill is available by hovering over it, and for any
+							skill level, hover
+							over its respective checkbox.</p>
+						<p>Your selected choices will be formatted and provided at the page's
+							end. Copy and paste it
+							into a word processor for formatting preservation.</p>
+						<p>You can also export your selection as a comma-separated value (CSV)
+							document or HTML,
+							automatically downloaded for you. For optimal use, consider an
+							up-to-date version of Chrome
+							or Firefox, as some browsers may have limitations. In case of an
+							incorrectly named file,
+							rest assured the content remains unchanged.</p>
+						<p>To save your summary for future reference, bookmark the page. The URL
+							bookmark retains
+							necessary information and updates your selection upon your return.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid mt-3">
+			<form class="form-inline">
+				<div class="form-group"><label for="myInput" class="mr-2">Search for
+						Skills:</label><input type="text" class="form-control" id="myInput" onkeyup="searchForText()"
+						placeholder="Enter skill..." style="width: 300px;"></div>
+			</form>
+		</div>
+		<div class="row mt-3">
+			<div class="col-lg-8">
+				<div class="panel panel-default">
+					<table class="sfia-table">
+						<caption>SFIA Information Table</caption>
+						<thead>
+							<tr>
+								<th class="root_key_th">Category</th>
+								<th class="sub_key_th">Sub Category</th>
+								<th class="skill_key_th">Skill Set</th>
+								<th class="skill_level_th">1</th>
+								<th class="skill_level_th">2</th>
+								<th class="skill_level_th">3</th>
+								<th class="skill_level_th">4</th>
+								<th class="skill_level_th">5</th>
+								<th class="skill_level_th">6</th>
+								<th class="skill_level_th">7</th>
+							</tr>
+						</thead>
+						<tbody id="sfia-content"></tbody>
+					</table>
+					<a href="#" class="btn btn-default navbar-btn" id="exportHTML" onclick="exportHTML(event);">Export
+						to HTML</a>
+					<a href="#" class="btn btn-default navbar-btn" id="exportCSV" onclick="exportCSV(event)">Export to
+						CSV</a>
+					<label for="jsonVersionSelect">Select JSON Version:</label>
+					<select id="jsonVersionSelect" onchange="changeJsonVersion()">
+						<option value="json_source_v8" data-selected="true">version 8</option>
+						<option value="json_source_v7" data-selected="false">version 7</option>
+					</select>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- New section for Levels of Responsibility -->
+	<div class="col-lg-4">
+		<div class="levels-of-responsibility">
+			<h2>Levels of Responsibility</h2>
+			<table class="sfia-lors-table">
+				<caption>SFIA Levels of Responsibility</caption>
+				<thead>
+					<tr>
+						<th rowspan="2">Responsibility</th>
+						<th colspan="7">Level</th>
+					</tr>
+					<tr>
+						<th>1 -</th>
+						<th>2 -</th>
+						<th>3 -</th>
+						<th>4 -</th>
+						<th>5 -</th>
+						<th>6 -</th>
+						<th>7 -</th>
+					</tr>
+				</thead>
+				<tbody id="sfia-lors-content"></tbody>
+			</table>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Formatted Output</h3>
+			</div>
+			<div class="panel-body">
+				<div id="sfia-output"></div>
+				<div id="lor-output"></div>
+			</div>
+			<div class="panel-footer"></div>
+		</div>
+	</div>
+	<footer class="footer">
+			<p class="text-muted text-center">Copyright 2024</p>
+	</footer>
 </body>
 
 </html>
