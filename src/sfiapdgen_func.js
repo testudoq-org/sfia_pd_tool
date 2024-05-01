@@ -474,6 +474,7 @@ function renderLorOutput(lorJson, updateHash = true) {
  * Extract checked Levels of Responsibility (LoR) data from the page.
  * 
  * @returns {Array} - Array containing checked LoR data objects.
+ * @throws {Error} - If any LoR checkbox is missing a required property.
  */
 function extractCheckedLorData() {
     console.log("Entering extractCheckedLorData function");
@@ -494,8 +495,11 @@ function extractCheckedLorData() {
         const [, , , lorCategory, lorLevel] = box.id.split('-');
         const lorValue = box.value;
         const lorDescription = box.title;
-        
 
+        // Check if any of the required properties is missing
+        if (!lorCategory || !lorLevel || !lorValue || !lorDescription) {
+            throw new Error(`Missing required property for LoR checkbox ${box.id}`);
+        }
 
         console.log(`Extracted data from checkbox ${box.id}: ${lorCategory}-${lorLevel}: ${lorValue}. Title: ${lorDescription}`);
 
@@ -1067,11 +1071,6 @@ function setupEventListeners(sfiaJson) {
             checkbox.addEventListener('click', () => renderSfiaOutput(sfiaJson), false);
         });
 
-        // Add event listeners for LOR checkboxes
-        const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
-        lorCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener('click', () => renderLorOutput(lorJson), false);
-        });
     } catch (error) {
         console.error(
             "Error setting up event listeners:",
