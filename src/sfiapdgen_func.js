@@ -1065,12 +1065,6 @@ function setupEventListeners(sfiaJson) {
             console.error("Export HTML Button not found.");
         }
 
-        // Add event listeners for SFIA checkboxes
-        const sfiacheckboxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]');
-        sfiacheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener('click', () => renderSfiaOutput(sfiaJson), false);
-        });
-
     } catch (error) {
         console.error(
             "Error setting up event listeners:",
