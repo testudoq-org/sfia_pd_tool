@@ -243,3 +243,36 @@ body {
 .footer p {
   margin: 20px 0;
 }
+
+.lor-output-container {
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.lor-category {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.lor-item {
+  background-color: #fff;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.05);
+}
+
+.lor-title {
+  color: #007bff;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.lor-level,
+.lor-description {
+  color: #333;
+  font-size: 16px;
+  margin-bottom: 0;
+}

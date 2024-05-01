@@ -521,36 +521,44 @@ function clearLorOutput() {
 }
 
 /**
- * Render LoR data to lor-output element.
+ * Render LoR data to lor-output element with improved styling.
  * 
- * @param {Array} newLorJson - Array containing LoR data objects.
+ * @param {Array} newLorJson - Array of objects containing LoR data. Each object should have properties: lorCategory, lorLevel, and lorDescription.
  */
 function renderLorData(newLorJson) {
     console.log("Entering renderLorData function");
+    
+    // Get the target element where the LoR data will be rendered
     const lorOutput = document.getElementById('lor-output');
+    lorOutput.classList.add('lor-output-container'); // Add a CSS class for styling the container element
 
-    // Loop through the newLorJson array and append the LoR data to the lorOutput element
+    // Loop through the newLorJson array and process each LoR data object
     for (const { lorCategory, lorLevel, lorDescription } of newLorJson) {
         console.log(`Rendering data for ${lorCategory} at level ${lorLevel}`);
 
         // Create a new element for the LoR category
         const categoryEle = document.createElement('h1');
         categoryEle.textContent = lorCategory;
+        categoryEle.classList.add('lor-category'); // Add a CSS class for styling the category element
         console.log(`Created category element for ${lorCategory}`);
         lorOutput.appendChild(categoryEle);
 
-        // Create a new element for the LoR
+        // Create a new element to contain the LoR data
         const lorEle = document.createElement('div');
         lorEle.innerHTML = `
-              <h2>${lorCategory}</h2>
-              <p>Level: ${lorLevel}</p>
-              <p>Description: ${lorDescription}</p>
+              <h2 class="lor-title">${lorCategory}</h2>
+              <p class="lor-level">Level: ${lorLevel}</p>
+              <p class="lor-description">Description: ${lorDescription}</p>
           `;
+        lorEle.classList.add('lor-item'); // Add a CSS class for styling each LoR item
         console.log(`Created LoR element for ${lorCategory}`);
         lorOutput.appendChild(lorEle);
     }
+    
     console.log("Exiting renderLorData function");
 }
+
+
 
 /**
  * Generate URL hash based on LoR data.
@@ -778,13 +786,13 @@ async function initializeLorContent() {
             const row = document.createElement('tr');
             row.innerHTML = `
             <td>${responsibility.Responsibility}</td> <!-- Responsibility -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-1" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-1" title="${responsibility['1 -']}"></td> <!-- Level 1 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-2" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-2" title="${responsibility['2 -']}"></td> <!-- Level 2 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-3" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-3" title="${responsibility['3 -']}"></td> <!-- Level 3 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-4" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-4" title="${responsibility['4 -']}"></td> <!-- Level 4 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-5" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-5" title="${responsibility['5 -']}"></td> <!-- Level 5 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-6" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-6" title="${responsibility['6 -']}"></td> <!-- Level 6 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-7" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-7" title="${responsibility['7 -']}"></td> <!-- Level 7 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-1" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-1" title="${responsibility['1 - Follow']}"></td> <!-- Level 1 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-2" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-2" title="${responsibility['2 - Assist']}"></td> <!-- Level 2 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-3" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-3" title="${responsibility['3 - Apply']}"></td> <!-- Level 3 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-4" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-4" title="${responsibility['4 - Enable']}"></td> <!-- Level 4 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-5" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-5" title="${responsibility['5 - Ensure,advise']}"></td> <!-- Level 5 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-6" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-6" title="${responsibility['6 - Initiate, influence']}"></td> <!-- Level 6 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-7" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-7" title="${responsibility['7 - Set strategy, inspire, mobilise']}"></td> <!-- Level 7 -->
         `;
             document.getElementById('sfia-lors-content').appendChild(row);
 
@@ -1148,6 +1156,7 @@ window.onload = async function () {
 
             // Trigger the renderSfiaOutput function or any other logic needed after checkboxes are pre-selected
             renderSfiaOutput(sfiaJson, false);
+            renderLorOutput(lorJson, false);
 
         } else {
             // Do another thing if the hash doesn't exist
