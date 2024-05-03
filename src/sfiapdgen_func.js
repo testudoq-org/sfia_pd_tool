@@ -943,7 +943,7 @@ function updateURLWithLorCheckboxes() {
     const selectedLorCheckboxes = Array.from(lorCheckboxes)
         .filter(checkbox => checkbox.checked)
         // Retrieve the 'id' attribute of each checked LoR checkbox.
-        .map(checkbox => checkbox.id);
+        .map(checkbox => checkbox.value);
 
     // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
     const urlHash = selectedLorCheckboxes.join('+');
