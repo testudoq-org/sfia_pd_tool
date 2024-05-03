@@ -464,7 +464,7 @@ function renderLorOutput(lorJson, updateHash = true) {
     console.log("Updating URL hash if necessary");
     if (updateHash) {
         console.log("Updating URL hash");
-        updateUrlHash(newLorJson);
+        updateURLWithSfiaCheckboxes(newLorJson);
     }
 
     console.log("Exiting renderLorOutput function");
@@ -598,38 +598,14 @@ function generateUrlHash(newLorJson) {
  * 
  * @param {Array} newLorJson - Array containing LoR data objects.
  */
-function updateUrlHash(newLorJson) {
-    console.log("Entering updateUrlHash function");
+function updateURLWithSfiaCheckboxes(newLorJson) {
+    console.log("Entering updateURLWithSfiaCheckboxes function");
     console.log("newLorJson:", newLorJson);
     const urlHashStr = generateUrlHash(newLorJson);
     console.log("Generated urlHashStr:", urlHashStr);
     window.location.hash = urlHashStr;
     console.log("URL hash updated to:", urlHashStr);
 }
-
-
-/**
- * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
- * 
- * This function retrieves all LoR checkboxes on the page, filters them to only include
- * the checked ones, retrieves their 'id' attribute, and joins them with '+' as a separator.
- * The resulting string is then set as the URL hash.
- */
-function updateURLWithLorCheckboxes() {
-    // Retrieve all LoR checkboxes on the page.
-    const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
-
-    // Filter the checkboxes to only include the checked ones.
-    const selectedLorCheckboxes = Array.from(lorCheckboxes)
-        .filter(checkbox => checkbox.checked)
-        // Retrieve the 'id' attribute of each checked LoR checkbox.
-        .map(checkbox => checkbox.id);
-
-    // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
-    const urlHash = selectedLorCheckboxes.join('+');
-    window.location.hash = urlHash;
-}
-
 
 /**
  * Function to set up event listeners for exporting data and triggering rendering of the SFIA content.
@@ -952,7 +928,27 @@ function selectLorCheckboxesAndInitialize(lorJson) {
     }
 }
 
+/**
+ * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
+ * 
+ * This function retrieves all LoR checkboxes on the page, filters them to only include
+ * the checked ones, retrieves their 'id' attribute, and joins them with '+' as a separator.
+ * The resulting string is then set as the URL hash.
+ */
+function updateURLWithLorCheckboxes() {
+    // Retrieve all LoR checkboxes on the page.
+    const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
 
+    // Filter the checkboxes to only include the checked ones.
+    const selectedLorCheckboxes = Array.from(lorCheckboxes)
+        .filter(checkbox => checkbox.checked)
+        // Retrieve the 'id' attribute of each checked LoR checkbox.
+        .map(checkbox => checkbox.id);
+
+    // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
+    const urlHash = selectedLorCheckboxes.join('+');
+    window.location.hash = urlHash;
+}
 
 /**
  * Selects checkboxes based on the URL hash and triggers
