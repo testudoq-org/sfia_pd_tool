@@ -820,23 +820,6 @@ async function initializeLorContent() {
     }
 
 }
-/**
- * Function to truncate a given text and add a tooltip for hover-over.
- *
- * @param {string} text - The text to be truncated.
- * @param {number} maxLength - The maximum length of the truncated text.
- * @return {string} The truncated text with a tooltip, or the original text if it's shorter than maxLength.
- */
-function getTruncatedText(text, maxLength) {
-    // Check if the text is longer than the maximum length
-    if (text.length > maxLength) {
-        // If it is, truncate it and add '...' at the end, and a tooltip for hover-over
-        return text.substring(0, maxLength) + '...' +  // Truncated text
-            ' <span class="tooltiptext">' + text + '</span>'; // Tooltip
-    }
-    // If it's not, just return the original text
-    return text;
-}
 
 /**
  * Function to search for text in the SFIA table and show/hide rows based on the filter.
