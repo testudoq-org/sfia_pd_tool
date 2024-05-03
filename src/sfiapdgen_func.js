@@ -458,13 +458,13 @@ function renderLorOutput(lorJson, updateHash = true) {
     renderLorData(newLorJson);
 
     console.log("Generating URL hash");
-    const urlHash = generateUrlHash(newLorJson);
-    console.log("urlHash:", urlHash);
+    updateHash = generateUrlHash(newLorJson);
+    console.log("updateHash:", updateHash);
 
     console.log("Updating URL hash if necessary");
     if (updateHash) {
         console.log("Updating URL hash");
-        updateURLWithSfiaCheckboxes(newLorJson);
+        updateURLWithLorCheckboxes(updateHash);
     }
 
     console.log("Exiting renderLorOutput function");
