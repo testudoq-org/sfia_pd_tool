@@ -1,4 +1,7 @@
 module.exports = function (grunt) {
+    // Load the package.json file and assign it to the pkg variable
+    var pkg = grunt.file.readJSON('package.json');
+
     grunt.initConfig({
         clean: {
             minFiles: ['dist/**/*.*min.*']
@@ -6,8 +9,8 @@ module.exports = function (grunt) {
         copy: {
             main: {
                 files: [
-                    { expand: true, cwd: 'src', src: ['**/*.html', '**/*.css', '**/*.json', '**/*.ico'], dest: 'dist/', filter: 'isFile' },
-                    { expand: true, cwd: 'src', src: ['**/*.js', '!**/*.min.*'], dest: 'dist/', filter: 'isFile' }
+                    { expand: true, cwd: 'src', src: ['**/sfiapdgen.html', '**/*.css', '**/*.json', '**/*.ico'], dest: 'dist/', filter: 'isFile' },
+                    { expand: true, cwd: 'src', src: ['**/sfiapdgen_func.js', '!**/*.min.*'], dest: 'dist/', filter: 'isFile' }
                 ]
             }
         },
@@ -18,32 +21,30 @@ module.exports = function (grunt) {
                     'dist/sfiapdgen_func.js': 'dist/sfiapdgen_func.js',
                 },
                 options: {
-                    replacements: [                                             
-                        //  {
-                        // pattern: '/src/', // Replace '/src/' with '/sfia/'
-                        //   replacement: '/sfia/' // Replace '/src/' with '/sfia/'
-                        // },
-                        // {
-                        //     pattern: 'sfiapdgen_func.js', // Replace 'sfiapdgen_func.js' old src filename
-                        //     replacement: 'sfiapdgen_func.min.js'  // Replace 'sfiapdgen_func.js' with the new dist filename
-                        // },
-                        // {
-                        //     pattern: 'styles.css', // Replace 'styles.css' old filename
-                        //     replacement: 'styles.min.css'  // Replace 'styles.css' with the new filename
-                        // },
-                        // {
-                        //     pattern: 'let jsonUrl = currentHost + "/src/" + selectedVersion + ".json";', // Replace the old jsonUrl pattern
-                        //    replacement: 'let jsonUrl = currentHost + "/sfia/" + selectedVersion + ".json";'  // Replace with the new jsonUrl pattern
-                        //}
+                    replacements: [
+                        {
+                            pattern: 'sfiapdgen_func.js',
+                            replacement: 'sfiapdgen_func.js'
+                        },
+                        // ... (other replacements)
                     ]
                 }
             }
         },
+        concat: {
+            options: {
+                separator: ';',
+            },
+            dist: {
+                src: ['src/browserUpdate.js', 'src/dataFetching.js', 'src/constants.js', 'src/exportFunctions.js', 'src/checkboxHandling.js', 'src/tableRendering.js', 'src/lorDataHandling.js', 'src/utilityFunctions.js', 'src/jsonHandling.js', 'src/urlHandling.js', 'src/eventListeners.js', 'src/windowEvents.js'],
+                dest: 'src/sfiapdgen_func.js',
+            },
+        },
         watch: {
             options: {
-                debounceDelay: 1000
+                debounceDelay: 3000
             },
-            files: ['src/**/*'],
+            files: ['src/**/*', 'src/sfiapdgen_func.js'],
             tasks: ['delayedBuild']
         },
         exec: {
@@ -66,16 +67,17 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-string-replace');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-exec');
 
-    grunt.registerTask('build', ['clean', 'copy', 'string-replace']);
+    grunt.registerTask('build', ['clean', 'copy', 'string-replace', 'concat']);
 
     grunt.registerTask('testSpecificFile', ['exec:codeceptjsLocalSpecific']);
 
     grunt.registerTask('testLocal', ['exec:codeceptjsLocal', 'copy']); // Added 'copy' task as dependency
 
     grunt.registerTask('testDist', ['exec:codeceptjsDist']); // TODO 'ftp-copy' task as dependency
-    grunt.registerTask('testProduction', ['exec:codeceptjsProduction']); // removed  'copy' task as dependency
+    grunt.registerTask('testProduction', ['exec:codeceptjsProduction']); // removed 'copy' task as dependency
 
     grunt.registerTask('delayedBuild', function () {
         var done = this.async();
