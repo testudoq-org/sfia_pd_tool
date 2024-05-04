@@ -1,3 +1,6 @@
+// src/lorDataHandling.js
+
+// This file contains functions for extracting checked Levels of Responsibility (LoR) data from the page and rendering LoR data with improved styling.
 
 /**
  * Fetches and displays Levels of Responsibility data from the 'sfia-lors-8.json' file.

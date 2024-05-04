@@ -1,3 +1,7 @@
+// src/windowEvents.js
+
+// This file contains functions to handle window events, such as 'hashchange' and 'onload'.
+
 /**
  * Listens for hash change events and performs the following tasks:
  *  - Retrieves the storedVersion value from a cookie

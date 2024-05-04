@@ -1,3 +1,7 @@
+// src/checkboxHandling.js
+
+// This file contains functions for checking if a specific SFIA skill level is present in the URL hash and generating table cells with checkboxes.
+
 /**
  * Checks if a specific sfia skill level is present in the URL hash.
  *

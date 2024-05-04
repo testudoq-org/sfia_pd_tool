@@ -1,3 +1,6 @@
+// src/exportFunctions.js
+
+// This file includes functions for exporting checked box data to a CSV file and exporting the HTML content to a downloadable HTML file.
 
 /**
  * Function to export checked box data to a CSV file.
