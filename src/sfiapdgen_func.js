@@ -322,23 +322,18 @@ function changeJsonVersion() {
             console.log("Downloaded JSON data:", data);
 
 
-            // Mark the selected option as selected
-            const jsonVersionSelectElement = document.getElementById("jsonVersionSelect");
-            if (jsonVersionSelectElement) {
-                const options = jsonVersionSelectElement.options;
-                for (let i = 0; i < options.length; i++) {
-                    if (options[i].value === selectedVersion) {
-                        console.log("Found selected version option:", options[i]);
-                        options[i].setAttribute("data-selected", "true");
-                        console.log("Data-selected attribute set to true.");
-                    } else {
-                        options[i].removeAttribute("data-selected");
-                    }
-                }
+            const selectElement = document.getElementById("jsonVersionSelect");
+            if (selectElement) {
+                const options = Array.from(selectElement.options);
+                options.forEach(option => {
+                    option.setAttribute(
+                        "data-selected",
+                        option.value === selectedVersion
+                    );
+                });
             } else {
                 console.error("jsonVersionSelect element not found.");
             }
-
             // Call the function to initialize SFIA content with the new JSON data
             initializeSFIAContent(data);
             // Call the function to set up event listeners
@@ -458,13 +453,13 @@ function renderLorOutput(lorJson, updateHash = true) {
     renderLorData(newLorJson);
 
     console.log("Generating URL hash");
-    const urlHash = generateUrlHash(newLorJson);
-    console.log("urlHash:", urlHash);
+    updateHash = generateUrlHash(newLorJson);
+    console.log("updateHash:", updateHash);
 
     console.log("Updating URL hash if necessary");
     if (updateHash) {
         console.log("Updating URL hash");
-        updateUrlHash(newLorJson);
+        updateURLWithLorCheckboxes(updateHash);
     }
 
     console.log("Exiting renderLorOutput function");
@@ -598,38 +593,14 @@ function generateUrlHash(newLorJson) {
  * 
  * @param {Array} newLorJson - Array containing LoR data objects.
  */
-function updateUrlHash(newLorJson) {
-    console.log("Entering updateUrlHash function");
+function updateURLWithSfiaCheckboxes(newLorJson) {
+    console.log("Entering updateURLWithSfiaCheckboxes function");
     console.log("newLorJson:", newLorJson);
     const urlHashStr = generateUrlHash(newLorJson);
     console.log("Generated urlHashStr:", urlHashStr);
     window.location.hash = urlHashStr;
     console.log("URL hash updated to:", urlHashStr);
 }
-
-
-/**
- * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
- * 
- * This function retrieves all LoR checkboxes on the page, filters them to only include
- * the checked ones, retrieves their 'id' attribute, and joins them with '+' as a separator.
- * The resulting string is then set as the URL hash.
- */
-function updateURLWithLorCheckboxes() {
-    // Retrieve all LoR checkboxes on the page.
-    const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
-
-    // Filter the checkboxes to only include the checked ones.
-    const selectedLorCheckboxes = Array.from(lorCheckboxes)
-        .filter(checkbox => checkbox.checked)
-        // Retrieve the 'id' attribute of each checked LoR checkbox.
-        .map(checkbox => checkbox.id);
-
-    // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
-    const urlHash = selectedLorCheckboxes.join('+');
-    window.location.hash = urlHash;
-}
-
 
 /**
  * Function to set up event listeners for exporting data and triggering rendering of the SFIA content.
@@ -820,23 +791,6 @@ async function initializeLorContent() {
     }
 
 }
-/**
- * Function to truncate a given text and add a tooltip for hover-over.
- *
- * @param {string} text - The text to be truncated.
- * @param {number} maxLength - The maximum length of the truncated text.
- * @return {string} The truncated text with a tooltip, or the original text if it's shorter than maxLength.
- */
-function getTruncatedText(text, maxLength) {
-    // Check if the text is longer than the maximum length
-    if (text.length > maxLength) {
-        // If it is, truncate it and add '...' at the end, and a tooltip for hover-over
-        return text.substring(0, maxLength) + '...' +  // Truncated text
-            ' <span class="tooltiptext">' + text + '</span>'; // Tooltip
-    }
-    // If it's not, just return the original text
-    return text;
-}
 
 /**
  * Function to search for text in the SFIA table and show/hide rows based on the filter.
@@ -969,7 +923,27 @@ function selectLorCheckboxesAndInitialize(lorJson) {
     }
 }
 
+/**
+ * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
+ * 
+ * This function retrieves all LoR checkboxes on the page, filters them to only include
+ * the checked ones, retrieves their 'id' attribute, and joins them with '+' as a separator.
+ * The resulting string is then set as the URL hash.
+ */
+function updateURLWithLorCheckboxes() {
+    // Retrieve all LoR checkboxes on the page.
+    const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
 
+    // Filter the checkboxes to only include the checked ones.
+    const selectedLorCheckboxes = Array.from(lorCheckboxes)
+        .filter(checkbox => checkbox.checked)
+        // Retrieve the 'id' attribute of each checked LoR checkbox.
+        .map(checkbox => checkbox.value);
+
+    // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
+    const urlHash = selectedLorCheckboxes.join('+');
+    window.location.hash = urlHash;
+}
 
 /**
  * Selects checkboxes based on the URL hash and triggers
