@@ -322,23 +322,18 @@ function changeJsonVersion() {
             console.log("Downloaded JSON data:", data);
 
 
-            // Mark the selected option as selected
-            const jsonVersionSelectElement = document.getElementById("jsonVersionSelect");
-            if (jsonVersionSelectElement) {
-                const options = jsonVersionSelectElement.options;
-                for (let i = 0; i < options.length; i++) {
-                    if (options[i].value === selectedVersion) {
-                        console.log("Found selected version option:", options[i]);
-                        options[i].setAttribute("data-selected", "true");
-                        console.log("Data-selected attribute set to true.");
-                    } else {
-                        options[i].removeAttribute("data-selected");
-                    }
-                }
+            const selectElement = document.getElementById("jsonVersionSelect");
+            if (selectElement) {
+                const options = Array.from(selectElement.options);
+                options.forEach(option => {
+                    option.setAttribute(
+                        "data-selected",
+                        option.value === selectedVersion
+                    );
+                });
             } else {
                 console.error("jsonVersionSelect element not found.");
             }
-
             // Call the function to initialize SFIA content with the new JSON data
             initializeSFIAContent(data);
             // Call the function to set up event listeners
