@@ -1,3 +1,6 @@
+// src/dataFetching.js
+
+// This file includes functions for asynchronously fetching data from a given URL.
 
 /**
  * Asynchronously fetches data from a given URL.

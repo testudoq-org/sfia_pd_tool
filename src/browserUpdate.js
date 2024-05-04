@@ -1,4 +1,8 @@
 
+// src/browserUpdate.js
+
+// This file contains the code for appending a script tag to the document body, loading the Browser Update script
+
 /**
  * Function $buo_f is responsible for appending a script tag to the
  * document body. This script tag loads the Browser Update script

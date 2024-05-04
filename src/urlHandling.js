@@ -1,3 +1,6 @@
+// src/urlHandling.js
+
+// This file includes functions for generating and updating URL hashes based on LoR data and SFIA checkboxes.
 
 /**
  * Generate URL hash based on LoR data.
