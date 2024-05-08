@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Edge predefined URL",
+      "name": "Full Build and Launch Edge predefined URL",
       "type": "msedge",
       "request": "launch",
       "url": "http://127.0.0.1:5500/src/sfiapdgen.html#BPTS-3+BSMO-4",
@@ -11,13 +11,29 @@
       "preLaunchTask": "grunt build"
     },
     {
-      "name": "Launch Edge against root URL",
+      "name": "Full Launch Edge against root URL",
       "type": "msedge",
       "request": "launch",
       "url": "http://127.0.0.1:5500/src/sfiapdgen.html",
       "webRoot": "${workspaceFolder}",
       "outFiles": ["${workspaceFolder}/src/*.js"],
       "preLaunchTask": "grunt build"
+    },
+    {
+      "name": "Launch Edge predefined URL",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://127.0.0.1:5500/src/sfiapdgen.html#BPTS-3+BSMO-4",
+      "webRoot": "${workspaceFolder}",
+      "outFiles": ["${workspaceFolder}/src/*.js"]
+    },
+    {
+      "name": " Launch Edge against root URL",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://127.0.0.1:5500/src/sfiapdgen.html",
+      "webRoot": "${workspaceFolder}",
+      "outFiles": ["${workspaceFolder}/src/*.js"]
     }
   ]
 }
