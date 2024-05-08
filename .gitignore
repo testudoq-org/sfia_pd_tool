@@ -379,3 +379,6 @@ sfiapdgen-min.html
 test-report.html
 output/Verify_search_functionality.failed.png
 output/Verify_search_functionality.failed.png
+output/
+src/sfiapdgen_func.js
+sfiapdgen_func.js

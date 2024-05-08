@@ -9,8 +9,8 @@ module.exports = function (grunt) {
         copy: {
             main: {
                 files: [
-                    { expand: true, cwd: 'src', src: ['**/sfiapdgen.html', '**/*.css', '**/*.json', '**/*.ico'], dest: 'dist/', filter: 'isFile' },
-                    { expand: true, cwd: 'src', src: ['**/sfiapdgen_func.js', '!**/*.min.*'], dest: 'dist/', filter: 'isFile' }
+                    { expand: true, cwd: 'src', src: ['**/*.html', '**/*.css', '**/*.json', '**/*.ico'], dest: 'dist/', filter: 'isFile' },
+                    { expand: true, cwd: 'src', src: ['**/*.js', '!**/*.min.*'], dest: 'dist/', filter: 'isFile' }
                 ]
             }
         },
@@ -36,7 +36,7 @@ module.exports = function (grunt) {
                 separator: ';',
             },
             dist: {
-                src: ['src/browserUpdate.js', 'src/dataFetching.js', 'src/constants.js', 'src/exportFunctions.js', 'src/checkboxHandling.js', 'src/tableRendering.js', 'src/lorDataHandling.js', 'src/utilityFunctions.js', 'src/jsonHandling.js', 'src/urlHandling.js', 'src/eventListeners.js', 'src/windowEvents.js'],
+                src: ['src/browserUpdate.js', 'src/dataFetching.js', 'src/constants.js', 'src/exportFunctions.js', 'src/checkboxHandling.js', 'src/initializeContent.js', 'src/tableRendering.js', 'src/dataHandling.js', 'src/utilityFunctions.js', 'src/jsonHandling.js', 'src/urlHandling.js', 'src/eventListeners.js', 'src/windowEvents.js'],
                 dest: 'src/sfiapdgen_func.js',
             },
         },
