@@ -402,6 +402,8 @@ function SelectSfiaCheckboxesAndInitialize(sfiaJson) {
  */
 async function initializeSFIAContent(sfiaJson) {
     try {
+        console.log('Initializing SFIA content...');
+
         // Arrays to keep track of printed root and sub keys
         const rootKeyPrinted = [];
         const subKeyPrinted = [];
@@ -409,10 +411,13 @@ async function initializeSFIAContent(sfiaJson) {
         // Get the table element
         const table = document.getElementById('sfia-content');
         table.innerHTML = ''; // Clear existing content before populating with new data
+        console.log('Table element cleared');
 
         // Loop through the SFIA JSON and populate the table with data
         for (const rootKey in sfiaJson) {
+            console.log('Processing root key:', rootKey);
             for (const subKey in sfiaJson[rootKey]) {
+                console.log('Processing sub key:', subKey);
                 for (const skillKey in sfiaJson[rootKey][subKey]) {
                     // Create a new row for each skill
                     const row = document.createElement('tr');
@@ -461,6 +466,7 @@ async function initializeSFIAContent(sfiaJson) {
         sfiacheckboxes.forEach(function (checkbox) {
             checkbox.addEventListener('click', () => renderSfiaOutput(sfiaJson), false);
         });
+        console.log('Click event listeners added to checkboxes');
 
     } catch (error) {
         console.error('Error initializing SFIA content:', error);
@@ -468,6 +474,7 @@ async function initializeSFIAContent(sfiaJson) {
 
     // Render the output if the URL contains a hash
     if (window.location.href.split("#").length > 0) {
+        console.log('URL contains a hash, rendering output...');
         renderSfiaOutput(sfiaJson, false);
     }
 
@@ -487,10 +494,12 @@ async function initializeLorContent() {
     try {
         // Fetch LOR JSON data
         const response = await fetch('json-sfia-lors-v8.json');
-        lorJson = await response.json();
+        const lorJson = await response.json();
 
         // Clear existing content in the LOR table body
-        document.getElementById('sfia-lors-content').innerHTML = '';
+        const lorContent = document.getElementById('sfia-lors-content');
+        lorContent.innerHTML = '';
+        console.log('LOR content cleared');
 
         // Loop through LOR JSON data and build the checklist
         lorJson.forEach((responsibility, index) => {
@@ -505,7 +514,8 @@ async function initializeLorContent() {
             <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-6" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-6" title="6 - Initiate, influence ~ ${responsibility['6 - Initiate, influence']}"></td> <!-- Level 6 -->
             <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-7" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-7" title="7 - Set strategy, inspire, mobilise ~ ${responsibility['7 - Set strategy, inspire, mobilise']}"></td> <!-- Level 7 -->
         `;
-            document.getElementById('sfia-lors-content').appendChild(row);
+            lorContent.appendChild(row);
+            console.log('LOR row added');
 
             // Add a click event listener to each LOR checkbox
             const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
@@ -515,7 +525,10 @@ async function initializeLorContent() {
                     renderLorOutput(lorJson, false);
                 }, false);
             });
+            console.log('LOR checkbox event listener added');
         });
+        console.log('LOR content initialized');
+
     } catch (error) {
         console.error('Error fetching or displaying LOR data:', error);
     }
