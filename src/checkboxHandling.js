@@ -58,15 +58,14 @@ function addSfiaSelectionBox(index, sfiaJson, rootKey, subKey, skillKey, code) {
             "category": rootKey,
             "subCategory": subKey,
             "skill": skillKey,
-            "level": index,
-            "code": code // Include the "code" property
+            "level": index
         });
 
         // Check if the skill should be preselected and set the checked attribute accordingly
-        const checked = checkSfiaPreselected(sfiaJson[rootKey][subKey][skillKey], index) ? "checked" : "";
+        const checked = checkSfiaPreselected(sfiaJson[rootKey][subKey][skillKey]["code"], index) ? "checked" : "";
 
         // Generate the checkbox input with the appropriate data attributes
-        col.innerHTML = `<input type='checkbox' id="sfia-checkbox-${code}-${index}" value="${code}-${index}" title='${sfiaJson[rootKey][subKey][skillKey]["levels"][index]}' sfia-data='${jsonData}' ${checked}/>`;
+        col.innerHTML = `<input type='checkbox' id="sfia-checkbox-${sfiaJson[rootKey][subKey][skillKey]["code"]}-${index}" value="${code}-${index}" title='${sfiaJson[rootKey][subKey][skillKey]["levels"][index]}' sfia-data='${jsonData}' ${checked}/>`;
         col.className += " select_col";
     } else {
         // Generate a disabled checkbox if the level is not present

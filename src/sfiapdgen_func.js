@@ -298,6 +298,7 @@ function checkSfiaPreselected(code, level) {
  * @param {string} rootKey - The key for the root category.
  * @param {string} subKey - The key for the sub category.
  * @param {string} skillKey - The key for the skill.
+ * @param {string} code - The code associated with the skill.
  * @return {HTMLElement} The table cell element with the checkbox.
  */
 function addSfiaSelectionBox(index, sfiaJson, rootKey, subKey, skillKey, code) {
@@ -462,7 +463,7 @@ async function initializeSFIAContent(sfiaJson) {
                     const col3 = document.createElement('td');
                     col3.className += " skill_key";
                     row.appendChild(col3);
-
+                    
                     let skillcode = sfiaJson[rootKey][subKey][skillKey]["code"]
                     const skillSpan = document.createElement('span');
                     skillSpan.textContent = skillKey + " - " + sfiaJson[rootKey][subKey][skillKey]["code"];

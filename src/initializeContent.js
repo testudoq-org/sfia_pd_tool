@@ -49,18 +49,15 @@ async function initializeSFIAContent(sfiaJson) {
                     const col3 = document.createElement('td');
                     col3.className += " skill_key";
                     row.appendChild(col3);
-
+                    
                     let skillcode = sfiaJson[rootKey][subKey][skillKey]["code"]
                     const skillSpan = document.createElement('span');
                     skillSpan.textContent = skillKey + " - " + sfiaJson[rootKey][subKey][skillKey]["code"];
                     skillSpan.title = sfiaJson[rootKey][subKey][skillKey]["description"];
                     col3.appendChild(skillSpan);
 
-                    const code = sfiaJson[rootKey][subKey][skillKey]["code"];
-
                     // Add the selection boxes to the row
                     for (let i = 1; i < 8; i++) {
-                        row.appendChild(addSfiaSelectionBox(i, sfiaJson, rootKey, subKey, skillKey, code));
                         row.appendChild(addSfiaSelectionBox(i, sfiaJson, rootKey, subKey, skillKey, skillcode));
                     }
 
