@@ -1,4 +1,8 @@
 
+// src/browserUpdate.js
+
+// This file contains the code for appending a script tag to the document body, loading the Browser Update script
+
 /**
  * Function $buo_f is responsible for appending a script tag to the
  * document body. This script tag loads the Browser Update script
@@ -23,7 +27,10 @@ if (window.location.hostname !== '127.0.0.1') {
         window.attachEvent("onload", $buo_f);
     }
 }
-;
+;// src/dataFetching.js
+
+// This file includes functions for asynchronously fetching data from a given URL.
+
 /**
  * Asynchronously fetches data from a given URL.
  * 
@@ -97,12 +104,18 @@ function setStoredVersion(storedVersion) {
     // Call the function to set up event listeners
     setupEventListeners(sfiaJson);
 }
-;
+;// src/constants.js
+
+// This file contains constant variables or configuration values used throughout the project.
+
 let sfiaJson;  // declare sfiaJson at a higher scope
 let lorJson; // declare lorJson at a higher scope
 let lastExportTime = 0; // Initialize lastExportTime to 0
 const $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
-;
+;// src/exportFunctions.js
+
+// This file includes functions for exporting checked box data to a CSV file and exporting the HTML content to a downloadable HTML file.
+
 /**
  * Function to export checked box data to a CSV file.
  * @param {Event} event - The event triggering the function.
@@ -239,7 +252,11 @@ function exportHTML(event, sfiaJson) {
     a.click();
     a.remove();
 }
-;/**
+;// src/checkboxHandling.js
+
+// This file contains functions for checking if a specific SFIA skill level is present in the URL hash and generating table cells with checkboxes.
+
+/**
  * Checks if a specific sfia skill level is present in the URL hash.
  *
  * @param {string} code - The code of the skill.
@@ -283,7 +300,7 @@ function checkSfiaPreselected(code, level) {
  * @param {string} skillKey - The key for the skill.
  * @return {HTMLElement} The table cell element with the checkbox.
  */
-function addSfiaSelectionBox(index, sfiaJson, rootKey, subKey, skillKey) {
+function addSfiaSelectionBox(index, sfiaJson, rootKey, subKey, skillKey, code) {
     // Create a table cell element
     const col = document.createElement('td');
 
@@ -301,7 +318,7 @@ function addSfiaSelectionBox(index, sfiaJson, rootKey, subKey, skillKey) {
         const checked = checkSfiaPreselected(sfiaJson[rootKey][subKey][skillKey]["code"], index) ? "checked" : "";
 
         // Generate the checkbox input with the appropriate data attributes
-        col.innerHTML = `<input type='checkbox' id="sfia-checkbox-${sfiaJson[rootKey][subKey][skillKey]["code"]}" title='${sfiaJson[rootKey][subKey][skillKey]["levels"][index]}' sfia-data='${jsonData}' ${checked}/>`;
+        col.innerHTML = `<input type='checkbox' id="sfia-checkbox-${sfiaJson[rootKey][subKey][skillKey]["code"]}-${index}" value="${code}-${index}" title='${sfiaJson[rootKey][subKey][skillKey]["levels"][index]}' sfia-data='${jsonData}' ${checked}/>`;
         col.className += " select_col";
     } else {
         // Generate a disabled checkbox if the level is not present
@@ -446,6 +463,7 @@ async function initializeSFIAContent(sfiaJson) {
                     col3.className += " skill_key";
                     row.appendChild(col3);
 
+                    let skillcode = sfiaJson[rootKey][subKey][skillKey]["code"]
                     const skillSpan = document.createElement('span');
                     skillSpan.textContent = skillKey + " - " + sfiaJson[rootKey][subKey][skillKey]["code"];
                     skillSpan.title = sfiaJson[rootKey][subKey][skillKey]["description"];
@@ -453,7 +471,7 @@ async function initializeSFIAContent(sfiaJson) {
 
                     // Add the selection boxes to the row
                     for (let i = 1; i < 8; i++) {
-                        row.appendChild(addSfiaSelectionBox(i, sfiaJson, rootKey, subKey, skillKey));
+                        row.appendChild(addSfiaSelectionBox(i, sfiaJson, rootKey, subKey, skillKey, skillcode));
                     }
 
                     table.appendChild(row); // add entire row to table.
@@ -537,7 +555,9 @@ async function initializeLorContent() {
         renderLorOutput(lorJson, false);
     }
 }
-;//tableRendering.js
+;// src/tableRendering.js
+
+// This file includes functions for rendering the output HTML based on the selected checkboxes and the provided SFIA JSON data.
 
 /**
  * Render the output HTML based on the selected checkboxes and the provided SFIA JSON data.
@@ -655,7 +675,55 @@ function renderLorOutput(lorJson, updateHash = true) {
 
     console.log("Exiting renderLorOutput function");
 }
-;//dataHandling.js
+;
+/**
+ * Fetches and displays Levels of Responsibility data from the 'sfia-lors-8.json' file.
+ * This function retrieves the data, clears any existing content in the table,
+ * and then appends new rows to the table for each data item.
+ * adds a tool tip to each of the checkboxes based onthe description attribute of the lor
+ */
+async function initializeLorContent() {
+    try {
+        // Fetch LOR JSON data
+        const response = await fetch('json-sfia-lors-v8.json');
+        lorJson = await response.json();
+
+        // Clear existing content in the LOR table body
+        document.getElementById('sfia-lors-content').innerHTML = '';
+
+        // Loop through LOR JSON data and build the checklist
+        lorJson.forEach((responsibility, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td>${responsibility.Responsibility}</td> <!-- Responsibility -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-1" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-1" title="1 - Follow ~ ${responsibility['1 - Follow']}"></td> <!-- Level 1 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-2" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-2" title="2 - Assist ~ ${responsibility['2 - Assist']}"></td> <!-- Level 2 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-3" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-3" title="3 - Apply ~ ${responsibility['3 - Apply']}"></td> <!-- Level 3 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-4" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-4" title="4 - Enable ~ ${responsibility['4 - Enable']}"></td> <!-- Level 4 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-5" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-5" title="5 - Ensure,advise ~ ${responsibility['5 - Ensure,advise']}"></td> <!-- Level 5 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-6" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-6" title="6 - Initiate, influence ~ ${responsibility['6 - Initiate, influence']}"></td> <!-- Level 6 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-7" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-7" title="7 - Set strategy, inspire, mobilise ~ ${responsibility['7 - Set strategy, inspire, mobilise']}"></td> <!-- Level 7 -->
+        `;
+            document.getElementById('sfia-lors-content').appendChild(row);
+
+            // Add a click event listener to each LOR checkbox
+            const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
+            lorCheckboxes.forEach(function (checkbox) {
+                checkbox.addEventListener('click', function () {
+                    console.log('Checkbox clicked:', checkbox.id);
+                    renderLorOutput(lorJson, false);
+                }, false);
+            });
+        });
+    } catch (error) {
+        console.error('Error fetching or displaying LOR data:', error);
+    }
+    // Render the output if the URL contains a hash
+    if (window.location.href.split("#").length > 0) {
+        renderLorOutput(lorJson, false);
+    }
+
+}
 
 /**
  * Render LoR data to lor-output element with improved styling.
@@ -750,7 +818,10 @@ function clearLorOutput() {
     const lorOutput = document.getElementById('lor-output');
     lorOutput.innerHTML = '';
 }
-;
+;// src/utilityFunctions.js
+
+// This file includes utility functions, such as checking if the last export was within a specified timeout duration and searching for text in the SFIA table.
+
 /**
  * Checks if the last export was within the specified timeout duration.
  *
@@ -762,10 +833,6 @@ function isExportSkippedDueToTimeout(timeoutDuration) {
     const timeSinceLastExport = currentTime - lastExportTime;
     return timeSinceLastExport < timeoutDuration;
 }
-
-
-
-
 
 /**
  * Function to search for text in the SFIA table and show/hide rows based on the filter.
@@ -810,7 +877,10 @@ function searchForText() {
         console.error("An error occurred:", error.message);
     }
 }
-;
+;// src/jsonHandling.js
+
+// This file contains a function to change the JSON version based on the selected value from a dropdown.
+
 /**
  * Change the JSON version based on the selected value from the dropdown.
  * This function fetches the JSON data from the specified URL and initializes
@@ -885,7 +955,10 @@ function changeJsonVersion() {
         });
 
 }
-;
+;// src/urlHandling.js
+
+// This file includes functions for generating and updating URL hashes based on LoR data and SFIA checkboxes.
+
 /**
  * Generate URL hash based on LoR data.
  * 
@@ -948,7 +1021,10 @@ function updateURLWithLorCheckboxes() {
     const urlHash = selectedLorCheckboxes.join('+');
     window.location.hash = urlHash;
 }
-;
+;// src/eventListeners.js
+
+// This file contains a function to set up event listeners for exporting data and triggering rendering of the SFIA content.
+
 /**
  * Function to set up event listeners for exporting data and triggering rendering of the SFIA content.
  * @param {Object} sfiaJson - The SFIA JSON data.
@@ -1000,7 +1076,11 @@ function setupEventListeners(sfiaJson) {
         );
     }
 }
-;/**
+;// src/windowEvents.js
+
+// This file contains functions to handle window events, such as 'hashchange' and 'onload'.
+
+/**
  * Listens for hash change events and performs the following tasks:
  *  - Retrieves the storedVersion value from a cookie
  *  - If the storedVersion is defined, it fetches the selected version JSON data
