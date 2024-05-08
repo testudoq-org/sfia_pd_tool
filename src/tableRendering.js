@@ -1,4 +1,6 @@
-//tableRendering.js
+// src/tableRendering.js
+
+// This file includes functions for rendering the output HTML based on the selected checkboxes and the provided SFIA JSON data.
 
 /**
  * Render the output HTML based on the selected checkboxes and the provided SFIA JSON data.

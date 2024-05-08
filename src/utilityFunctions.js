@@ -1,3 +1,6 @@
+// src/utilityFunctions.js
+
+// This file includes utility functions, such as checking if the last export was within a specified timeout duration and searching for text in the SFIA table.
 
 /**
  * Checks if the last export was within the specified timeout duration.
@@ -10,10 +13,6 @@ function isExportSkippedDueToTimeout(timeoutDuration) {
     const timeSinceLastExport = currentTime - lastExportTime;
     return timeSinceLastExport < timeoutDuration;
 }
-
-
-
-
 
 /**
  * Function to search for text in the SFIA table and show/hide rows based on the filter.

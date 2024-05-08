@@ -1,3 +1,6 @@
+// src/constants.js
+
+// This file contains constant variables or configuration values used throughout the project.
 
 let sfiaJson;  // declare sfiaJson at a higher scope
 let lorJson; // declare lorJson at a higher scope

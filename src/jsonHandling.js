@@ -1,3 +1,6 @@
+// src/jsonHandling.js
+
+// This file contains a function to change the JSON version based on the selected value from a dropdown.
 
 /**
  * Change the JSON version based on the selected value from the dropdown.

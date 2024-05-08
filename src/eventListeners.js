@@ -1,3 +1,6 @@
+// src/eventListeners.js
+
+// This file contains a function to set up event listeners for exporting data and triggering rendering of the SFIA content.
 
 /**
  * Function to set up event listeners for exporting data and triggering rendering of the SFIA content.

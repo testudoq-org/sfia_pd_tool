@@ -10,7 +10,7 @@ module.exports = function (grunt) {
             main: {
                 files: [
                     { expand: true, cwd: 'src', src: ['**/*.html', '**/*.css', '**/*.json', '**/*.ico'], dest: 'dist/', filter: 'isFile' },
-                    { expand: true, cwd: 'src', src: ['**/sfiapdgen_func.js', '!**/*.min.*'], dest: 'dist/', filter: 'isFile' }
+                    { expand: true, cwd: 'src', src: ['**/*.js', '!**/*.min.*'], dest: 'dist/', filter: 'isFile' }
                 ]
             }
         },
@@ -42,7 +42,7 @@ module.exports = function (grunt) {
         },
         watch: {
             options: {
-                debounceDelay: 1000
+                debounceDelay: 3000
             },
             files: ['src/**/*', 'src/sfiapdgen_func.js'],
             tasks: ['delayedBuild']
