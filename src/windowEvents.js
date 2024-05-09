@@ -10,43 +10,33 @@
  *
  * @event hashchange
  */
-window.addEventListener('hashchange', async function () {
+async function handleHashChange() {
     try {
-        // Retrieve the storedVersion value from a cookie
-        let storedVersion = getCookie("selectedVersion");
+        let storedVersion = getCookie(SELECTED_VERSION);
 
-// If the storedVersion is defined
-if (typeof storedVersion !== 'undefined') {
-    // Fetch the selected version JSON data
-    let sfiaJson = await fetchData(storedVersion + ".json");
+        if (storedVersion == null) {
+            console.info('hashchange entry: storedVersion is undefined.');
+            await initializeContent();
+            return;
+        }
 
-    // Check if SFIA content has already been initialized
-    if (!sfiaJson) {
-        // Call the SelectSfiaCheckboxesAndInitialize function
-        // to pre-select checkboxes and initialize SFIA content
-       await  SelectSfiaCheckboxesAndInitialize(sfiaJson);
+        let sfiaJson = await fetchData(storedVersion + ".json");
 
-        // Call the selectLorCheckboxesAndInitialize function
-        // to pre-select LoR checkboxes and initialize LoR content
-       await selectLorCheckboxesAndInitialize(lorJson);
+        if (sfiaJson) {
+            console.log('SFIA content has already been initialized.');
+            return;
+        }
 
         console.info('hashchange entry: storedVersion is defined.');
-    } else {
-        // SFIA content has already been initialized, no need to call SelectSfiaCheckboxesAndInitialize
-        console.log('SFIA content has already been initialized.');
-    }
-        } else {
-            // Call the function to initialize SFIA content
-            await initializeSFIAContent(sfiaJson);
-            // Call the function to initalize LOR content
-            await initializeLorContent(lorJson);
-            console.info('hashchange entry: storedVersion is undefined.');
-        }
+        await initializeCheckboxesAndContent(sfiaJson);
     } catch (error) {
-        // Log any errors that occur during hash change handling
         console.error('An error occurred:', error.message);
+        // handle error (retry, show error message, etc.)
     }
-});
+}
+
+window.addEventListener('hashchange', handleHashChange);
+
 
 /**
  * Window onload function that is triggered when the page finishes loading.

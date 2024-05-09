@@ -112,6 +112,7 @@ let sfiaJson;  // declare sfiaJson at a higher scope
 let lorJson; // declare lorJson at a higher scope
 let lastExportTime = 0; // Initialize lastExportTime to 0
 const $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
+const SELECTED_VERSION = "selectedVersion";
 ;// src/exportFunctions.js
 
 // This file includes functions for exporting checked box data to a CSV file and exporting the HTML content to a downloadable HTML file.
@@ -413,6 +414,38 @@ function SelectSfiaCheckboxesAndInitialize(sfiaJson) {
     }
 }
 ;//initializeContent.js
+
+/**
+ * Asynchronously initializes the content by calling the functions to initialize SFIA and LOR content.
+ */
+async function initializeContent() {
+    console.log('Initializing content...');
+
+    // Initialize SFIA content
+    console.log('Initializing SFIA content...');
+    await initializeSFIAContent(sfiaJson);
+    
+    // Initialize LOR content
+    console.log('Initializing LOR content...');
+    await initializeLorContent(lorJson);
+}
+
+/**
+ * Asynchronously initializes the checkboxes and content by calling the functions to select SFIA checkboxes and initialize LOR checkboxes.
+ * @param {Object} sfiaJson - The SFIA JSON data.
+ */
+async function initializeCheckboxesAndContent(sfiaJson) {
+    // Debugging information
+    console.log('Initializing checkboxes and content...');
+
+    // Select SFIA checkboxes and initialize
+    console.log('Selecting SFIA checkboxes and initializing...');
+    await SelectSfiaCheckboxesAndInitialize(sfiaJson);
+    
+    // Select LOR checkboxes and initialize
+    console.log('Selecting LOR checkboxes and initializing...');
+    await selectLorCheckboxesAndInitialize(lorJson);
+}
 
 /**
  * Initialize SFIA content by populating a table with SFIA JSON data.
@@ -1089,43 +1122,33 @@ function setupEventListeners(sfiaJson) {
  *
  * @event hashchange
  */
-window.addEventListener('hashchange', async function () {
+async function handleHashChange() {
     try {
-        // Retrieve the storedVersion value from a cookie
-        let storedVersion = getCookie("selectedVersion");
+        let storedVersion = getCookie(SELECTED_VERSION);
 
-// If the storedVersion is defined
-if (typeof storedVersion !== 'undefined') {
-    // Fetch the selected version JSON data
-    let sfiaJson = await fetchData(storedVersion + ".json");
+        if (storedVersion == null) {
+            console.info('hashchange entry: storedVersion is undefined.');
+            await initializeContent();
+            return;
+        }
 
-    // Check if SFIA content has already been initialized
-    if (!sfiaJson) {
-        // Call the SelectSfiaCheckboxesAndInitialize function
-        // to pre-select checkboxes and initialize SFIA content
-       await  SelectSfiaCheckboxesAndInitialize(sfiaJson);
+        let sfiaJson = await fetchData(storedVersion + ".json");
 
-        // Call the selectLorCheckboxesAndInitialize function
-        // to pre-select LoR checkboxes and initialize LoR content
-       await selectLorCheckboxesAndInitialize(lorJson);
+        if (sfiaJson) {
+            console.log('SFIA content has already been initialized.');
+            return;
+        }
 
         console.info('hashchange entry: storedVersion is defined.');
-    } else {
-        // SFIA content has already been initialized, no need to call SelectSfiaCheckboxesAndInitialize
-        console.log('SFIA content has already been initialized.');
-    }
-        } else {
-            // Call the function to initialize SFIA content
-            await initializeSFIAContent(sfiaJson);
-            // Call the function to initalize LOR content
-            await initializeLorContent(lorJson);
-            console.info('hashchange entry: storedVersion is undefined.');
-        }
+        await initializeCheckboxesAndContent(sfiaJson);
     } catch (error) {
-        // Log any errors that occur during hash change handling
         console.error('An error occurred:', error.message);
+        // handle error (retry, show error message, etc.)
     }
-});
+}
+
+window.addEventListener('hashchange', handleHashChange);
+
 
 /**
  * Window onload function that is triggered when the page finishes loading.

@@ -1,6 +1,38 @@
 //initializeContent.js
 
 /**
+ * Asynchronously initializes the content by calling the functions to initialize SFIA and LOR content.
+ */
+async function initializeContent() {
+    console.log('Initializing content...');
+
+    // Initialize SFIA content
+    console.log('Initializing SFIA content...');
+    await initializeSFIAContent(sfiaJson);
+    
+    // Initialize LOR content
+    console.log('Initializing LOR content...');
+    await initializeLorContent(lorJson);
+}
+
+/**
+ * Asynchronously initializes the checkboxes and content by calling the functions to select SFIA checkboxes and initialize LOR checkboxes.
+ * @param {Object} sfiaJson - The SFIA JSON data.
+ */
+async function initializeCheckboxesAndContent(sfiaJson) {
+    // Debugging information
+    console.log('Initializing checkboxes and content...');
+
+    // Select SFIA checkboxes and initialize
+    console.log('Selecting SFIA checkboxes and initializing...');
+    await SelectSfiaCheckboxesAndInitialize(sfiaJson);
+    
+    // Select LOR checkboxes and initialize
+    console.log('Selecting LOR checkboxes and initializing...');
+    await selectLorCheckboxesAndInitialize(lorJson);
+}
+
+/**
  * Initialize SFIA content by populating a table with SFIA JSON data.
  * @param {Object} sfiaJson - The SFIA JSON data.
  */
