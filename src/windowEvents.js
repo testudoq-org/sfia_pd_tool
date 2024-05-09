@@ -57,43 +57,34 @@ if (typeof storedVersion !== 'undefined') {
  *  - Otherwise, it initializes SFIA content
  */
 window.onload = async function () {
-    // Log that the window onload function has been triggered
     console.log('Window onload function triggered');
 
     try {
-        // Get the current URL
+        // Set the stored version
+        await setStoredVersion("json_source_v8");
+
+        // Initialize SFIA content
+        await initializeSFIAContent(sfiaJson);
+        // Initialize LOR content
+        await initializeLorContent();
+
         let currentURL = window.location.href;
         console.info('Current URL is:', currentURL);
 
-        // Call the setStoredVersion function to set the stored version
-        await setStoredVersion("json_source_v8");  // Provide the initial stored version
-
-
-        // Check if '/#/' is already present in the URL
         if (currentURL.includes('#')) {
-            // The hash exists Trigger the renderSfiaOutput function or any other logic needed after checkboxes are pre-selected
             // Parse URL hash and pre-select checkboxes
+            console.log('Hash exists in URL:', currentURL);
             const urlHash = window.location.hash.replace('#', '');
             const selectedCheckboxes = urlHash.split('+');
 
-            // If there are selected checkboxes, pre-select them
-
-            // Trigger the renderSfiaOutput function or any other logic needed after checkboxes are pre-selected
+            // Pre-select checkboxes if needed
             renderSfiaOutput(sfiaJson, false);
             renderLorOutput(lorJson, false);
-
         } else {
-            // Do another thing if the hash doesn't exist
             console.log('Hash does not exist, appending # to URL:', currentURL);
-            // If there are no selected checkboxes, initialize SFIA content
-            await initializeSFIAContent(sfiaJson);
-            // Display Levels of Responsibility data
-            await initializeLorContent();
-            console.log('Hash exists in URL:', currentURL);
+            
         }
-
     } catch (error) {
-        // Log any errors that occur during the onload function
-        console.error('An error occurred:', error.message);
+        console.error('An error occurred during the onload function:', error.message);
     }
 };
