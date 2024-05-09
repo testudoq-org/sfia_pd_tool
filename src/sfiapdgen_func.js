@@ -1,4 +1,13 @@
+// src/constants.js
 
+// This file contains constant variables or configuration values used throughout the project.
+
+let sfiaJson;  // declare sfiaJson at a higher scope
+let lorJson; // declare lorJson at a higher scope
+let lastExportTime = 0; // Initialize lastExportTime to 0
+const $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
+const SELECTED_VERSION = "selectedVersion";
+;
 // src/browserUpdate.js
 
 // This file contains the code for appending a script tag to the document body, loading the Browser Update script
@@ -104,15 +113,6 @@ function setStoredVersion(storedVersion) {
     // Call the function to set up event listeners
     setupEventListeners(sfiaJson);
 }
-;// src/constants.js
-
-// This file contains constant variables or configuration values used throughout the project.
-
-let sfiaJson;  // declare sfiaJson at a higher scope
-let lorJson; // declare lorJson at a higher scope
-let lastExportTime = 0; // Initialize lastExportTime to 0
-const $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
-const SELECTED_VERSION = "selectedVersion";
 ;// src/exportFunctions.js
 
 // This file includes functions for exporting checked box data to a CSV file and exporting the HTML content to a downloadable HTML file.
