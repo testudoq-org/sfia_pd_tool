@@ -2,32 +2,6 @@
 
 // This file includes functions for generating and updating URL hashes based on LoR data and SFIA checkboxes.
 
-/**
- * Generate URL hash based on LoR data.
- * 
- * @param {Array} newLorJson - Array containing LoR data objects.
- * @returns {string} - URL hash string.
- */
-function generateUrlHash(newLorJson) {
-    console.log("Entering generateUrlHash function");
-    // Initialize an empty array to store LoR category-level pairs
-    const urlHash = [];
-
-    console.log("newLorJson:", newLorJson);
-
-    // Loop through the newLorJson array and add LoR category-level pairs to the urlHash array
-    for (const { lorCategory, lorLevel } of newLorJson) {
-        console.log(`Adding ${lorCategory}-${lorLevel} to urlHash`);
-        urlHash.push(`${lorCategory}-${lorLevel}`);
-    }
-
-    console.log("urlHash:", urlHash);
-
-    // Return the URL hash string
-    const urlHashStr = urlHash.join("+");
-    console.log("Returning urlHashStr:", urlHashStr);
-    return urlHashStr;
-}
 
 /**
  * Update the URL hash based on filtered SFIA data.
@@ -45,20 +19,6 @@ function updateSfiaUrlHash(filteredData, updateHash) {
         );
         window.location.hash = urlHash.join("+");
     }
-}
-
-/**
- * Update URL hash based on LoR data.
- * 
- * @param {Array} newLorJson - Array containing LoR data objects.
- */
-function updateURLWithSfiaCheckboxes(newLorJson) {
-    console.log("Entering updateURLWithSfiaCheckboxes function");
-    console.log("newLorJson:", newLorJson);
-    const urlHashStr = generateUrlHash(newLorJson);
-    console.log("Generated urlHashStr:", urlHashStr);
-    window.location.hash = urlHashStr;
-    console.log("URL hash updated to:", urlHashStr);
 }
 
 /**
