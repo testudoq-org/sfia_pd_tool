@@ -3,7 +3,7 @@
 // This file contains functions for checking if a specific SFIA skill level is present in the URL hash and generating table cells with checkboxes.
 
 /**
- * Checks if a specific sfia skill level is present in the URL hash.
+ * Checks if a specific SFIA skill level is present in the URL hash.
  *
  * @param {string} code - The code of the skill.
  * @param {number} level - The level of the skill.
@@ -13,13 +13,13 @@ function checkSfiaPreselected(code, level) {
     // Check if the URL hash exists and is not empty
     if (window.location.hash) {
         // Get the levels from the URL hash
-        var hashLevels = window.location.hash.substring(1).split("+");
+        const hashLevels = window.location.hash.substring(1).split("+");
         // Iterate through the levels in reverse order
-        for (var i = hashLevels.length - 1; i >= 0; i--) {
+        for (let i = hashLevels.length - 1; i >= 0; i--) {
             // Get the code and level from the current level
-            var hashLevel = hashLevels[i].split("-");
-            var check_code = hashLevel[0];
-            var check_level = parseInt(hashLevel[1]);
+            const hashLevel = hashLevels[i].split("-");
+            const check_code = hashLevel[0];
+            const check_level = parseInt(hashLevel[1]);
 
             // Check if the current level matches the provided code and level
             if (code === check_code && level === check_level) {
@@ -30,6 +30,7 @@ function checkSfiaPreselected(code, level) {
 
     return false;
 }
+
 
 /**
  * Generates a table cell element with a checkbox input. The checkbox 
