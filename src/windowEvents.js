@@ -56,7 +56,7 @@ window.onload = async function () {
         // Initialize SFIA content
         await initializeSFIAContent(sfiaJson);
         // Initialize LOR content
-        await initializeLorContent();
+        await initializeLorContent(lorJson);
 
         let currentURL = window.location.href;
         console.info('Current URL is:', currentURL);
