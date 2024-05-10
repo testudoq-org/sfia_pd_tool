@@ -702,6 +702,8 @@ function renderSfiaLevelDescription(html, description) {
 }
 
 
+// src/tableRendering.js
+
 /**
  * Render the output HTML based on the selected Levels of Responsibility (LoR) checkboxes.
  * 
@@ -722,13 +724,13 @@ function renderLorOutput(lorJson, updateHash = true) {
     renderLorData(newLorJson);
 
     console.log("Generating URL hash");
-    updateHash = generateUrlHash(newLorJson);
-    console.log("updateHash:", updateHash);
+    const generatedHash = generateUrlHash(newLorJson); // Store generated hash in a new variable
+    console.log("generatedHash:", generatedHash);
 
     console.log("Updating URL hash if necessary");
     if (updateHash) {
         console.log("Updating URL hash");
-        updateURLWithLorCheckboxes(updateHash);
+        updateURLWithLorCheckboxes(generatedHash); // Use the new variable
     }
 
     console.log("Exiting renderLorOutput function");
@@ -1008,6 +1010,63 @@ function updateURLWithLorCheckboxes() {
     // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
     const urlHash = selectedLorCheckboxes.join('+');
     window.location.hash = urlHash;
+}
+
+// src/urlHandling.js
+
+/**
+ * Generate URL hash based on combined LoR and SFIA data.
+ * 
+ * @param {Object} lorJson - The LoR JSON data.
+ * @param {Object} sfiaJson - The SFIA JSON data.
+ * @returns {string} - Combined URL hash string.
+ */
+function generateUrlHash(lorJson, sfiaJson) {
+    const lorHash = generateLorHash(lorJson);
+    const sfiaHash = generateSfiaHash(sfiaJson);
+    return `${lorHash}+${sfiaHash}`; // Combine LoR and SFIA hashes
+}
+
+// src/urlHandling.js
+
+/**
+ * Generate URL hash based on LoR data.
+ * 
+ * @param {Object} lorJson - The LoR JSON data.
+ * @returns {string} - LoR URL hash string.
+ */
+function generateLorHash(lorJson) {
+    const urlHash = [];
+
+    for (const { lorCategory, lorLevel } of lorJson) {
+        urlHash.push(`${lorCategory}-${lorLevel}`);
+    }
+
+    return urlHash.join("+");
+}
+
+// src/urlHandling.js
+
+/**
+ * Generate URL hash based on SFIA data.
+ * 
+ * @param {Object} sfiaJson - The SFIA JSON data.
+ * @returns {string} - SFIA URL hash string.
+ */
+function generateSfiaHash(sfiaJson) {
+    const urlHash = [];
+
+    for (const category in sfiaJson) {
+        for (const subCategory in sfiaJson[category]) {
+            for (const skill in sfiaJson[category][subCategory]) {
+                const skillCode = sfiaJson[category][subCategory][skill]["code"];
+                const skillLevels = Object.keys(sfiaJson[category][subCategory][skill]["levels"]).join('+');
+                urlHash.push(`${skillCode}-${skillLevels}`);
+            }
+        }
+    }
+
+    return urlHash.join("+");
 }
 ;// src/eventListeners.js
 

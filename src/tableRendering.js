@@ -117,6 +117,8 @@ function renderSfiaLevelDescription(html, description) {
 }
 
 
+// src/tableRendering.js
+
 /**
  * Render the output HTML based on the selected Levels of Responsibility (LoR) checkboxes.
  * 
@@ -137,13 +139,13 @@ function renderLorOutput(lorJson, updateHash = true) {
     renderLorData(newLorJson);
 
     console.log("Generating URL hash");
-    updateHash = generateUrlHash(newLorJson);
-    console.log("updateHash:", updateHash);
+    const generatedHash = generateUrlHash(newLorJson); // Store generated hash in a new variable
+    console.log("generatedHash:", generatedHash);
 
     console.log("Updating URL hash if necessary");
     if (updateHash) {
         console.log("Updating URL hash");
-        updateURLWithLorCheckboxes(updateHash);
+        updateURLWithLorCheckboxes(generatedHash); // Use the new variable
     }
 
     console.log("Exiting renderLorOutput function");
