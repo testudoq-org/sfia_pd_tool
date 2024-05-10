@@ -992,12 +992,13 @@ function updateSfiaUrlHash(filteredData, updateHash) {
 
 /**
  * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
- * 
  * This function retrieves all LoR checkboxes on the page, filters them to only include
  * the checked ones, retrieves their 'id' attribute, and joins them with '+' as a separator.
  * The resulting string is then set as the URL hash.
+ * 
+ * @param {string} hash - The combined LoR hash string.
  */
-function updateURLWithLorCheckboxes() {
+function updateURLWithLorCheckboxes(hash) {
     // Retrieve all LoR checkboxes on the page.
     const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
 
@@ -1011,6 +1012,7 @@ function updateURLWithLorCheckboxes() {
     const urlHash = selectedLorCheckboxes.join('+');
     window.location.hash = urlHash;
 }
+
 
 // src/urlHandling.js
 
