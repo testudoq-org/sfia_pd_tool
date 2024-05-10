@@ -118,8 +118,7 @@ async function initializeSFIAContent(sfiaJson) {
 }
 
 
-// Lor content below
-
+// Lor content below fo //initializeContent.js
 
 /**
  * Fetches and displays Levels of Responsibility data from the 'sfia-lors-8.json' file.
@@ -131,12 +130,10 @@ async function initializeLorContent() {
     try {
         // Fetch LOR JSON data
         const response = await fetch('json-sfia-lors-v8.json');
-        const lorJson = await response.json();
+        lorJson = await response.json();
 
         // Clear existing content in the LOR table body
-        const lorContent = document.getElementById('sfia-lors-content');
-        lorContent.innerHTML = '';
-        console.log('LOR content cleared');
+        document.getElementById('sfia-lors-content').innerHTML = '';
 
         // Loop through LOR JSON data and build the checklist
         lorJson.forEach((responsibility, index) => {
@@ -151,8 +148,7 @@ async function initializeLorContent() {
             <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-6" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-6" title="6 - Initiate, influence ~ ${responsibility['6 - Initiate, influence']}"></td> <!-- Level 6 -->
             <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-7" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-7" title="7 - Set strategy, inspire, mobilise ~ ${responsibility['7 - Set strategy, inspire, mobilise']}"></td> <!-- Level 7 -->
         `;
-            lorContent.appendChild(row);
-            console.log('LOR row added');
+            document.getElementById('sfia-lors-content').appendChild(row);
 
             // Add a click event listener to each LOR checkbox
             const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
@@ -162,10 +158,7 @@ async function initializeLorContent() {
                     renderLorOutput(lorJson, false);
                 }, false);
             });
-            console.log('LOR checkbox event listener added');
         });
-        console.log('LOR content initialized');
-
     } catch (error) {
         console.error('Error fetching or displaying LOR data:', error);
     }
@@ -173,4 +166,5 @@ async function initializeLorContent() {
     if (window.location.href.split("#").length > 0) {
         renderLorOutput(lorJson, false);
     }
+
 }

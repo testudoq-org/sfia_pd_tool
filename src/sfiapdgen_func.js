@@ -533,8 +533,7 @@ async function initializeSFIAContent(sfiaJson) {
 }
 
 
-// Lor content below
-
+// Lor content below fo //initializeContent.js
 
 /**
  * Fetches and displays Levels of Responsibility data from the 'sfia-lors-8.json' file.
@@ -546,12 +545,10 @@ async function initializeLorContent() {
     try {
         // Fetch LOR JSON data
         const response = await fetch('json-sfia-lors-v8.json');
-        const lorJson = await response.json();
+        lorJson = await response.json();
 
         // Clear existing content in the LOR table body
-        const lorContent = document.getElementById('sfia-lors-content');
-        lorContent.innerHTML = '';
-        console.log('LOR content cleared');
+        document.getElementById('sfia-lors-content').innerHTML = '';
 
         // Loop through LOR JSON data and build the checklist
         lorJson.forEach((responsibility, index) => {
@@ -566,8 +563,7 @@ async function initializeLorContent() {
             <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-6" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-6" title="6 - Initiate, influence ~ ${responsibility['6 - Initiate, influence']}"></td> <!-- Level 6 -->
             <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-7" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-7" title="7 - Set strategy, inspire, mobilise ~ ${responsibility['7 - Set strategy, inspire, mobilise']}"></td> <!-- Level 7 -->
         `;
-            lorContent.appendChild(row);
-            console.log('LOR row added');
+            document.getElementById('sfia-lors-content').appendChild(row);
 
             // Add a click event listener to each LOR checkbox
             const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
@@ -577,10 +573,7 @@ async function initializeLorContent() {
                     renderLorOutput(lorJson, false);
                 }, false);
             });
-            console.log('LOR checkbox event listener added');
         });
-        console.log('LOR content initialized');
-
     } catch (error) {
         console.error('Error fetching or displaying LOR data:', error);
     }
@@ -588,6 +581,7 @@ async function initializeLorContent() {
     if (window.location.href.split("#").length > 0) {
         renderLorOutput(lorJson, false);
     }
+
 }
 ;// src/tableRendering.js
 
@@ -739,55 +733,7 @@ function renderLorOutput(lorJson, updateHash = true) {
 
     console.log("Exiting renderLorOutput function");
 }
-;
-/**
- * Fetches and displays Levels of Responsibility data from the 'sfia-lors-8.json' file.
- * This function retrieves the data, clears any existing content in the table,
- * and then appends new rows to the table for each data item.
- * adds a tool tip to each of the checkboxes based onthe description attribute of the lor
- */
-async function initializeLorContent() {
-    try {
-        // Fetch LOR JSON data
-        const response = await fetch('json-sfia-lors-v8.json');
-        lorJson = await response.json();
-
-        // Clear existing content in the LOR table body
-        document.getElementById('sfia-lors-content').innerHTML = '';
-
-        // Loop through LOR JSON data and build the checklist
-        lorJson.forEach((responsibility, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-            <td>${responsibility.Responsibility}</td> <!-- Responsibility -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-1" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-1" title="1 - Follow ~ ${responsibility['1 - Follow']}"></td> <!-- Level 1 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-2" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-2" title="2 - Assist ~ ${responsibility['2 - Assist']}"></td> <!-- Level 2 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-3" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-3" title="3 - Apply ~ ${responsibility['3 - Apply']}"></td> <!-- Level 3 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-4" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-4" title="4 - Enable ~ ${responsibility['4 - Enable']}"></td> <!-- Level 4 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-5" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-5" title="5 - Ensure,advise ~ ${responsibility['5 - Ensure,advise']}"></td> <!-- Level 5 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-6" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-6" title="6 - Initiate, influence ~ ${responsibility['6 - Initiate, influence']}"></td> <!-- Level 6 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-7" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-7" title="7 - Set strategy, inspire, mobilise ~ ${responsibility['7 - Set strategy, inspire, mobilise']}"></td> <!-- Level 7 -->
-        `;
-            document.getElementById('sfia-lors-content').appendChild(row);
-
-            // Add a click event listener to each LOR checkbox
-            const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
-            lorCheckboxes.forEach(function (checkbox) {
-                checkbox.addEventListener('click', function () {
-                    console.log('Checkbox clicked:', checkbox.id);
-                    renderLorOutput(lorJson, false);
-                }, false);
-            });
-        });
-    } catch (error) {
-        console.error('Error fetching or displaying LOR data:', error);
-    }
-    // Render the output if the URL contains a hash
-    if (window.location.href.split("#").length > 0) {
-        renderLorOutput(lorJson, false);
-    }
-
-}
+;//dataHandling.js
 
 /**
  * Render LoR data to lor-output element with improved styling.
