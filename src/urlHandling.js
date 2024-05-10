@@ -30,6 +30,24 @@ function generateUrlHash(newLorJson) {
 }
 
 /**
+ * Update the URL hash based on filtered SFIA data.
+ * @param {Object} filteredData - Filtered SFIA data.
+ * @param {boolean} updateHash - Flag to indicate whether to update the URL hash.
+ */
+function updateSfiaUrlHash(filteredData, updateHash) {
+    if (updateHash) {
+        const urlHash = Object.values(filteredData).flatMap(category =>
+            Object.values(category).flatMap(subCategory =>
+                Object.values(subCategory).map(skill =>
+                    `${skill["code"]}-${Object.keys(skill["levels"]).join('+')}`
+                )
+            )
+        );
+        window.location.hash = urlHash.join("+");
+    }
+}
+
+/**
  * Update URL hash based on LoR data.
  * 
  * @param {Array} newLorJson - Array containing LoR data objects.
