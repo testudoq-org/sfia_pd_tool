@@ -16,26 +16,51 @@ Thank you for considering contributing to our project! We appreciate your intere
     npm install
     ```
 
-3. **Install Grunt Watch**: Install the `grunt-contrib-watch` module as a development dependency:
+3. **Install Grunt Plugins**: Install the necessary Grunt plugins by running the following commands:
 
     ```bash
     npm install grunt-contrib-watch --save-dev
-    ```
-
-4. **Install Grunt grunt-exec**: Install the `grunt-runt-exec` module as a development dependency:
-
-    ```bash
     npm install grunt-exec --save-dev
     ```
 
-5. **Run Initial Setup**: Run any initial setup commands provided by the project. This may include database migrations, environment configurations, or other setup tasks.
+4. **Run Initial Setup**: Run any initial setup commands provided by the project. This may include database migrations, environment configurations, or other setup tasks.
 
 ## Running Tests
 
 1. **CodeceptJS Tests**: To run the CodeceptJS tests, execute the following command:
 
     ```bash
-    npx codeceptjs run
+    npm run codeceptjs
+    ```
+
+    For running tests in headless mode:
+
+    ```bash
+    npm run codeceptjs:headless
+    ```
+
+    To open the CodeceptJS UI:
+
+    ```bash
+    npm run codeceptjs:ui
+    ```
+
+    Additionally, you can run demo tests:
+
+    ```bash
+    npm run codeceptjs:demo
+    ```
+
+    For demo tests in headless mode:
+
+    ```bash
+    npm run codeceptjs:demo:headless
+    ```
+
+    To open the CodeceptJS UI for demo tests:
+
+    ```bash
+    npm run codeceptjs:demo:ui
     ```
 
 2. **Generate Step Definitions**: If you need to generate step definitions for your tests, use the following command:
