@@ -50,6 +50,9 @@ window.onload = async function () {
     console.log('Window onload function triggered');
 
     try {
+        // Call the function to update the URL hash initially
+        updateCombinedUrlHash();
+
         // Set the stored version
         await setStoredVersion("json_source_v8");
 
@@ -72,7 +75,7 @@ window.onload = async function () {
             renderLorOutput(lorJson, false);
         } else {
             console.log('Hash does not exist, appending # to URL:', currentURL);
-            
+
         }
     } catch (error) {
         console.error('An error occurred during the onload function:', error.message);

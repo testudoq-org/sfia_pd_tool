@@ -7,8 +7,10 @@ let lorJson; // declare lorJson at a higher scope
 let lastExportTime = 0; // Initialize lastExportTime to 0
 const $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
 const SELECTED_VERSION = "selectedVersion";
-let g_sfiahash = "";
-let g_lorhash = "";
+// Initialize global variables with values from the URL hash
+const urlHashParts = window.location.hash.substring(1).split("&&"); // Remove the "#" symbol and split by "&&"
+g_sfiahash = urlHashParts[0];
+g_lorhash = urlHashParts[1];
 ;
 // src/browserUpdate.js
 
@@ -994,20 +996,38 @@ function updateSfiaUrlHash(filteredData, updateHash) {
         );
         g_sfiahash = urlHash.join("+");
         updateCombinedUrlHash();
-        
+
 
     }
 }
 
+/**
+ * Updates the URL with the combined SFIA and LoR hashes.
+ * If both SFIA and LoR hashes are present, combines them with "&&" as a separator.
+ * If only the SFIA hash is present, sets the URL hash to the SFIA hash.
+ * If only the LoR hash is present, sets the URL hash to the LoR hash.
+ */
 function updateCombinedUrlHash() {
+
     if (g_sfiahash && g_lorhash) {
-        window.location.hash = g_sfiahash + "+" + g_lorhash;
+        window.location.hash = g_sfiahash + "&&" + g_lorhash;
     } else if (g_sfiahash) {
+        /**
+         * If only the SFIA hash is present, set the URL hash to the SFIA hash.
+         */
         window.location.hash = g_sfiahash;
     } else if (g_lorhash) {
-        window.location.hash = g_lorhash;
+        /**
+         * If only the LoR hash is present, set the URL hash to the LoR hash.
+         * Note that we add "&&" before the LoR hash, as the URL can't start with "&&"
+         */
+        window.location.hash = "&&" + g_lorhash;
     }
 }
+
+
+
+
 
 /**
  * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
@@ -1034,7 +1054,6 @@ function updateURLWithLorCheckboxes(hash) {
 
     updateCombinedUrlHash();
 }
-
 
 // src/urlHandling.js
 
@@ -1199,6 +1218,9 @@ window.onload = async function () {
     console.log('Window onload function triggered');
 
     try {
+        // Call the function to update the URL hash initially
+        updateCombinedUrlHash();
+
         // Set the stored version
         await setStoredVersion("json_source_v8");
 
@@ -1221,7 +1243,7 @@ window.onload = async function () {
             renderLorOutput(lorJson, false);
         } else {
             console.log('Hash does not exist, appending # to URL:', currentURL);
-            
+
         }
     } catch (error) {
         console.error('An error occurred during the onload function:', error.message);

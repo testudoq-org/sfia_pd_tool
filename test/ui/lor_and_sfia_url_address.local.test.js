@@ -81,6 +81,6 @@ Scenario('Check multiple skills are added to URL with correct format SFIA-1+LOR-
     console.log('Current URL:', currentUrl);
 
     // Assert that the current URL contains the expected hash value
-    const expectedUrl = 'http://127.0.0.1:5500/src/sfiapdgen.html#BPTS-2+BSMO-2+AUTO-1';
+    const expectedUrl = 'http://127.0.0.1:5500/src/sfiapdgen.html#BPTS-2+BSMO-2&&AUTO-1';
     I.seeInCurrentUrl(expectedUrl);
 });

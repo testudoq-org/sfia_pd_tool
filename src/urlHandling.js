@@ -22,20 +22,38 @@ function updateSfiaUrlHash(filteredData, updateHash) {
         );
         g_sfiahash = urlHash.join("+");
         updateCombinedUrlHash();
-        
+
 
     }
 }
 
+/**
+ * Updates the URL with the combined SFIA and LoR hashes.
+ * If both SFIA and LoR hashes are present, combines them with "&&" as a separator.
+ * If only the SFIA hash is present, sets the URL hash to the SFIA hash.
+ * If only the LoR hash is present, sets the URL hash to the LoR hash.
+ */
 function updateCombinedUrlHash() {
+
     if (g_sfiahash && g_lorhash) {
-        window.location.hash = g_sfiahash + "+" + g_lorhash;
+        window.location.hash = g_sfiahash + "&&" + g_lorhash;
     } else if (g_sfiahash) {
+        /**
+         * If only the SFIA hash is present, set the URL hash to the SFIA hash.
+         */
         window.location.hash = g_sfiahash;
     } else if (g_lorhash) {
-        window.location.hash = g_lorhash;
+        /**
+         * If only the LoR hash is present, set the URL hash to the LoR hash.
+         * Note that we add "&&" before the LoR hash, as the URL can't start with "&&"
+         */
+        window.location.hash = "&&" + g_lorhash;
     }
 }
+
+
+
+
 
 /**
  * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
