@@ -12,12 +12,15 @@ function updateSfiaUrlHash(filteredData, updateHash) {
     if (updateHash) {
         const urlHash = Object.values(filteredData).flatMap(category =>
             Object.values(category).flatMap(subCategory =>
-                Object.values(subCategory).map(skill =>
-                    `${skill["code"]}-${Object.keys(skill["levels"]).join('+')}`
-                )
+                Object.values(subCategory).map(skill => {
+                    const skillLevels = Object.keys(skill["levels"]).map(level =>
+                        `${skill["code"]}-${level}`
+                    );
+                    return skillLevels.join("+");
+                })
             )
         );
-        window.location.hash = urlHash.join("+");
+        window.location.hash = "#" + urlHash.join("+");
     }
 }
 

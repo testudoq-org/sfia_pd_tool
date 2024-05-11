@@ -7,6 +7,8 @@ let lorJson; // declare lorJson at a higher scope
 let lastExportTime = 0; // Initialize lastExportTime to 0
 const $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
 const SELECTED_VERSION = "selectedVersion";
+let g_sfiahash = "";
+let g_lorhash = "";
 ;
 // src/browserUpdate.js
 
@@ -982,12 +984,15 @@ function updateSfiaUrlHash(filteredData, updateHash) {
     if (updateHash) {
         const urlHash = Object.values(filteredData).flatMap(category =>
             Object.values(category).flatMap(subCategory =>
-                Object.values(subCategory).map(skill =>
-                    `${skill["code"]}-${Object.keys(skill["levels"]).join('+')}`
-                )
+                Object.values(subCategory).map(skill => {
+                    const skillLevels = Object.keys(skill["levels"]).map(level =>
+                        `${skill["code"]}-${level}`
+                    );
+                    return skillLevels.join("+");
+                })
             )
         );
-        window.location.hash = urlHash.join("+");
+        window.location.hash = "#" + urlHash.join("+");
     }
 }
 
