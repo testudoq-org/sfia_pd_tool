@@ -139,13 +139,13 @@ function renderLorOutput(lorJson, updateHash = true) {
     renderLorData(newLorJson);
 
     console.log("Generating URL hash");
-    const generatedHash = generateUrlHash(newLorJson); // Store generated hash in a new variable
-    console.log("generatedHash:", generatedHash);
+    const generatedLorHash = generateUrlHash(newLorJson); // Store generated hash in a new variable
+    console.log("generatedHash:", generatedLorHash);
 
     console.log("Updating URL hash if necessary");
     if (updateHash) {
         console.log("Updating URL hash");
-        updateURLWithLorCheckboxes(generatedHash); // Use the new variable
+        updateURLWithLorCheckboxes(generatedLorHash); // Use the new variable
     }
 
     console.log("Exiting renderLorOutput function");
