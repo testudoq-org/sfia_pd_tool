@@ -68,6 +68,9 @@ Scenario('Check multiple skills are added to URL with correct format SFIA-1+LOR-
     // Click on the checkbox with value "BSMO-2"
     I.click('#sfia-checkbox-BSMO-2');
 
+    // Click on the checkbox with value "AUTO-1"
+    I.click('#lor-checkbox-0-Autonomy-1');
+
     // Wait for the URL to change
     I.waitForURL();
 
@@ -78,6 +81,6 @@ Scenario('Check multiple skills are added to URL with correct format SFIA-1+LOR-
     console.log('Current URL:', currentUrl);
 
     // Assert that the current URL contains the expected hash value
-    const expectedUrl = 'http://127.0.0.1:5500/src/sfiapdgen.html#BPTS-2+BSMO-2';
+    const expectedUrl = 'http://127.0.0.1:5500/src/sfiapdgen.html#BPTS-2+BSMO-2+AUTO-1';
     I.seeInCurrentUrl(expectedUrl);
 });

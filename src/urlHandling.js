@@ -20,7 +20,20 @@ function updateSfiaUrlHash(filteredData, updateHash) {
                 })
             )
         );
-        window.location.hash = "#" + urlHash.join("+");
+        g_sfiahash = urlHash.join("+");
+        updateCombinedUrlHash();
+        
+
+    }
+}
+
+function updateCombinedUrlHash() {
+    if (g_sfiahash && g_lorhash) {
+        window.location.hash = g_sfiahash + "+" + g_lorhash;
+    } else if (g_sfiahash) {
+        window.location.hash = g_sfiahash;
+    } else if (g_lorhash) {
+        window.location.hash = g_lorhash;
     }
 }
 
@@ -43,10 +56,12 @@ function updateURLWithLorCheckboxes(hash) {
         .map(checkbox => checkbox.value);
 
     // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
-    const urlHash = selectedLorCheckboxes.join('+');
-    window.location.hash = urlHash;
-}
+    g_lorhash = selectedLorCheckboxes.join('+');
 
+    // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
+
+    updateCombinedUrlHash();
+}
 
 // src/urlHandling.js
 

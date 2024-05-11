@@ -143,7 +143,7 @@ function renderLorOutput(lorJson, updateHash = true) {
     console.log("generatedHash:", generatedLorHash);
 
     console.log("Updating URL hash if necessary");
-    if (updateHash) {
+    if (updateHash || generatedLorHash !== "") {
         console.log("Updating URL hash");
         updateURLWithLorCheckboxes(generatedLorHash); // Use the new variable
     }
