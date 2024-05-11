@@ -10,43 +10,33 @@
  *
  * @event hashchange
  */
-window.addEventListener('hashchange', async function () {
+async function handleHashChange() {
     try {
-        // Retrieve the storedVersion value from a cookie
-        let storedVersion = getCookie("selectedVersion");
+        let storedVersion = getCookie(SELECTED_VERSION);
 
-// If the storedVersion is defined
-if (typeof storedVersion !== 'undefined') {
-    // Fetch the selected version JSON data
-    let sfiaJson = await fetchData(storedVersion + ".json");
+        if (storedVersion == null) {
+            console.info('hashchange entry: storedVersion is undefined.');
+            await initializeContent();
+            return;
+        }
 
-    // Check if SFIA content has already been initialized
-    if (!sfiaJson) {
-        // Call the SelectSfiaCheckboxesAndInitialize function
-        // to pre-select checkboxes and initialize SFIA content
-       await  SelectSfiaCheckboxesAndInitialize(sfiaJson);
+        let sfiaJson = await fetchData(storedVersion + ".json");
 
-        // Call the selectLorCheckboxesAndInitialize function
-        // to pre-select LoR checkboxes and initialize LoR content
-       await selectLorCheckboxesAndInitialize(lorJson);
+        if (sfiaJson) {
+            console.log('SFIA content has already been initialized.');
+            return;
+        }
 
         console.info('hashchange entry: storedVersion is defined.');
-    } else {
-        // SFIA content has already been initialized, no need to call SelectSfiaCheckboxesAndInitialize
-        console.log('SFIA content has already been initialized.');
-    }
-        } else {
-            // Call the function to initialize SFIA content
-            await initializeSFIAContent(sfiaJson);
-            // Call the function to initalize LOR content
-            await initializeLorContent(lorJson);
-            console.info('hashchange entry: storedVersion is undefined.');
-        }
+        await initializeCheckboxesAndContent(sfiaJson);
     } catch (error) {
-        // Log any errors that occur during hash change handling
         console.error('An error occurred:', error.message);
+        // handle error (retry, show error message, etc.)
     }
-});
+}
+
+window.addEventListener('hashchange', handleHashChange);
+
 
 /**
  * Window onload function that is triggered when the page finishes loading.
@@ -57,43 +47,37 @@ if (typeof storedVersion !== 'undefined') {
  *  - Otherwise, it initializes SFIA content
  */
 window.onload = async function () {
-    // Log that the window onload function has been triggered
     console.log('Window onload function triggered');
 
     try {
-        // Get the current URL
+        // Call the function to update the URL hash initially
+        updateCombinedUrlHash();
+
+        // Set the stored version
+        await setStoredVersion("json_source_v8");
+
+        // Initialize SFIA content
+        await initializeSFIAContent(sfiaJson);
+        // Initialize LOR content
+        await initializeLorContent(lorJson);
+
         let currentURL = window.location.href;
         console.info('Current URL is:', currentURL);
 
-        // Call the setStoredVersion function to set the stored version
-        await setStoredVersion("json_source_v8");  // Provide the initial stored version
-
-
-        // Check if '/#/' is already present in the URL
         if (currentURL.includes('#')) {
-            // The hash exists Trigger the renderSfiaOutput function or any other logic needed after checkboxes are pre-selected
             // Parse URL hash and pre-select checkboxes
+            console.log('Hash exists in URL:', currentURL);
             const urlHash = window.location.hash.replace('#', '');
             const selectedCheckboxes = urlHash.split('+');
 
-            // If there are selected checkboxes, pre-select them
-
-            // Trigger the renderSfiaOutput function or any other logic needed after checkboxes are pre-selected
+            // Pre-select checkboxes if needed
             renderSfiaOutput(sfiaJson, false);
             renderLorOutput(lorJson, false);
-
         } else {
-            // Do another thing if the hash doesn't exist
             console.log('Hash does not exist, appending # to URL:', currentURL);
-            // If there are no selected checkboxes, initialize SFIA content
-            await initializeSFIAContent(sfiaJson);
-            // Display Levels of Responsibility data
-            await initializeLorContent();
-            console.log('Hash exists in URL:', currentURL);
-        }
 
+        }
     } catch (error) {
-        // Log any errors that occur during the onload function
-        console.error('An error occurred:', error.message);
+        console.error('An error occurred during the onload function:', error.message);
     }
 };

@@ -1,6 +1,38 @@
 //initializeContent.js
 
 /**
+ * Asynchronously initializes the content by calling the functions to initialize SFIA and LOR content.
+ */
+async function initializeContent() {
+    console.log('Initializing content...');
+
+    // Initialize SFIA content
+    console.log('Initializing SFIA content...');
+    await initializeSFIAContent(sfiaJson);
+    
+    // Initialize LOR content
+    console.log('Initializing LOR content...');
+    await initializeLorContent(lorJson);
+}
+
+/**
+ * Asynchronously initializes the checkboxes and content by calling the functions to select SFIA checkboxes and initialize LOR checkboxes.
+ * @param {Object} sfiaJson - The SFIA JSON data.
+ */
+async function initializeCheckboxesAndContent(sfiaJson) {
+    // Debugging information
+    console.log('Initializing checkboxes and content...');
+
+    // Select SFIA checkboxes and initialize
+    console.log('Selecting SFIA checkboxes and initializing...');
+    await SelectSfiaCheckboxesAndInitialize(sfiaJson);
+    
+    // Select LOR checkboxes and initialize
+    console.log('Selecting LOR checkboxes and initializing...');
+    await selectLorCheckboxesAndInitialize(lorJson);
+}
+
+/**
  * Initialize SFIA content by populating a table with SFIA JSON data.
  * @param {Object} sfiaJson - The SFIA JSON data.
  */
@@ -49,7 +81,8 @@ async function initializeSFIAContent(sfiaJson) {
                     const col3 = document.createElement('td');
                     col3.className += " skill_key";
                     row.appendChild(col3);
-
+                    
+                    let skillcode = sfiaJson[rootKey][subKey][skillKey]["code"]
                     const skillSpan = document.createElement('span');
                     skillSpan.textContent = skillKey + " - " + sfiaJson[rootKey][subKey][skillKey]["code"];
                     skillSpan.title = sfiaJson[rootKey][subKey][skillKey]["description"];
@@ -57,7 +90,7 @@ async function initializeSFIAContent(sfiaJson) {
 
                     // Add the selection boxes to the row
                     for (let i = 1; i < 8; i++) {
-                        row.appendChild(addSfiaSelectionBox(i, sfiaJson, rootKey, subKey, skillKey));
+                        row.appendChild(addSfiaSelectionBox(i, sfiaJson, rootKey, subKey, skillKey, skillcode));
                     }
 
                     table.appendChild(row); // add entire row to table.
@@ -85,8 +118,7 @@ async function initializeSFIAContent(sfiaJson) {
 }
 
 
-// Lor content below
-
+// Lor content below fo //initializeContent.js
 
 /**
  * Fetches and displays Levels of Responsibility data from the 'sfia-lors-8.json' file.
@@ -98,12 +130,10 @@ async function initializeLorContent() {
     try {
         // Fetch LOR JSON data
         const response = await fetch('json-sfia-lors-v8.json');
-        const lorJson = await response.json();
+        lorJson = await response.json();
 
         // Clear existing content in the LOR table body
-        const lorContent = document.getElementById('sfia-lors-content');
-        lorContent.innerHTML = '';
-        console.log('LOR content cleared');
+        document.getElementById('sfia-lors-content').innerHTML = '';
 
         // Loop through LOR JSON data and build the checklist
         lorJson.forEach((responsibility, index) => {
@@ -118,8 +148,7 @@ async function initializeLorContent() {
             <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-6" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-6" title="6 - Initiate, influence ~ ${responsibility['6 - Initiate, influence']}"></td> <!-- Level 6 -->
             <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-7" value="${responsibility.Responsibility.substring(0, 4).toUpperCase()}-7" title="7 - Set strategy, inspire, mobilise ~ ${responsibility['7 - Set strategy, inspire, mobilise']}"></td> <!-- Level 7 -->
         `;
-            lorContent.appendChild(row);
-            console.log('LOR row added');
+            document.getElementById('sfia-lors-content').appendChild(row);
 
             // Add a click event listener to each LOR checkbox
             const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
@@ -129,10 +158,7 @@ async function initializeLorContent() {
                     renderLorOutput(lorJson, false);
                 }, false);
             });
-            console.log('LOR checkbox event listener added');
         });
-        console.log('LOR content initialized');
-
     } catch (error) {
         console.error('Error fetching or displaying LOR data:', error);
     }
@@ -140,4 +166,5 @@ async function initializeLorContent() {
     if (window.location.href.split("#").length > 0) {
         renderLorOutput(lorJson, false);
     }
+
 }

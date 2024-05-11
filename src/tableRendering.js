@@ -8,84 +8,116 @@
  * @param {boolean} updateHash - Flag to indicate whether to update the URL hash.
  */
 function renderSfiaOutput(sfiaJson, updateHash = true) {
+    const checkedBoxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked');
+    const filteredData = filterSfiaData(sfiaJson, checkedBoxes);
+    renderSfiaHtmlOutput(filteredData);
+    updateSfiaUrlHash(filteredData, updateHash);
+}
 
-    // Get all the checked checkboxes
-    const sfiacheckedBoxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked');
+/**
+ * Filter SFIA JSON data based on the checked checkboxes.
+ * @param {Object} sfiaJson - The SFIA JSON data.
+ * @param {NodeList} checkedBoxes - The checked checkboxes.
+ * @returns {Object} - Filtered SFIA data.
+ */
+function filterSfiaData(sfiaJson, checkedBoxes) {
+    const filteredData = {};
+    checkedBoxes.forEach(box => {
+        const jsonData = JSON.parse(box.getAttribute('sfia-data'));
+        filteredData[jsonData.category] ??= {};
+        filteredData[jsonData.category][jsonData.subCategory] ??= {};
+        filteredData[jsonData.category][jsonData.subCategory][jsonData.skill] ??= {
+            description: sfiaJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.description,
+            code: sfiaJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.code,
+            levels: {},
+        };
+        filteredData[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"][jsonData.level] = sfiaJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.levels?.[jsonData.level];
+    });
+    return filteredData;
+}
 
-    // Create a new JSON object to store the filtered data
-    const newJson = sfiaJson;
-    const newArr = {};
-
-    // Create an array to store the URL hash parts
-    const urlHash = [];
-
-    if (sfiacheckedBoxes) {
-        // Loop through each checked checkbox
-        for (const box of sfiacheckedBoxes) {
-            // Parse the JSON data from the checkbox
-            const jsonData = JSON.parse(box.getAttribute('sfia-data'));
-
-            // Create a nested structure in newArr based on the JSON data
-            newArr[jsonData.category] ??= {};
-            newArr[jsonData.category][jsonData.subCategory] ??= {};
-            newArr[jsonData.category][jsonData.subCategory][jsonData.skill] ??= {
-                description: newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.description,
-                code: newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.code,
-                levels: {},
-            };
-
-            // Add the skill level data to newArr
-            newArr[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"][jsonData.level] = newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.levels?.[jsonData.level];
-
-            // Add the skill code and level to the URL hash array
-            urlHash.push(`${newJson[jsonData.category]?.[jsonData.subCategory]?.[jsonData.skill]?.code}-${jsonData.level}`);
-        }
-    }
-    // Get the HTML element to render the output
+/**
+ * Render HTML output based on filtered SFIA data.
+ * @param {Object} filteredData - Filtered SFIA data.
+ */
+function renderSfiaHtmlOutput(filteredData) {
     const html = document.getElementById('sfia-output');
-    html.innerHTML = ''; // Clear HTML content
-
-    // Render the filtered data in the HTML
-    for (const category in newArr) {
-        // Render category heading
+    html.innerHTML = '';
+    for (const category in filteredData) {
         const categoryEle = document.createElement('h1');
         categoryEle.textContent = category;
         html.appendChild(categoryEle);
-
-        // Render sub-category headings and skill information
-        for (const subCategory in newArr[category]) {
-            const subCategoryEle = document.createElement('h2');
-            subCategoryEle.textContent = subCategory;
-            html.appendChild(subCategoryEle);
-
-            for (const skill in newArr[category][subCategory]) {
-                const skillEle = document.createElement('h3');
-                skillEle.textContent = `${skill} - ${newArr[category][subCategory][skill]["code"]}`;
-                html.appendChild(skillEle);
-
-                const skillDescriptionEle = document.createElement('p');
-                skillDescriptionEle.textContent = newArr[category][subCategory][skill]["description"];
-                html.appendChild(skillDescriptionEle);
-
-                // Render skill level information
-                for (const level in newArr[category][subCategory][skill]["levels"]) {
-                    const levelEle = document.createElement('h4');
-                    levelEle.textContent = `Level ${level}`;
-                    html.appendChild(levelEle);
-
-                    const levelDescriptionEle = document.createElement('p');
-                    levelDescriptionEle.textContent = newArr[category][subCategory][skill]["levels"][level];
-                    html.appendChild(levelDescriptionEle);
-                }
-            }
-        }
-    }
-
-    // Update the URL hash if updateHash is true
-    if (updateHash) {
-        window.location.hash = urlHash.join("+");
+        renderSfiaSubCategoryAndSkills(html, filteredData[category]);
     }
 }
+
+/**
+ * Render sub-category headings and skill information.
+ * @param {HTMLElement} html - HTML element to render output.
+ * @param {Object} subCategories - Sub-categories data.
+ */
+function renderSfiaSubCategoryAndSkills(html, subCategories) {
+    for (const subCategory in subCategories) {
+        const subCategoryEle = document.createElement('h2');
+        subCategoryEle.textContent = subCategory;
+        html.appendChild(subCategoryEle);
+        renderSfiaSkills(html, subCategories[subCategory]);
+    }
+}
+
+/**
+ * Render skills information.
+ * @param {HTMLElement} html - HTML element to render output.
+ * @param {Object} skills - Skills data.
+ */
+function renderSfiaSkills(html, skills) {
+    for (const skill in skills) {
+        const skillEle = document.createElement('h3');
+        skillEle.textContent = `${skill} - ${skills[skill]["code"]}`;
+        html.appendChild(skillEle);
+        renderSfiaSkillDescription(html, skills[skill]["description"]);
+        renderSfiaSkillLevels(html, skills[skill]["levels"]);
+    }
+}
+
+/**
+ * Render skill description.
+ * @param {HTMLElement} html - HTML element to render output.
+ * @param {string} description - Skill description.
+ */
+function renderSfiaSkillDescription(html, description) {
+    const skillDescriptionEle = document.createElement('p');
+    skillDescriptionEle.textContent = description;
+    html.appendChild(skillDescriptionEle);
+}
+
+/**
+ * Render skill level information.
+ * @param {HTMLElement} html - HTML element to render output.
+ * @param {Object} levels - Skill levels data.
+ */
+function renderSfiaSkillLevels(html, levels) {
+    for (const level in levels) {
+        const levelEle = document.createElement('h4');
+        levelEle.textContent = `Level ${level}`;
+        html.appendChild(levelEle);
+        renderSfiaLevelDescription(html, levels[level]);
+    }
+}
+
+/**
+ * Render level description.
+ * @param {HTMLElement} html - HTML element to render output.
+ * @param {string} description - Level description.
+ */
+function renderSfiaLevelDescription(html, description) {
+    const levelDescriptionEle = document.createElement('p');
+    levelDescriptionEle.textContent = description;
+    html.appendChild(levelDescriptionEle);
+}
+
+
+// src/tableRendering.js
 
 /**
  * Render the output HTML based on the selected Levels of Responsibility (LoR) checkboxes.
@@ -107,13 +139,13 @@ function renderLorOutput(lorJson, updateHash = true) {
     renderLorData(newLorJson);
 
     console.log("Generating URL hash");
-    updateHash = generateUrlHash(newLorJson);
-    console.log("updateHash:", updateHash);
+    const generatedLorHash = generateUrlHash(newLorJson); // Store generated hash in a new variable
+    console.log("generatedHash:", generatedLorHash);
 
     console.log("Updating URL hash if necessary");
-    if (updateHash) {
+    if (updateHash || generatedLorHash !== "") {
         console.log("Updating URL hash");
-        updateURLWithLorCheckboxes(updateHash);
+        updateURLWithLorCheckboxes(generatedLorHash); // Use the new variable
     }
 
     console.log("Exiting renderLorOutput function");

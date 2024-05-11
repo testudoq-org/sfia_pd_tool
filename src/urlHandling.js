@@ -2,55 +2,68 @@
 
 // This file includes functions for generating and updating URL hashes based on LoR data and SFIA checkboxes.
 
+
 /**
- * Generate URL hash based on LoR data.
- * 
- * @param {Array} newLorJson - Array containing LoR data objects.
- * @returns {string} - URL hash string.
+ * Update the URL hash based on filtered SFIA data.
+ * @param {Object} filteredData - Filtered SFIA data.
+ * @param {boolean} updateHash - Flag to indicate whether to update the URL hash.
  */
-function generateUrlHash(newLorJson) {
-    console.log("Entering generateUrlHash function");
-    // Initialize an empty array to store LoR category-level pairs
-    const urlHash = [];
+function updateSfiaUrlHash(filteredData, updateHash) {
+    if (updateHash) {
+        const urlHash = Object.values(filteredData).flatMap(category =>
+            Object.values(category).flatMap(subCategory =>
+                Object.values(subCategory).map(skill => {
+                    const skillLevels = Object.keys(skill["levels"]).map(level =>
+                        `${skill["code"]}-${level}`
+                    );
+                    return skillLevels.join("+");
+                })
+            )
+        );
+        g_sfiahash = urlHash.join("+");
+        updateCombinedUrlHash();
 
-    console.log("newLorJson:", newLorJson);
 
-    // Loop through the newLorJson array and add LoR category-level pairs to the urlHash array
-    for (const { lorCategory, lorLevel } of newLorJson) {
-        console.log(`Adding ${lorCategory}-${lorLevel} to urlHash`);
-        urlHash.push(`${lorCategory}-${lorLevel}`);
     }
-
-    console.log("urlHash:", urlHash);
-
-    // Return the URL hash string
-    const urlHashStr = urlHash.join("+");
-    console.log("Returning urlHashStr:", urlHashStr);
-    return urlHashStr;
 }
 
 /**
- * Update URL hash based on LoR data.
- * 
- * @param {Array} newLorJson - Array containing LoR data objects.
+ * Updates the URL with the combined SFIA and LoR hashes.
+ * If both SFIA and LoR hashes are present, combines them with "&&" as a separator.
+ * If only the SFIA hash is present, sets the URL hash to the SFIA hash.
+ * If only the LoR hash is present, sets the URL hash to the LoR hash.
  */
-function updateURLWithSfiaCheckboxes(newLorJson) {
-    console.log("Entering updateURLWithSfiaCheckboxes function");
-    console.log("newLorJson:", newLorJson);
-    const urlHashStr = generateUrlHash(newLorJson);
-    console.log("Generated urlHashStr:", urlHashStr);
-    window.location.hash = urlHashStr;
-    console.log("URL hash updated to:", urlHashStr);
+function updateCombinedUrlHash() {
+
+    if (g_sfiahash && g_lorhash) {
+        window.location.hash = g_sfiahash + "&&" + g_lorhash;
+    } else if (g_sfiahash) {
+        /**
+         * If only the SFIA hash is present, set the URL hash to the SFIA hash.
+         */
+        window.location.hash = g_sfiahash;
+    } else if (g_lorhash) {
+        /**
+         * If only the LoR hash is present, set the URL hash to the LoR hash.
+         * Note that we add "&&" before the LoR hash, as the URL can't start with "&&"
+         */
+        window.location.hash = "&&" + g_lorhash;
+    }
 }
+
+
+
+
 
 /**
  * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
- * 
  * This function retrieves all LoR checkboxes on the page, filters them to only include
  * the checked ones, retrieves their 'id' attribute, and joins them with '+' as a separator.
  * The resulting string is then set as the URL hash.
+ * 
+ * @param {string} hash - The combined LoR hash string.
  */
-function updateURLWithLorCheckboxes() {
+function updateURLWithLorCheckboxes(hash) {
     // Retrieve all LoR checkboxes on the page.
     const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
 
@@ -61,6 +74,66 @@ function updateURLWithLorCheckboxes() {
         .map(checkbox => checkbox.value);
 
     // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
-    const urlHash = selectedLorCheckboxes.join('+');
-    window.location.hash = urlHash;
+    g_lorhash = selectedLorCheckboxes.join('+');
+
+    // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
+
+    updateCombinedUrlHash();
+}
+
+// src/urlHandling.js
+
+/**
+ * Generate URL hash based on combined LoR and SFIA data.
+ * 
+ * @param {Object} lorJson - The LoR JSON data.
+ * @param {Object} sfiaJson - The SFIA JSON data.
+ * @returns {string} - Combined URL hash string.
+ */
+function generateUrlHash(lorJson, sfiaJson) {
+    const lorHash = generateLorHash(lorJson);
+    const sfiaHash = generateSfiaHash(sfiaJson);
+    return `${lorHash}+${sfiaHash}`; // Combine LoR and SFIA hashes
+}
+
+// src/urlHandling.js
+
+/**
+ * Generate URL hash based on LoR data.
+ * 
+ * @param {Object} lorJson - The LoR JSON data.
+ * @returns {string} - LoR URL hash string.
+ */
+function generateLorHash(lorJson) {
+    const urlHash = [];
+
+    for (const { lorCategory, lorLevel } of lorJson) {
+        urlHash.push(`${lorCategory}-${lorLevel}`);
+    }
+
+    return urlHash.join("+");
+}
+
+// src/urlHandling.js
+
+/**
+ * Generate URL hash based on SFIA data.
+ * 
+ * @param {Object} sfiaJson - The SFIA JSON data.
+ * @returns {string} - SFIA URL hash string.
+ */
+function generateSfiaHash(sfiaJson) {
+    const urlHash = [];
+
+    for (const category in sfiaJson) {
+        for (const subCategory in sfiaJson[category]) {
+            for (const skill in sfiaJson[category][subCategory]) {
+                const skillCode = sfiaJson[category][subCategory][skill]["code"];
+                const skillLevels = Object.keys(sfiaJson[category][subCategory][skill]["levels"]).join('+');
+                urlHash.push(`${skillCode}-${skillLevels}`);
+            }
+        }
+    }
+
+    return urlHash.join("+");
 }
