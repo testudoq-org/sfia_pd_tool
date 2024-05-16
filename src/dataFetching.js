@@ -109,5 +109,6 @@ async function fetchSelectedVersionData(dropdownValue) {
  * @param {Object} jsonData - The JSON data for the selected version.
  */
 function setupEventListenersForData(jsonData) {
+    sfiaJson = jsonData; // Assign fetched data to sfiaJson
     setupEventListeners(jsonData);
 }

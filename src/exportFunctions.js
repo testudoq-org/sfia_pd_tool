@@ -17,63 +17,36 @@ function exportCSV(event, sfiaJson) {
 
     // Check if the last export was within the timeout duration
     if (isExportSkippedDueToTimeout(3000)) {
-        console.log("Export HTML skipped due to timeout.");
+        console.log("Export CSV skipped due to timeout."); // Added console.log statement
         return; // Return early to prevent multiple downloads
     }
 
     // Update the last export time
     lastExportTime = new Date().getTime();
 
-    // Get all the checked checkboxes
-    const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
-
     // Initialize an empty array to store the CSV data
     const data = [];
+    let checked_boxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked');
 
-    // Loop through each checked checkbox
-    for (const box of checkedBoxes) {
-        // Parse the JSON data from the checkbox
-        const jsonData = JSON.parse(box.getAttribute('sfia-data'));
 
-        // Check if required properties exist before accessing them
-        const categoryData = sfiaJson[jsonData.category];
-        const subCategoryData = categoryData?.[jsonData.subCategory];
-        const skillData = subCategoryData?.[jsonData.skill];
-
-        // If all required data exists
-        if (categoryData && subCategoryData && skillData) {
-            const skillCode = skillData["code"];
-            const skillDescription = skillData["description"];
-            const skillLevel = skillData["levels"]?.[jsonData.level];
-
-            // If all required skill data exists
-            if (skillCode && skillDescription && skillLevel) {
-                // Add the data to the array
-                data.push([
-                    `${jsonData.skill} ${skillCode}-${jsonData.level}`,
-                    skillDescription,
-                    skillLevel
-                ]);
-            } else {
-                // Log an error if required skill data is missing
-                console.error(`Incomplete or missing data for ${jsonData.category}/${jsonData.subCategory}/${jsonData.skill}`);
-            }
-        } else {
-            // Log an error if required category or subcategory data is missing
-            console.error(`Skill data not found for ${jsonData.category}/${jsonData.subCategory}/${jsonData.skill}`);
-        }
+    for (let i = 0, box; (box = checked_boxes[i]) !== undefined; i++) {
+        let json_data = JSON.parse(box.getAttribute('sfia-data'));
+        data.push([json_data.skill + " " + sfiaJson[json_data.category][json_data.subCategory][json_data.skill]["code"] + "-" + json_data.level, sfiaJson[json_data.category][json_data.subCategory][json_data.skill]["description"], sfiaJson[json_data.category][json_data.subCategory][json_data.skill]["levels"][json_data.level]]);
     }
 
-    // Convert the data array to a CSV string
-    const csvContent = data.map(infoArray => `"${infoArray.join('","')}"`).join("\n");
+    var csvContent = "";
+    data.forEach(function (infoArray, index) {
 
-    // Create a download link for the CSV file
-    const encodedUri = encodeURI(csvContent);
-    const a = document.createElement('a');
+        var dataString = '"' + infoArray.join('","') + '"';
+        csvContent += dataString + "\n";
+
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let a = document.createElement('a');
     a.href = 'data:attachment/csv,' + encodedUri;
     a.download = 'PositionSummary.csv';
 
-    // Append the link to the body, trigger the click event, and remove the link
     document.body.appendChild(a);
     a.click();
     a.remove();
