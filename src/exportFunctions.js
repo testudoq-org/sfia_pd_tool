@@ -52,21 +52,39 @@ function exportCSV(event, sfiaJson) {
     event.preventDefault();
 
     if (isExportSkippedDueToTimeout(3000)) {
-        console.log("Export CSV skipped due to timeout.");
-        return;
+        console.log("Export CSV skipped due to timeout."); // Added console.log statement
+        return; // Return early to prevent multiple downloads
     }
 
     lastExportTime = new Date().getTime();
 
-    const checkedBoxes = getCheckedBoxes();
-    const processedData = processCheckedBoxes(checkedBoxes, sfiaJson);
-    const csvContent = generateCSVContent(processedData);
+    // Get all the checked checkboxes
+    const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
 
-    const encodedUri = encodeURI(csvContent);
-    const a = document.createElement('a');
+    // Initialize an empty array to store the CSV data
+    const data = [];
+    let checked_boxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked');
+
+
+    for (let i = 0, box; (box = checked_boxes[i]) !== undefined; i++) {
+        let json_data = JSON.parse(box.getAttribute('sfia-data'));
+        data.push([json_data.skill + " " + sfiaJson[json_data.category][json_data.subCategory][json_data.skill]["code"] + "-" + json_data.level, sfiaJson[json_data.category][json_data.subCategory][json_data.skill]["description"], sfiaJson[json_data.category][json_data.subCategory][json_data.skill]["levels"][json_data.level]]);
+    }
+
+    var csvContent = "";
+    data.forEach(function (infoArray, index) {
+
+        var dataString = '"' + infoArray.join('","') + '"';
+        csvContent += dataString + "\n";
+
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let a = document.createElement('a');
     a.href = 'data:attachment/csv,' + encodedUri;
     a.download = 'PositionSummary.csv';
 
+    // Append the link to the body, trigger the click event, and remove the link
     document.body.appendChild(a);
     a.click();
     a.remove();
