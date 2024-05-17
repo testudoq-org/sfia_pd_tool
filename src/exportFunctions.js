@@ -68,15 +68,27 @@ function exportCSV(event, sfiaJson) {
 
     console.log('CSV data:', data);
 
-    let csvContent = data.join("\n");
-    let encodedUri = encodeURI(csvContent);
-    let a = document.createElement('a');
-    a.href = 'data:attachment/csv,' + encodedUri;
+    // Convert the data array to CSV format
+    let csvContent = data.map(row => row.join(',')).join('\n');
+
+    // Create a Blob object from the CSV content
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+
+    // Generate a URL for downloading the Blob object
+    const url = URL.createObjectURL(blob);
+
+    // Create a link element and trigger the download
+    const a = document.createElement('a');
+    a.href = url;
     a.download = 'PositionSummary.csv';
 
+    // Append the link to the document and trigger the download
     document.body.appendChild(a);
     a.click();
-    a.remove();
+
+    // Clean up
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 /**
