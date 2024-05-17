@@ -2,7 +2,7 @@
 
 // This file contains constant variables or configuration values used throughout the project.
 
-let sfiaJson = {};  // declare sfiaJson at a higher scope
+let sfiaJson = fetchSelectedVersionData();  // declare sfiaJson at a higher scope
 let lorJson; // declare lorJson at a higher scope
 let lastExportTime = 0; // Initialize lastExportTime to 0
 const $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
@@ -201,46 +201,35 @@ function generateCSVContent(data) {
     return csvContent;
 }
 
+/**
+ * Export the HTML content to a downloadable CSV file.
+ * @param {Event} event - The event triggering the function.
+ * @param {Object} sfiaJson - The sfiaJson object containing all the data.
+ */
 function exportCSV(event, sfiaJson) {
-    console.log('Export CSV triggered');
+    console.log('Export CSV button triggered');
     console.log('Event:', event);
-
     event.preventDefault();
 
-    if (isExportSkippedDueToTimeout(3000)) {
-        console.log("Export CSV skipped due to timeout."); // Added console.log statement
-        return; // Return early to prevent multiple downloads
-    }
-
-    lastExportTime = new Date().getTime();
-
-    // Get all the checked checkboxes
-    const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
-
     // Initialize an empty array to store the CSV data
+    const checkedBoxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked');
+    console.log('Number of checked boxes:', checkedBoxes.length);
+
     const data = [];
-    let checked_boxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked');
 
-
-    for (let i = 0, box; (box = checked_boxes[i]) !== undefined; i++) {
-        let json_data = JSON.parse(box.getAttribute('sfia-data'));
-        data.push([json_data.skill + " " + sfiaJson[json_data.category][json_data.subCategory][json_data.skill]["code"] + "-" + json_data.level, sfiaJson[json_data.category][json_data.subCategory][json_data.skill]["description"], sfiaJson[json_data.category][json_data.subCategory][json_data.skill]["levels"][json_data.level]]);
+    for (let i = 0, box; (box = checkedBoxes[i]) !== undefined; i++) {
+        const jsonData = JSON.parse(box.getAttribute('sfia-data'));
+        data.push([jsonData.skill + " " + sfiaJson[jsonData.category][jsonData.subCategory][jsonData.skill]["code"] + "-" + jsonData.level, sfiaJson[jsonData.category][jsonData.subCategory][jsonData.skill]["description"], sfiaJson[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"][jsonData.level]]);
     }
 
-    var csvContent = "";
-    data.forEach(function (infoArray, index) {
+    console.log('CSV data:', data);
 
-        var dataString = '"' + infoArray.join('","') + '"';
-        csvContent += dataString + "\n";
-
-    });
-
+    let csvContent = data.join("\n");
     let encodedUri = encodeURI(csvContent);
     let a = document.createElement('a');
     a.href = 'data:attachment/csv,' + encodedUri;
     a.download = 'PositionSummary.csv';
 
-    // Append the link to the body, trigger the click event, and remove the link
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -1078,11 +1067,10 @@ function updateCombinedUrlHash() {
          */
         window.location.hash = "&&" + g_lorhash;
     }
+    else{
+        window.location.hash = "";
+    }
 }
-
-
-
-
 
 /**
  * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.

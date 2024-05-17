@@ -49,6 +49,8 @@
     },
     "dependencies": {
         "@codeceptjs/helper": "^2.0.4",
-        "codeceptjs": "^3.6.1"
+        "codeceptjs": "^3.6.1",
+        "csv-parser": "^3.0.0",
+        "fs": "^0.0.1-security"
     }
 }
