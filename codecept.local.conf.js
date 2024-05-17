@@ -17,7 +17,7 @@ exports.config = {
   // Define the output directory for test reports
   output: './output',
 
-  // Configure helpers (e.g., Playwright, EndpointHelper)
+  // Configure helpers (e.g., Playwright, EndpointHelper, FileHelper)
   helpers: {
     // Define custom helper 'EndpointHelper' and specify its location
     EndpointHelper: {
@@ -26,9 +26,13 @@ exports.config = {
     // Configure Playwright helper (e.g., browser, url, executablePath)
     Playwright: {
       browser: 'firefox', // Specify the browser to be used for testing
-      url: '(link unavailable)', // Specify the base URL of your application
+      url: 'http://127.0.0.1:5500/src/sfiapdgen.html', // Specify the base URL of your application
       executablePath: 'D:\\Program Files\\Mozilla Firefox\\firefox.exe', // Specify the path to the browser executable
       show: true // Show the browser window during tests (set to false for headless mode)
+    },
+    // Define custom helper 'FileHelper' and specify its location
+    FileHelper: {
+      require: './test/helpers/FileHelper.js'
     }
   },
 

@@ -1,9 +1,7 @@
 // src/exportFunctions.js
 
-// This file includes functions for exporting checked box data to a CSV file and exporting the HTML content to a downloadable HTML file.
-
 function getCheckedBoxes() {
-    return document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked');
+    return document.querySelectorAll('input[type="checkbox"][id^="sfia-checkbox-"]:checked');
 }
 
 function processCheckedBoxes(checkedBoxes, sfiaJson) {
@@ -45,31 +43,13 @@ function generateCSVContent(data) {
     return csvContent;
 }
 
-/**
- * Export the HTML content to a downloadable CSV file.
- * @param {Event} event - The event triggering the function.
- * @param {Object} sfiaJson - The sfiaJson object containing all the data.
- */
 function exportCSV(event, sfiaJson) {
     console.log('Export CSV button triggered');
-    console.log('Event:', event);
     event.preventDefault();
 
-    // Initialize an empty array to store the CSV data
-    const checkedBoxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked');
-    console.log('Number of checked boxes:', checkedBoxes.length);
-
-    const data = [];
-
-    for (let i = 0, box; (box = checkedBoxes[i]) !== undefined; i++) {
-        const jsonData = JSON.parse(box.getAttribute('sfia-data'));
-        data.push([jsonData.skill + " " + sfiaJson[jsonData.category][jsonData.subCategory][jsonData.skill]["code"] + "-" + jsonData.level, sfiaJson[jsonData.category][jsonData.subCategory][jsonData.skill]["description"], sfiaJson[jsonData.category][jsonData.subCategory][jsonData.skill]["levels"][jsonData.level]]);
-    }
-
-    console.log('CSV data:', data);
-
-    // Convert the data array to CSV format
-    let csvContent = data.map(row => row.join(',')).join('\n');
+    const checkedBoxes = getCheckedBoxes();
+    const processedData = processCheckedBoxes(checkedBoxes, sfiaJson);
+    const csvContent = generateCSVContent(processedData);
 
     // Create a Blob object from the CSV content
     const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -81,13 +61,9 @@ function exportCSV(event, sfiaJson) {
     const a = document.createElement('a');
     a.href = url;
     a.download = 'PositionSummary.csv';
-
-    // Append the link to the document and trigger the download
-    document.body.appendChild(a);
     a.click();
 
     // Clean up
-    document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
 
