@@ -8,7 +8,8 @@
       "url": "http://127.0.0.1:5500/src/sfiapdgen.html#BPTS-3+BSMO-4",
       "webRoot": "${workspaceFolder}",
       "outFiles": ["${workspaceFolder}/src/*.js"],
-      "preLaunchTask": "grunt build"
+      "preLaunchTask": "Start Live Server",
+      "postDebugTask": "Stop Live Server"
     },
     {
       "name": "Full Launch Edge against root URL",
@@ -17,7 +18,8 @@
       "url": "http://127.0.0.1:5500/src/sfiapdgen.html",
       "webRoot": "${workspaceFolder}",
       "outFiles": ["${workspaceFolder}/src/*.js"],
-      "preLaunchTask": "grunt build"
+      "preLaunchTask": "Start Live Server",
+      "postDebugTask": "Stop Live Server"
     },
     {
       "name": "Launch Edge predefined URL",
@@ -25,7 +27,9 @@
       "request": "launch",
       "url": "http://127.0.0.1:5500/src/sfiapdgen.html#BPTS-3+BSMO-4",
       "webRoot": "${workspaceFolder}",
-      "outFiles": ["${workspaceFolder}/src/*.js"]
+      "outFiles": ["${workspaceFolder}/src/*.js"],
+      "preLaunchTask": "Start Live Server",
+      "postDebugTask": "Stop Live Server"
     },
     {
       "name": " Launch Edge against root URL",
@@ -33,7 +37,9 @@
       "request": "launch",
       "url": "http://127.0.0.1:5500/src/sfiapdgen.html",
       "webRoot": "${workspaceFolder}",
-      "outFiles": ["${workspaceFolder}/src/*.js"]
+      "outFiles": ["${workspaceFolder}/src/*.js"],
+      "preLaunchTask": "Start Live Server",
+      "postDebugTask": "Stop Live Server"
     }
   ]
 }

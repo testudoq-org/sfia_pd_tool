@@ -1,14 +1,27 @@
 {
     "version": "2.0.0",
     "tasks": [
-        {
-            "label": "grunt build",
-            "type": "shell",
-            "command": "grunt build",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+      {
+        "label": "grunt build",
+        "type": "shell",
+        "command": "grunt build",
+        "group": {
+          "kind": "build",
+          "isDefault": true
         }
+      },
+      {
+        "label": "Start Live Server",
+        "type": "shell",
+        "command": "npm run start-server",
+        "group": "none"
+      },
+      {
+        "label": "Stop Live Server",
+        "type": "shell",
+        "command": "npm run stop-server",
+        "group": "none"
+      }
     ]
-}
+  }
+  
