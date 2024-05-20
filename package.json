@@ -13,12 +13,16 @@
         "codeceptjs:ui": "codecept-ui --app",
         "codeceptjs:demo": "codeceptjs run --steps -c node_modules/@codeceptjs/examples",
         "codeceptjs:demo:headless": "HEADLESS=true codeceptjs run --steps -c node_modules/@codeceptjs/examples",
-        "codeceptjs:demo:ui": "codecept-ui --app  -c node_modules/@codeceptjs/examples"
+        "codeceptjs:demo:ui": "codecept-ui --app  -c node_modules/@codeceptjs/examples",
+        "start-server": "echo y | npx live-server --port=5500 --open=src/sfiapdgen.html",
+        "stop-server": "taskkill /IM node.exe /F",
+        "testLocal": "grunt testLocal"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@codeceptjs/helper": "^2.0.4",
         "@linthtml/linthtml": "^0.9.6",
         "clean-webpack-plugin": "^4.0.0",
         "copy-webpack-plugin": "^12.0.2",
@@ -48,7 +52,8 @@
         "webpack-cli": "^5.1.4"
     },
     "dependencies": {
-        "@codeceptjs/helper": "^2.0.4",
-        "codeceptjs": "^3.6.1"
+        "codeceptjs": "^3.6.1",
+        "csv-parser": "^3.0.0",
+        "fs": "^0.0.1-security"
     }
 }

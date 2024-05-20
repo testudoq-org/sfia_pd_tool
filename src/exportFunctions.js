@@ -1,82 +1,84 @@
 // src/exportFunctions.js
 
-// This file includes functions for exporting checked box data to a CSV file and exporting the HTML content to a downloadable HTML file.
+function getCheckedBoxes() {
+    return document.querySelectorAll('input[type="checkbox"][id^="sfia-checkbox-"]:checked');
+}
 
-/**
- * Function to export checked box data to a CSV file.
- * @param {Event} event - The event triggering the function.
- * @param {Object} sfiaJson - The sfiaJson object containing all the data.
- */
-function exportCSV(event, sfiaJson) {
-    // Log the function trigger and the event object
-    console.log('Export CSV triggered');
-    console.log('Event:', event);
-
-    // Prevent the default action associated with the event
-    event.preventDefault();
-
-    // Check if the last export was within the timeout duration
-    if (isExportSkippedDueToTimeout(3000)) {
-        console.log("Export HTML skipped due to timeout.");
-        return; // Return early to prevent multiple downloads
-    }
-
-    // Update the last export time
-    lastExportTime = new Date().getTime();
-
-    // Get all the checked checkboxes
-    const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
-
-    // Initialize an empty array to store the CSV data
+function processCheckedBoxes(checkedBoxes, sfiaJson) {
     const data = [];
-
-    // Loop through each checked checkbox
-    for (const box of checkedBoxes) {
-        // Parse the JSON data from the checkbox
+    checkedBoxes.forEach(box => {
         const jsonData = JSON.parse(box.getAttribute('sfia-data'));
-
-        // Check if required properties exist before accessing them
         const categoryData = sfiaJson[jsonData.category];
-        const subCategoryData = categoryData?.[jsonData.subCategory];
-        const skillData = subCategoryData?.[jsonData.skill];
+        const subCategoryData = categoryData[jsonData.subCategory];
+        const skillData = subCategoryData[jsonData.skill];
 
-        // If all required data exists
         if (categoryData && subCategoryData && skillData) {
             const skillCode = skillData["code"];
             const skillDescription = skillData["description"];
-            const skillLevel = skillData["levels"]?.[jsonData.level];
+            const skillLevel = skillData["levels"][jsonData.level];
 
-            // If all required skill data exists
             if (skillCode && skillDescription && skillLevel) {
-                // Add the data to the array
                 data.push([
                     `${jsonData.skill} ${skillCode}-${jsonData.level}`,
                     skillDescription,
                     skillLevel
                 ]);
             } else {
-                // Log an error if required skill data is missing
                 console.error(`Incomplete or missing data for ${jsonData.category}/${jsonData.subCategory}/${jsonData.skill}`);
             }
         } else {
-            // Log an error if required category or subcategory data is missing
             console.error(`Skill data not found for ${jsonData.category}/${jsonData.subCategory}/${jsonData.skill}`);
         }
-    }
+    });
 
-    // Convert the data array to a CSV string
-    const csvContent = data.map(infoArray => `"${infoArray.join('","')}"`).join("\n");
+    return data;
+}
 
-    // Create a download link for the CSV file
-    const encodedUri = encodeURI(csvContent);
+function generateCSVContent(data) {
+    let csvContent = "";
+    data.forEach(infoArray => {
+        let dataString = '"' + infoArray.join('","') + '"';
+        csvContent += dataString + "\n";
+    });
+    return csvContent;
+}
+
+
+/**
+ * Export the CSV content to a downloadable CSV file.
+ * @param {Event} event - The event triggering the function.
+ * @param {Object} sfiaJson - The sfiaJson object containing all the data.
+ */
+function exportCSV(event, sfiaJson) {
+    // Log the function trigger and the event object
+    console.log('Export CSV button triggered');
+    console.log('Event:', event);
+
+    // Prevent the default action associated with the event
+    event.preventDefault();
+
+    // Get the checked boxes
+    const checkedBoxes = getCheckedBoxes();
+
+    // Process the checked boxes and generate the CSV content
+    const processedData = processCheckedBoxes(checkedBoxes, sfiaJson);
+    const csvContent = generateCSVContent(processedData);
+
+    // Create a blob from the CSV content
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+
+    // Create an anchor element to download the CSV file
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = 'data:attachment/csv,' + encodedUri;
+    a.href = url;
     a.download = 'PositionSummary.csv';
-
-    // Append the link to the body, trigger the click event, and remove the link
+    a.setAttribute('visibility', 'hidden');
     document.body.appendChild(a);
+
+    // Trigger the download
     a.click();
-    a.remove();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 /**

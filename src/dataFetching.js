@@ -48,30 +48,67 @@ function getCookie(name) {
     }
 }
 
+// Function to set the selected version in the cookie
+function setStoredVersionToCookie(version) {
+    document.cookie = `selectedVersion=${version}`;
+}
+
 
 /**
  * Sets the stored version based on the provided value.
  * @param {string} storedVersion - The version to be stored.
  */
 function setStoredVersion(storedVersion) {
-    // Get the stored version from the cookie, if any
-    let storedVersionFromCookie = getCookie("selectedVersion");
+    const storedVersionFromCookie = getStoredVersionFromCookie();
+    const dropdownValue = setDropdownValue(storedVersionFromCookie);
+    const jsonData = fetchSelectedVersionData(dropdownValue);
+    setupEventListenersForData(jsonData);
+}
 
-    // If no stored version is found in the cookie, use the provided storedVersion
-    if (!storedVersionFromCookie) {
-        storedVersionFromCookie = storedVersion;
+/**
+ * Retrieves the stored version from the cookie, if any.
+ * @returns {string} The stored version from the cookie or null if not found.
+ */
+function getStoredVersionFromCookie() {
+    let storedVersionFromCookie = getCookie("selectedVersion");
+    return storedVersionFromCookie || null;
+}
+
+/**
+ * Sets the selected version in the dropdown element.
+ * @param {string} storedVersion - The version to be set in the dropdown.
+ * @returns {string} The selected version.
+ */
+function setDropdownValue(storedVersion) {
+    let dropdown = document.getElementById("jsonVersionSelect");
+
+    // Check if dropdown value is empty, null, or undefined
+    if (!dropdown.value || dropdown.value === null || dropdown.value === undefined) {
+        dropdown.value = storedVersion;
     }
 
-    // Set the selected version in the dropdown
-    let dropdown = document.getElementById("jsonVersionSelect");
-    dropdown.value = storedVersionFromCookie;
+    return dropdown.value;
+}
 
-    // Trigger the changeJsonVersion function to download the selected version
-    changeJsonVersion();  // Remove await here
 
-    // Fetch the selected version JSON data
-    const sfiaJson = fetchData(storedVersionFromCookie + ".json");  // Remove await here
+/**
+ * Fetches the selected version JSON data based on the dropdown value.
+ * @param {string} dropdownValue - The value selected in the dropdown.
+ * @returns {Object} The JSON data for the selected version.
+ */
+async function fetchSelectedVersionData(dropdownValue) {
+    // Set default value if dropdownValue is empty or null
+    dropdownValue = dropdownValue || "json_source_v8";
+    const jsonUrl = dropdownValue + ".json";
+    const jsonData = await fetchData(jsonUrl);
+    return jsonData;
+}
 
-    // Call the function to set up event listeners
-    setupEventListeners(sfiaJson);
+/**
+ * Sets up event listeners based on the provided JSON data.
+ * @param {Object} jsonData - The JSON data for the selected version.
+ */
+function setupEventListenersForData(jsonData) {
+    sfiaJson = jsonData; // Assign fetched data to sfiaJson
+    setupEventListeners(jsonData);
 }

@@ -12,8 +12,15 @@ function changeJsonVersion() {
     // Get the selected value from the dropdown
     let selectedVersion = document.getElementById("jsonVersionSelect").value;
 
-    // Set a cookie to remember the selected version
-    document.cookie = "selectedVersion=" + selectedVersion;
+    // Check if selectedVersion is empty, null, or undefined, set default
+    if (!selectedVersion || selectedVersion === null || selectedVersion === undefined) {
+
+
+        selectedVersion = "json_source_v8";
+    }
+
+    // Set the selected version in the cookie
+    setStoredVersionToCookie(selectedVersion);
 
     // Get the current host
     let currentHost = window.location.origin;

@@ -53,8 +53,17 @@ window.onload = async function () {
         // Call the function to update the URL hash initially
         updateCombinedUrlHash();
 
-        // Set the stored version
-        await setStoredVersion("json_source_v8");
+        // Get the stored version from the cookie
+        let storedVersion = getStoredVersionFromCookie();
+
+        // If the stored version exists, use it. Otherwise, use the default version.
+        let selectedVersion = storedVersion ? storedVersion : "json_source_v8";
+
+        // Set the selected version in the dropdown
+        document.getElementById("jsonVersionSelect").value = selectedVersion;
+
+        // Set the data on table
+        await changeJsonVersion();
 
         // Initialize SFIA content
         await initializeSFIAContent(sfiaJson);
@@ -73,10 +82,15 @@ window.onload = async function () {
             // Pre-select checkboxes if needed
             renderSfiaOutput(sfiaJson, false);
             renderLorOutput(lorJson, false);
+
+
         } else {
             console.log('Hash does not exist, appending # to URL:', currentURL);
 
         }
+
+        // Set the stored version
+        setStoredVersion("json_source_v8");
     } catch (error) {
         console.error('An error occurred during the onload function:', error.message);
     }

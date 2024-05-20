@@ -49,11 +49,10 @@ function updateCombinedUrlHash() {
          */
         window.location.hash = "&&" + g_lorhash;
     }
+    else{
+        window.location.hash = "";
+    }
 }
-
-
-
-
 
 /**
  * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.

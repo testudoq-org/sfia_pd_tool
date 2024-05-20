@@ -2,7 +2,7 @@
 
 // This file contains constant variables or configuration values used throughout the project.
 
-let sfiaJson;  // declare sfiaJson at a higher scope
+let sfiaJson = fetchSelectedVersionData();  // declare sfiaJson at a higher scope
 let lorJson; // declare lorJson at a higher scope
 let lastExportTime = 0; // Initialize lastExportTime to 0
 const $buoop = { required: { e: -4, f: -3, o: -3, s: -1, c: -3 }, insecure: true, api: 2024.02 };
@@ -90,112 +90,132 @@ function getCookie(name) {
     }
 }
 
+// Function to set the selected version in the cookie
+function setStoredVersionToCookie(version) {
+    document.cookie = `selectedVersion=${version}`;
+}
+
 
 /**
  * Sets the stored version based on the provided value.
  * @param {string} storedVersion - The version to be stored.
  */
 function setStoredVersion(storedVersion) {
-    // Get the stored version from the cookie, if any
-    let storedVersionFromCookie = getCookie("selectedVersion");
+    const storedVersionFromCookie = getStoredVersionFromCookie();
+    const dropdownValue = setDropdownValue(storedVersionFromCookie);
+    const jsonData = fetchSelectedVersionData(dropdownValue);
+    setupEventListenersForData(jsonData);
+}
 
-    // If no stored version is found in the cookie, use the provided storedVersion
-    if (!storedVersionFromCookie) {
-        storedVersionFromCookie = storedVersion;
+/**
+ * Retrieves the stored version from the cookie, if any.
+ * @returns {string} The stored version from the cookie or null if not found.
+ */
+function getStoredVersionFromCookie() {
+    let storedVersionFromCookie = getCookie("selectedVersion");
+    return storedVersionFromCookie || null;
+}
+
+/**
+ * Sets the selected version in the dropdown element.
+ * @param {string} storedVersion - The version to be set in the dropdown.
+ * @returns {string} The selected version.
+ */
+function setDropdownValue(storedVersion) {
+    let dropdown = document.getElementById("jsonVersionSelect");
+
+    // Check if dropdown value is empty, null, or undefined
+    if (!dropdown.value || dropdown.value === null || dropdown.value === undefined) {
+        dropdown.value = storedVersion;
     }
 
-    // Set the selected version in the dropdown
-    let dropdown = document.getElementById("jsonVersionSelect");
-    dropdown.value = storedVersionFromCookie;
+    return dropdown.value;
+}
 
-    // Trigger the changeJsonVersion function to download the selected version
-    changeJsonVersion();  // Remove await here
 
-    // Fetch the selected version JSON data
-    const sfiaJson = fetchData(storedVersionFromCookie + ".json");  // Remove await here
+/**
+ * Fetches the selected version JSON data based on the dropdown value.
+ * @param {string} dropdownValue - The value selected in the dropdown.
+ * @returns {Object} The JSON data for the selected version.
+ */
+async function fetchSelectedVersionData(dropdownValue) {
+    // Set default value if dropdownValue is empty or null
+    dropdownValue = dropdownValue || "json_source_v8";
+    const jsonUrl = dropdownValue + ".json";
+    const jsonData = await fetchData(jsonUrl);
+    return jsonData;
+}
 
-    // Call the function to set up event listeners
-    setupEventListeners(sfiaJson);
+/**
+ * Sets up event listeners based on the provided JSON data.
+ * @param {Object} jsonData - The JSON data for the selected version.
+ */
+function setupEventListenersForData(jsonData) {
+    sfiaJson = jsonData; // Assign fetched data to sfiaJson
+    setupEventListeners(jsonData);
 }
 ;// src/exportFunctions.js
 
-// This file includes functions for exporting checked box data to a CSV file and exporting the HTML content to a downloadable HTML file.
+function getCheckedBoxes() {
+    return document.querySelectorAll('input[type="checkbox"][id^="sfia-checkbox-"]:checked');
+}
 
-/**
- * Function to export checked box data to a CSV file.
- * @param {Event} event - The event triggering the function.
- * @param {Object} sfiaJson - The sfiaJson object containing all the data.
- */
-function exportCSV(event, sfiaJson) {
-    // Log the function trigger and the event object
-    console.log('Export CSV triggered');
-    console.log('Event:', event);
-
-    // Prevent the default action associated with the event
-    event.preventDefault();
-
-    // Check if the last export was within the timeout duration
-    if (isExportSkippedDueToTimeout(3000)) {
-        console.log("Export HTML skipped due to timeout.");
-        return; // Return early to prevent multiple downloads
-    }
-
-    // Update the last export time
-    lastExportTime = new Date().getTime();
-
-    // Get all the checked checkboxes
-    const checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
-
-    // Initialize an empty array to store the CSV data
+function processCheckedBoxes(checkedBoxes, sfiaJson) {
     const data = [];
-
-    // Loop through each checked checkbox
-    for (const box of checkedBoxes) {
-        // Parse the JSON data from the checkbox
+    checkedBoxes.forEach(box => {
         const jsonData = JSON.parse(box.getAttribute('sfia-data'));
-
-        // Check if required properties exist before accessing them
         const categoryData = sfiaJson[jsonData.category];
-        const subCategoryData = categoryData?.[jsonData.subCategory];
-        const skillData = subCategoryData?.[jsonData.skill];
+        const subCategoryData = categoryData[jsonData.subCategory];
+        const skillData = subCategoryData[jsonData.skill];
 
-        // If all required data exists
         if (categoryData && subCategoryData && skillData) {
             const skillCode = skillData["code"];
             const skillDescription = skillData["description"];
-            const skillLevel = skillData["levels"]?.[jsonData.level];
+            const skillLevel = skillData["levels"][jsonData.level];
 
-            // If all required skill data exists
             if (skillCode && skillDescription && skillLevel) {
-                // Add the data to the array
                 data.push([
                     `${jsonData.skill} ${skillCode}-${jsonData.level}`,
                     skillDescription,
                     skillLevel
                 ]);
             } else {
-                // Log an error if required skill data is missing
                 console.error(`Incomplete or missing data for ${jsonData.category}/${jsonData.subCategory}/${jsonData.skill}`);
             }
         } else {
-            // Log an error if required category or subcategory data is missing
             console.error(`Skill data not found for ${jsonData.category}/${jsonData.subCategory}/${jsonData.skill}`);
         }
-    }
+    });
 
-    // Convert the data array to a CSV string
-    const csvContent = data.map(infoArray => `"${infoArray.join('","')}"`).join("\n");
+    return data;
+}
 
-    // Create a download link for the CSV file
-    const encodedUri = encodeURI(csvContent);
+function generateCSVContent(data) {
+    let csvContent = "";
+    data.forEach(infoArray => {
+        let dataString = '"' + infoArray.join('","') + '"';
+        csvContent += dataString + "\n";
+    });
+    return csvContent;
+}
+
+function exportCSV(event, sfiaJson) {
+    console.log('Export CSV button triggered');
+    event.preventDefault();
+
+    const checkedBoxes = getCheckedBoxes();
+    const processedData = processCheckedBoxes(checkedBoxes, sfiaJson);
+    const csvContent = generateCSVContent(processedData);
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = 'data:attachment/csv,' + encodedUri;
+    a.href = url;
     a.download = 'PositionSummary.csv';
-
-    // Append the link to the body, trigger the click event, and remove the link
+    a.setAttribute('visibility', 'hidden');
     document.body.appendChild(a);
     a.click();
-    a.remove();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 /**
@@ -908,8 +928,15 @@ function changeJsonVersion() {
     // Get the selected value from the dropdown
     let selectedVersion = document.getElementById("jsonVersionSelect").value;
 
-    // Set a cookie to remember the selected version
-    document.cookie = "selectedVersion=" + selectedVersion;
+    // Check if selectedVersion is empty, null, or undefined, set default
+    if (!selectedVersion || selectedVersion === null || selectedVersion === undefined) {
+
+
+        selectedVersion = "json_source_v8";
+    }
+
+    // Set the selected version in the cookie
+    setStoredVersionToCookie(selectedVersion);
 
     // Get the current host
     let currentHost = window.location.origin;
@@ -1023,11 +1050,10 @@ function updateCombinedUrlHash() {
          */
         window.location.hash = "&&" + g_lorhash;
     }
+    else{
+        window.location.hash = "";
+    }
 }
-
-
-
-
 
 /**
  * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
@@ -1221,8 +1247,17 @@ window.onload = async function () {
         // Call the function to update the URL hash initially
         updateCombinedUrlHash();
 
-        // Set the stored version
-        await setStoredVersion("json_source_v8");
+        // Get the stored version from the cookie
+        let storedVersion = getStoredVersionFromCookie();
+
+        // If the stored version exists, use it. Otherwise, use the default version.
+        let selectedVersion = storedVersion ? storedVersion : "json_source_v8";
+
+        // Set the selected version in the dropdown
+        document.getElementById("jsonVersionSelect").value = selectedVersion;
+
+        // Set the data on table
+        await changeJsonVersion();
 
         // Initialize SFIA content
         await initializeSFIAContent(sfiaJson);
@@ -1241,10 +1276,15 @@ window.onload = async function () {
             // Pre-select checkboxes if needed
             renderSfiaOutput(sfiaJson, false);
             renderLorOutput(lorJson, false);
+
+
         } else {
             console.log('Hash does not exist, appending # to URL:', currentURL);
 
         }
+
+        // Set the stored version
+        setStoredVersion("json_source_v8");
     } catch (error) {
         console.error('An error occurred during the onload function:', error.message);
     }
