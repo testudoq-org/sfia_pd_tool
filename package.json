@@ -15,7 +15,8 @@
         "codeceptjs:demo:headless": "HEADLESS=true codeceptjs run --steps -c node_modules/@codeceptjs/examples",
         "codeceptjs:demo:ui": "codecept-ui --app  -c node_modules/@codeceptjs/examples",
         "start-server": "echo y | npx live-server --port=5500 --open=src/sfiapdgen.html",
-        "stop-server": "taskkill /IM node.exe /F"
+        "stop-server": "taskkill /IM node.exe /F",
+        "testLocal": "grunt testLocal"
     },
     "keywords": [],
     "author": "",
