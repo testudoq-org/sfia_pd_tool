@@ -9,8 +9,12 @@
 		integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
 		integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-wysihtml5/0.3.3/bootstrap3-wysihtml5.min.css">
 	<link rel="stylesheet" href="styles.css">
 	<link rel="icon" type="image/x-icon" href="favicon.ico" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/wysihtml5/0.3.0/wysihtml5.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-wysihtml5/0.3.3/bootstrap3-wysihtml5.all.min.js"></script>
 	<script src="sfiapdgen_func.js"></script>
 </head>
 
@@ -30,34 +34,22 @@
 						<h3 class="panel-title">Instructions</h3>
 					</div>
 					<div class="panel-body">
-						<p>Welcome to the PD generator tool, built upon the <a href="https://www.sfia-online.org">SFIA 8
-								Framework</a>.</p>
+						<p>Welcome to the PD generator tool, built upon the <a href="https://www.sfia-online.org">SFIA 8 Framework</a>.</p>
 						<p>To initiate PD generation, choose the desired skill set levels.</p>
-						<p>Description of any skill is available by hovering over it, and for any
-							skill level, hover
-							over its respective checkbox.</p>
-						<p>Your selected choices will be formatted and provided at the page's
-							end. Copy and paste it
-							into a word processor for formatting preservation.</p>
-						<p>You can also export your selection as a comma-separated value (CSV)
-							document or HTML,
-							automatically downloaded for you. For optimal use, consider an
-							up-to-date version of Chrome
-							or Firefox, as some browsers may have limitations. In case of an
-							incorrectly named file,
-							rest assured the content remains unchanged.</p>
-						<p>To save your summary for future reference, bookmark the page. The URL
-							bookmark retains
-							necessary information and updates your selection upon your return.</p>
+						<p>Description of any skill is available by hovering over it, and for any skill level, hover over its respective checkbox.</p>
+						<p>Your selected choices will be formatted and provided at the page's end. Copy and paste it into a word processor for formatting preservation.</p>
+						<p>You can also export your selection as a comma-separated value (CSV) document or HTML, automatically downloaded for you. For optimal use, consider an up-to-date version of Chrome or Firefox, as some browsers may have limitations. In case of an incorrectly named file, rest assured the content remains unchanged.</p>
+						<p>To save your summary for future reference, bookmark the page. The URL bookmark retains necessary information and updates your selection upon your return.</p>
 					</div>
 				</div>
 			</div>
 		</div>
 		<div class="container-fluid mt-3">
 			<form class="form-inline">
-				<div class="form-group"><label for="myInput" class="mr-2">Search for
-						Skills:</label><input type="text" class="form-control" id="myInput" onkeyup="searchForText()"
-						placeholder="Enter skill..." style="width: 300px;"></div>
+				<div class="form-group">
+					<label for="myInput" class="mr-2">Search for Skills:</label>
+					<input type="text" class="form-control" id="myInput" onkeyup="searchForText()" placeholder="Enter skill..." style="width: 300px;">
+				</div>
 			</form>
 		</div>
 		<div class="row mt-3">
@@ -81,10 +73,8 @@
 						</thead>
 						<tbody id="sfia-content"></tbody>
 					</table>
-					<a href="#" class="btn btn-default navbar-btn" id="exportHTML" onclick="exportHTML(event);">Export
-						to HTML</a>
-					<a href="#" class="btn btn-default navbar-btn" id="exportCSV" onclick="exportCSV(event, sfiaJson)">Export to
-						CSV</a>
+					<a href="#" class="btn btn-default navbar-btn" id="exportHTML" onclick="exportHTML(event);">Export to HTML</a>
+					<a href="#" class="btn btn-default navbar-btn" id="exportCSV" onclick="exportCSV(event, sfiaJson)">Export to CSV</a>
 					<label for="jsonVersionSelect">Select JSON Version:</label>
 					<select id="jsonVersionSelect" onchange="changeJsonVersion()">
 						<option value="json_source_v8" data-selected="true">version 8</option>
@@ -124,10 +114,15 @@
 						<h3 class="panel-title">Formatted Output</h3>
 					</div>
 					<div class="panel-body">
-						<div id="sfia-output"></div>
-						<div id="lor-output"></div>
+						<label for="sfia-editor">SFIA Content Editor</label>
+						<div id="sfia-output" class="wysihtml5" placeholder="Enter SFIA content here"></div>
+						<label for="lor-editor">LOR Content Editor</label>
+						<div id="lor-output" class="wysihtml5" placeholder="Enter LOR content here"></div>
 					</div>
-					<div class="panel-footer"></div>
+					<div class="panel-footer">
+						<button onclick="saveContent('sfia')" class="btn btn-primary">Save SFIA Content</button>
+						<button onclick="saveContent('lor')" class="btn btn-primary">Save LOR Content</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -137,6 +132,23 @@
 			<p class="text-muted text-center">Copyright 2024</p>
 		</div>
 	</footer>
+	<script>
+		$(document).ready(function () {
+			$('#sfia-output').wysihtml5();
+			$('#lor-output').wysihtml5();
+		});
+
+		function saveContent(type) {
+			if (type === 'sfia') {
+				var sfiaContent = $('#sfia-output').html();
+				$('#sfia-editor').val(sfiaContent);
+			} else if (type === 'lor') {
+				var lorContent = $('#lor-output').html();
+				$('#lor-editor').val(lorContent);
+			}
+			// Additional logic to save the data to the server or local storage
+		}
+	</script>
 </body>
 
 </html>
