@@ -9,6 +9,14 @@
 	<link rel="stylesheet" href="styles.css">
 	<link rel="icon" type="image/x-icon" href="favicon.ico" />
 	<script src="sfiapdgen_func.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			// Automatically show the instructions on page load
+			$('#instructions').collapse('show');
+		});
+	</script>
 </head>
 
 <body>
@@ -27,39 +35,60 @@
 				<div class="panel panel-default">
 					<div class="panel-heading" role="heading" aria-level="3">
 						<h3 class="panel-title">Instructions</h3>
+						<button class="btn btn-default pull-right" data-toggle="collapse" data-target="#instructions"
+							aria-expanded="true" aria-controls="instructions">
+							Toggle Instructions
+						</button>
 					</div>
-					<div class="panel-body">
+					<div class="panel-body" id="instructions"> <!-- Removed 'collapse' class -->
 						<p>Welcome to the PD generator tool, built upon the <a href="https://www.sfia-online.org">SFIA 8
-								Framework</a>.</p>
+								Framework</a>. This tool is designed to help you create comprehensive position
+							descriptions (PD) based on the skills and competencies defined in the SFIA framework.</p>
 						<p>To initiate PD generation, follow these steps:</p>
 						<ol>
-							<li><strong>Select Skill Set Levels:</strong> Choose the desired skill set levels from the
-								SFIA Information Table. Each skill level corresponds to a specific competency level.
+							<li><strong>Select Skill Set Levels:</strong>
+								<p>Choose the desired skill set levels from the SFIA Information Table. Each skill level
+									corresponds to a specific competency level, ranging from Level 1 (basic) to Level 7
+									(expert). For example, if you are looking for a candidate who can perform complex
+									tasks independently, you might select Level 4 or higher.</p>
 							</li>
-							<li><strong>Hover for Descriptions:</strong> For more information about any skill, hover
-								over the skill name. Additionally, hover over the checkboxes next to each skill level to
-								see detailed descriptions of what each level entails.</li>
-							<li><strong>Review Your Selections:</strong> Your selected choices will be formatted and
-								displayed at the bottom of the page. You can review them before exporting.</li>
-							<li><strong>Export Options:</strong> You can export your selections as a CSV or HTML
-								document. Click the respective button to download the file automatically. Ensure you are
-								using an up-to-date version of Chrome or Firefox for the best experience, as some
-								browsers may have limitations.</li>
-							<li><strong>Bookmark for Future Reference:</strong> To save your summary for future
-								reference, bookmark this page. The URL bookmark retains the necessary information and
-								will update your selections upon your return.</li>
+							<li><strong>Hover for Descriptions:</strong>
+								<p>For more information about any skill, hover over the skill name. This will display a
+									tooltip with a brief description of the skill. Additionally, hover over the
+									checkboxes next to each skill level to see detailed descriptions of what each level
+									entails, including the expected responsibilities and capabilities at that level.</p>
+							</li>
+							<li><strong>Review Your Selections:</strong>
+								<p>Your selected choices will be formatted and displayed at the bottom of the page. Take
+									a moment to review them to ensure they accurately reflect the skills and levels you
+									require for the position. You can make adjustments by going back to the SFIA
+									Information Table and modifying your selections.</p>
+							</li>
+							<li><strong>Export Options:</strong>
+								<p>You can export your selections as a CSV or HTML document. Click the respective button
+									to download the file automatically. Ensure you are using an up-to-date version of
+									Chrome or Firefox for the best experience, as some browsers may have limitations.
+									The exported document will include all selected skills and their corresponding
+									levels, formatted for easy sharing or printing.</p>
+							</li>
+							<li><strong>Bookmark for Future Reference:</strong>
+								<p>To save your summary for future reference, bookmark this page. The URL bookmark
+									retains the necessary information and will update your selections upon your return.
+									This feature is particularly useful if you need to revisit your selections or share
+									them with colleagues.</p>
+							</li>
 						</ol>
 						<p><strong>Additional Tips:</strong></p>
 						<ul>
 							<li>Make sure to check all relevant skill levels for a comprehensive position description.
-							</li>
+								Consider the specific needs of your organization and the role you are hiring for.</li>
 							<li>If you encounter any issues, try refreshing the page or clearing your browser's cache.
-							</li>
+								This can resolve common display or functionality problems.</li>
 							<li>For optimal performance, consider using a desktop or laptop device, especially when
-								working with larger datasets.</li>
+								working with larger datasets. Mobile devices may have limited functionality.</li>
 						</ul>
 						<p>If you have any questions or need further assistance, please refer to the help section or
-							contact support.</p>
+							contact support. We are here to help you create the best position descriptions possible!</p>
 					</div>
 				</div>
 			</div>
