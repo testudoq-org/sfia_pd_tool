@@ -1,0 +1,11 @@
+{
+    "liveServer.settings.root": "",
+    "liveServer.settings.donotShowInfoMsg": true,
+    "liveServer.settings.donotVerifyTags": true,
+    "liveServer.settings.noBrowser": true,
+    "liveServer.settings.port": 5500,
+    "liveServer.settings.ignoreFiles": [
+        "**/*.scss",
+        "**/*.sass"
+    ]
+}
