@@ -14,6 +14,10 @@
 	<script src="sfiapdgen_func.js"></script>
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!-- Add Ace editor dependencies -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/mode-markdown.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/theme-monokai.js"></script>
 	<script>
 		$(document).ready(function() {
 			// Automatically show the instructions on page load
@@ -106,83 +110,108 @@
 				</div>
 			</form>
 		</div>
+		<div class="container-fluid mt-3">
+			<div class="row">
+				<!-- First column: SFIA Table -->
+				<div class="col-xs-12 col-lg-8">
+					<div class="panel panel-default" style="display: flex; flex-direction: column; height: 100%;">
+						<div class="table-responsive" style="flex: 1;">
+							<table class="sfia-table" style="width: 100%; height: 100%;">
+								<caption>SFIA Information Table</caption>
+								<thead>
+									<tr>
+										<th>Category</th>
+										<th>Sub Category</th>
+										<th>Skill Set</th>
+										<th>1</th>
+										<th>2</th>
+										<th>3</th>
+										<th>4</th>
+										<th>5</th>
+										<th>6</th>
+										<th>7</th>
+									</tr>
+								</thead>
+								<tbody id="sfia-content"></tbody>
+							</table>
+						</div>
+						<div class="panel-footer" style="display: flex; justify-content: space-between; align-items: center;">
+							<div class="btn-group" role="group" aria-label="Export Options">
+								<a href="#" class="btn btn-primary" id="exportHTML" onclick="exportHTML(event);">Export to HTML</a>
+								<a href="#" class="btn btn-primary" id="exportCSV" onclick="exportCSV(event, sfiaJson)">Export to CSV</a>
+							</div>
+							<label for="jsonVersionSelect">Select SFIA Version:</label>
+							<select id="jsonVersionSelect" class="form-control" onchange="changeJsonVersion()">
+								<option value="json_source_v9">version 9</option>
+								<option value="json_source_v8" selected>version 8</option>
+								<option value="json_source_v7">version 7</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<!-- Second column: LoR and Formatted Output -->
+				<div class="col-xs-12 col-lg-4">
+					<!-- LoR Panel -->
+					<div class="panel panel-default">
+						<div class="levels-of-responsibility">
+							<h2>Levels of Responsibility</h2>
+							<div class="table-responsive">
+								<table class="sfia-lors-table">
+									<caption>SFIA Levels of Responsibility</caption>
+									<thead>
+										<tr>
+											<th rowspan="2">Responsibility</th>
+											<th colspan="7">Level</th>
+										</tr>
+										<tr>
+											<th>1 -</th>
+											<th>2 -</th>
+											<th>3 -</th>
+											<th>4 -</th>
+											<th>5 -</th>
+											<th>6 -</th>
+											<th>7 -</th>
+										</tr>
+									</thead>
+									<tbody id="sfia-lors-content"></tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+					<!-- Formatted Output Panel -->
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">Formatted Output</h3>
+						</div>
+						<div class="panel-body" style="min-height:600px;">
+							<label for="sfia-editor">SFIA Content Editor</label>
+							<div id="sfia-output" class="wysihtml5" placeholder="Enter SFIA content here"></div>
+							<label for="lor-editor">LOR Content Editor</label>
+							<div id="lor-output" class="wysihtml5" placeholder="Enter LOR content here"></div>
+						</div>
+						<div class="panel-footer">
+							<button onclick="saveSfiaContent()" class="btn btn-primary">Save SFIA Content</button>
+							<button onclick="saveLorContent()" class="btn btn-primary">Save LOR Content</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Add new panel for Ace editor -->
 		<div class="row mt-3">
 			<div class="col-xs-12 col-lg-8">
 				<div class="panel panel-default">
-					<div class="table-responsive">
-						<table class="sfia-table">
-							<caption>SFIA Information Table</caption>
-							<thead>
-								<tr>
-									<th>Category</th>
-									<th>Sub Category</th>
-									<th>Skill Set</th>
-									<th>1</th>
-									<th>2</th>
-									<th>3</th>
-									<th>4</th>
-									<th>5</th>
-									<th>6</th>
-									<th>7</th>
-								</tr>
-							</thead>
-							<tbody id="sfia-content"></tbody>
-						</table>
-					</div>
-					<div class="btn-group" role="group" aria-label="Export Options">
-						<a href="#" class="btn btn-primary" id="exportHTML" onclick="exportHTML(event);">Export to
-							HTML</a>
-						<a href="#" class="btn btn-primary" id="exportCSV" onclick="exportCSV(event, sfiaJson)">Export
-							to CSV</a>
-					</div>
-					<label for="jsonVersionSelect">Select SFIA Version:</label>
-					<select id="jsonVersionSelect" class="form-control" onchange="changeJsonVersion()">
-						<option value="json_source_v9">version 9</option>
-						<option value="json_source_v8" selected>version 8</option>
-						<option value="json_source_v7">version 7</option>
-					</select>
-				</div>
-			</div>
-			<div class="col-xs-12 col-lg-4">
-				<div class="levels-of-responsibility">
-					<h2>Levels of Responsibility</h2>
-					<div class="table-responsive">
-						<table class="sfia-lors-table">
-							<caption>SFIA Levels of Responsibility</caption>
-							<thead>
-								<tr>
-									<th rowspan="2">Responsibility</th>
-									<th colspan="7">Level</th>
-								</tr>
-								<tr>
-									<th>1 -</th>
-									<th>2 -</th>
-									<th>3 -</th>
-									<th>4 -</th>
-									<th>5 -</th>
-									<th>6 -</th>
-									<th>7 -</th>
-								</tr>
-							</thead>
-							<tbody id="sfia-lors-content"></tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-			<div class="col-xs-12 col-lg-4">
-				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3 class="panel-title">Formatted Output</h3>
+						<h3 class="panel-title">SFIA Skills Notes Editor</h3>
 					</div>
 					<div class="panel-body">
-						<label for="sfia-editor">SFIA Content Editor</label>
-						<div id="sfia-output" class="wysihtml5" placeholder="Enter SFIA content here"></div>
-						<label for="lor-editor">LOR Content Editor</label>
-						<div id="lor-output" class="wysihtml5" placeholder="Enter LOR content here"></div>
+						<div id="ace-editor" style="height: 400px;"></div>
 					</div>
 					<div class="panel-footer">
-						<button onclick="saveContent('sfia')" class="btn btn-primary">Save SFIA Content</button>
-						<button onclick="saveContent('lor')" class="btn btn-primary">Save LOR Content</button>
+						<button onclick="updateEditorContent()" class="btn btn-primary">Update Content</button>
+						<button onclick="copyToClipboard()" class="btn btn-secondary">Copy to Clipboard</button>
 					</div>
 				</div>
 			</div>

@@ -12,6 +12,8 @@
   border-collapse: collapse;
   font-weight: bold;
   border-bottom: 1px solid grey;
+  height: 100%;
+  table-layout: fixed;
 }
 
 .sfia-table thead {
@@ -158,6 +160,32 @@
   background-color: rgb(0, 155, 205); /* Blue background color */
 }
 
+/* Grid Layout Styles */
+.row.mt-3 {
+  margin-bottom: 20px;
+}
+
+.panel {
+  height: 100%;
+  margin-bottom: 20px;
+}
+
+/* Ensure consistent heights for panels */
+.panel-body {
+  min-height: 300px;
+}
+
+/* Adjust LoR panel to match SFIA table height */
+.levels-of-responsibility {
+  height: 100%;
+}
+
+/* Responsive adjustments */
+@media (min-width: 992px) {
+  .col-lg-8, .col-lg-4 {
+    margin-bottom: 20px;
+  }
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -275,4 +303,67 @@ body {
   color: #333;
   font-size: 16px;
   margin-bottom: 0;
+}
+
+/* Grid Layout Adjustments */
+.container-fluid .row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.col-lg-8 .panel,
+.col-lg-4 .panel {
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.col-lg-8 .panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.col-lg-8 .panel .table-responsive {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Ensure panels stack properly in the right column */
+.col-lg-4 {
+    display: flex;
+    flex-direction: column;
+}
+
+.col-lg-4 .panel {
+    flex: 0 0 auto;
+}
+
+/* Adjust the height of the SFIA table panel */
+.col-lg-8 .panel .table-responsive {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+/* Adjust the height of the LoR table */
+.levels-of-responsibility .table-responsive {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Adjust the height of the formatted output panel */
+.panel-body {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Remove unnecessary spacing */
+.mt-3 {
+    margin-top: 0 !important;
+}
+
+/* Ensure the panel footer is at the bottom */
+.panel-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

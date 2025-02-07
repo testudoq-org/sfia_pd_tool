@@ -95,3 +95,22 @@ window.onload = async function () {
         console.error('An error occurred during the onload function:', error.message);
     }
 };
+
+
+// Initialize Ace editor
+let editor;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Ace editor
+    editor = ace.edit("ace-editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/markdown");
+    editor.setOptions({
+        fontSize: "12pt",
+        wrap: true,
+        showPrintMargin: false
+    });
+
+    // Set initial content
+    updateEditorContent();
+});
