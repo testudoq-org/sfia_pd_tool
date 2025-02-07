@@ -199,20 +199,39 @@ function generateCSVContent(data) {
     return csvContent;
 }
 
+
+/**
+ * Export the CSV content to a downloadable CSV file.
+ * @param {Event} event - The event triggering the function.
+ * @param {Object} sfiaJson - The sfiaJson object containing all the data.
+ */
 function exportCSV(event, sfiaJson) {
+    // Log the function trigger and the event object
     console.log('Export CSV button triggered');
+    console.log('Event:', event);
+
+    // Prevent the default action associated with the event
     event.preventDefault();
 
+    // Get the checked boxes
     const checkedBoxes = getCheckedBoxes();
+
+    // Process the checked boxes and generate the CSV content
     const processedData = processCheckedBoxes(checkedBoxes, sfiaJson);
     const csvContent = generateCSVContent(processedData);
+
+    // Create a blob from the CSV content
     const blob = new Blob([csvContent], { type: 'text/csv' });
+
+    // Create an anchor element to download the CSV file
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = 'PositionSummary.csv';
     a.setAttribute('visibility', 'hidden');
     document.body.appendChild(a);
+
+    // Trigger the download
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
