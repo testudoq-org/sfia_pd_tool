@@ -93,6 +93,12 @@ The project uses Grunt for task automation. Here are the key Grunt commands you 
     grunt watch
     ```
 
+### Key Parts of `Gruntfile.js`
+
+- **concat**: This task concatenates various JavaScript files into a single file.
+- **watch**: This task monitors files for changes and automatically triggers a build when changes are detected.
+- **exec**: This task runs shell commands, such as running tests with CodeceptJS.
+
 ## Contributing Code
 
 1. **Branching Strategy**: Create a new branch for your contributions based on the `main` branch. Use a descriptive name for your branch that summarizes the changes you intend to make.
