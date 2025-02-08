@@ -71,6 +71,28 @@ Thank you for considering contributing to our project! We appreciate your intere
 
 3. **Other Test Suites**: If there are other test suites or frameworks used in the project, refer to their respective documentation for instructions on running tests.
 
+## Building the Project
+
+The project uses Grunt for task automation. Here are the key Grunt commands you need to know:
+
+1. **Build the Project**: The `build` task concatenates various JavaScript files into a single file and performs other build-related tasks.
+
+    ```bash
+    grunt build
+    ```
+
+2. **Distribute to `dist` Folder**: The `testDist` task is used to distribute the built code to the `dist` folder. This task might include running tests and copying files to the `dist` directory.
+
+    ```bash
+    grunt testDist
+    ```
+
+3. **Watch for Changes**: The `watch` task monitors files for changes and automatically triggers a build when changes are detected.
+
+    ```bash
+    grunt watch
+    ```
+
 ## Contributing Code
 
 1. **Branching Strategy**: Create a new branch for your contributions based on the `main` branch. Use a descriptive name for your branch that summarizes the changes you intend to make.
