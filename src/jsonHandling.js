@@ -14,8 +14,6 @@ function changeJsonVersion() {
 
     // Check if selectedVersion is empty, null, or undefined, set default
     if (!selectedVersion || selectedVersion === null || selectedVersion === undefined) {
-
-
         selectedVersion = "json_source_v8";
     }
 
@@ -25,8 +23,6 @@ function changeJsonVersion() {
     // Get the current host
     let currentHost = window.location.origin;
 
-    // Construct the URL for the JSON file based on the selected version and current host
-    //let jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
     // Construct the URL for the JSON file based on the selected version and current host
     let jsonUrl;
 
@@ -44,7 +40,6 @@ function changeJsonVersion() {
         jsonUrl = currentHost + "/sfia/" + selectedVersion + ".json";
     }
 
-
     // Use Fetch API for making the request
     fetch(jsonUrl)
         .then(response => {
@@ -57,7 +52,6 @@ function changeJsonVersion() {
         .then(data => {
             // Handle the downloaded JSON data here
             console.log("Downloaded JSON data:", data);
-
 
             const selectElement = document.getElementById("jsonVersionSelect");
             if (selectElement) {
@@ -81,5 +75,4 @@ function changeJsonVersion() {
             // Log any errors that occurred during the request
             console.error('There was a problem with the fetch request:', error);
         });
-
 }

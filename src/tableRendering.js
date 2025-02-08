@@ -116,9 +116,6 @@ function renderSfiaLevelDescription(html, description) {
     html.appendChild(levelDescriptionEle);
 }
 
-
-// src/tableRendering.js
-
 /**
  * Render the output HTML based on the selected Levels of Responsibility (LoR) checkboxes.
  * 

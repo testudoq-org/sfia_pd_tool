@@ -1,4 +1,4 @@
-//dataHandling.js
+// src/dataHandling.js
 
 /**
  * Render LoR data to lor-output element with improved styling.
@@ -90,6 +90,4 @@ function extractCheckedLorData() {
  * Clear the content of the lor-output element.
  */
 function clearLorOutput() {
-    const lorOutput = document.getElementById('lor-output');
-    lorOutput.innerHTML = '';
-}
+    const lorOutput = document.getElementById

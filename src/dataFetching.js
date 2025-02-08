@@ -53,7 +53,6 @@ function setStoredVersionToCookie(version) {
     document.cookie = `selectedVersion=${version}`;
 }
 
-
 /**
  * Sets the stored version based on the provided value.
  * @param {string} storedVersion - The version to be stored.
@@ -89,7 +88,6 @@ function setDropdownValue(storedVersion) {
 
     return dropdown.value;
 }
-
 
 /**
  * Fetches the selected version JSON data based on the dropdown value.
