@@ -1,7 +1,6 @@
+// BOF: src/browserUpdate.js
 
-// src/browserUpdate.js
-
-// This file contains the code for appending a script tag to the document body, loading the Browser Update script
+// // This file contains the code for appending a script tag to the document body, loading the Browser Update script
 
 /**
  * Function $buo_f is responsible for appending a script tag to the
@@ -27,3 +26,4 @@ if (window.location.hostname !== '127.0.0.1') {
         window.attachEvent("onload", $buo_f);
     }
 }
+// EOF: src/browserUpdate.js

@@ -14,6 +14,7 @@
 	<script src="sfiapdgen_func.js"></script>
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 	<!-- Add Ace editor dependencies -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/mode-markdown.js"></script>
@@ -33,10 +34,46 @@
 				<div class="navbar-header">
 					<a class="navbar-brand" href="#">SFIA PD Generator</a>
 				</div>
+				 <!-- Updated Hamburger Menu Structure -->
+				<div class="settings-menu">
+					<button id="toggle-menu" class="hamburger-btn" aria-label="Toggle menu" aria-expanded="false" aria-controls="menu-content">
+						<svg viewBox="0 0 24 24" width="24" height="24">
+							<path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+						</svg>
+					</button>
+					<!-- Add hidden class by default -->
+					<div id="menu-content" class="settings-panel hidden" aria-hidden="true">
+						<div class="api-selector">
+							<label class="api-option">
+								<input type="radio" name="api-selector" value="cohere" checked>
+								<span>Use Cohere</span>
+							</label>
+							<label class="api-option">
+								<input type="radio" name="api-selector" value="huggingface">
+								<span>Use Hugging Face</span>
+							</label>
+						</div>
+						<div class="api-inputs">
+							<div class="input-group">
+								<label for="cohere-api">Cohere API Key</label>
+								<input type="password" id="cohere-api" placeholder="Enter Cohere API Key">
+								<button class="toggle-password" data-target="cohere-api">Show</button>
+							</div>
+							<div class="input-group">
+								<label for="huggingface-api">Hugging Face API Key</label>
+								<input type="password" id="huggingface-api" placeholder="Enter Hugging Face API Key">
+								<button class="toggle-password" data-target="huggingface-api">Show</button>
+							</div>
+							<button id="save-keys-btn" class="save-btn">Save API Keys</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</nav>
 	</header>
 	<main id="pageContent" class="container-fluid">
+		<!-- Add this notification container right at the top -->
+		<div id="notification-container" class="notification-container"></div>
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="panel panel-default">
@@ -48,7 +85,7 @@
 						</button>
 					</div>
 					<div class="panel-body" id="instructions"> <!-- Removed 'collapse' class -->
-						<p>Welcome to the PD generator tool, built upon the <a href="https://www.sfia-online.org">SFIA 8
+						<p>Welcome to the PD generator tool, built upon the <a href="https://www.sfia-online.org">SFIA Skills
 								Framework</a>. This tool is designed to help you create comprehensive position
 							descriptions (PD) based on the skills and competencies defined in the SFIA framework.</p>
 						<p>To initiate PD generation, follow these steps:</p>
@@ -210,8 +247,9 @@
 						<div id="ace-editor" style="height: 400px;"></div>
 					</div>
 					<div class="panel-footer">
-						<button onclick="updateEditorContent()" class="btn btn-primary">Update Content</button>
-						<button onclick="copyToClipboard()" class="btn btn-secondary">Copy to Clipboard</button>
+					    <button onclick="updateEditorContent()" class="btn btn-primary">Update Content</button>
+					    <button onclick="copyToClipboard()" class="btn btn-secondary">Copy to Clipboard</button>
+					    <button onclick="startConversation()" class="btn btn-info">Start AI Conversation</button>
 					</div>
 				</div>
 			</div>

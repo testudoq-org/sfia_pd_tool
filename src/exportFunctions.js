@@ -43,7 +43,6 @@ function generateCSVContent(data) {
     return csvContent;
 }
 
-
 /**
  * Export the CSV content to a downloadable CSV file.
  * @param {Event} event - The event triggering the function.
@@ -139,4 +138,40 @@ function exportHTML(event, sfiaJson) {
     document.body.appendChild(a);
     a.click();
     a.remove();
+}
+
+/**
+ * Save the content of a specified element to a file with versioning and date-time stamping.
+ * @param {string} elementId - The ID of the element whose content is to be saved.
+ * @param {string} baseFilename - The base name of the file to save the content to.
+ */
+function saveContentToFile(elementId, baseFilename) {
+    const content = document.getElementById(elementId).innerHTML;
+    const version = document.getElementById("jsonVersionSelect").value;
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+    const filename = `${baseFilename}_v${version}_${timestamp}.html`;
+    const blob = new Blob([content], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+/**
+ * Save the SFIA content to a file.
+ */
+function saveSfiaContent() {
+    saveContentToFile('sfia-output', 'SFIA_Content');
+}
+
+/**
+ * Save the LOR content to a file.
+ */
+function saveLorContent() {
+    saveContentToFile('lor-output', 'LOR_Content');
 }

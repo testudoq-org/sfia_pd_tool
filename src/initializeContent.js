@@ -1,4 +1,4 @@
-//initializeContent.js
+// BOF: initializeContent.js
 
 /**
  * Asynchronously initializes the content by calling the functions to initialize SFIA and LOR content.
@@ -114,17 +114,13 @@ async function initializeSFIAContent(sfiaJson) {
         console.log('URL contains a hash, rendering output...');
         renderSfiaOutput(sfiaJson, false);
     }
-
 }
-
-
-// Lor content below fo //initializeContent.js
 
 /**
  * Fetches and displays Levels of Responsibility data from the 'sfia-lors-8.json' file.
  * This function retrieves the data, clears any existing content in the table,
  * and then appends new rows to the table for each data item.
- * adds a tool tip to each of the checkboxes based onthe description attribute of the lor
+ * adds a tool tip to each of the checkboxes based on the description attribute of the lor
  */
 async function initializeLorContent() {
     try {
@@ -166,5 +162,6 @@ async function initializeLorContent() {
     if (window.location.href.split("#").length > 0) {
         renderLorOutput(lorJson, false);
     }
-
 }
+
+// EOF: initializeContent.js

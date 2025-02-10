@@ -1,4 +1,4 @@
-// src/dataFetching.js
+// BOF: src/dataFetching.js
 
 // This file includes functions for asynchronously fetching data from a given URL.
 
@@ -53,7 +53,6 @@ function setStoredVersionToCookie(version) {
     document.cookie = `selectedVersion=${version}`;
 }
 
-
 /**
  * Sets the stored version based on the provided value.
  * @param {string} storedVersion - The version to be stored.
@@ -90,7 +89,6 @@ function setDropdownValue(storedVersion) {
     return dropdown.value;
 }
 
-
 /**
  * Fetches the selected version JSON data based on the dropdown value.
  * @param {string} dropdownValue - The value selected in the dropdown.
@@ -112,3 +110,5 @@ function setupEventListenersForData(jsonData) {
     sfiaJson = jsonData; // Assign fetched data to sfiaJson
     setupEventListeners(jsonData);
 }
+
+// EOF: src/dataFetching.js

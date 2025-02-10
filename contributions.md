@@ -19,6 +19,7 @@ Thank you for considering contributing to our project! We appreciate your intere
 3. **Install Grunt Plugins**: Install the necessary Grunt plugins by running the following commands:
 
     ```bash
+    npm install -g grunt-cli
     npm install grunt-contrib-watch --save-dev
     npm install grunt-exec --save-dev
     ```
@@ -70,6 +71,34 @@ Thank you for considering contributing to our project! We appreciate your intere
     ```
 
 3. **Other Test Suites**: If there are other test suites or frameworks used in the project, refer to their respective documentation for instructions on running tests.
+
+## Building the Project
+
+The project uses Grunt for task automation. Here are the key Grunt commands you need to know:
+
+1. **Build the Project**: The `build` task concatenates various JavaScript files into a single file and performs other build-related tasks.
+
+    ```bash
+    grunt build
+    ```
+
+2. **Distribute to `dist` Folder**: The `testDist` task is used to distribute the built code to the `dist` folder. This task might include running tests and copying files to the `dist` directory.
+
+    ```bash
+    grunt testDist
+    ```
+
+3. **Watch for Changes**: The `watch` task monitors files for changes and automatically triggers a build when changes are detected.
+
+    ```bash
+    grunt watch
+    ```
+
+### Key Parts of `Gruntfile.js`
+
+- **concat**: This task concatenates various JavaScript files into a single file.
+- **watch**: This task monitors files for changes and automatically triggers a build when changes are detected.
+- **exec**: This task runs shell commands, such as running tests with CodeceptJS.
 
 ## Contributing Code
 

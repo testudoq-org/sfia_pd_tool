@@ -1,4 +1,4 @@
-// src/utilityFunctions.js
+// BOF: src/utilityFunctions.js
 
 // This file includes utility functions, such as checking if the last export was within a specified timeout duration and searching for text in the SFIA table.
 
@@ -165,3 +165,5 @@ function copyToClipboard() {
         alert('Failed to copy content to clipboard');
     });
 }
+
+// EOF: src/utilityFunctions.js

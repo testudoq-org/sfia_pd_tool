@@ -31,7 +31,6 @@ function checkSfiaPreselected(code, level) {
     return false;
 }
 
-
 /**
  * Generates a table cell element with a checkbox input. The checkbox 
  * is associated with a specific skill level of a given skill. The 
