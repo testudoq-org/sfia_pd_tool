@@ -1,4 +1,4 @@
-//initializeContent.js
+// BOF: initializeContent.js
 
 /**
  * Asynchronously initializes the content by calling the functions to initialize SFIA and LOR content.
@@ -163,3 +163,5 @@ async function initializeLorContent() {
         renderLorOutput(lorJson, false);
     }
 }
+
+// EOF: initializeContent.js

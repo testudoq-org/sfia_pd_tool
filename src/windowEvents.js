@@ -1,4 +1,4 @@
-// src/windowEvents.js
+// BOF: src/windowEvents.js
 
 // This file contains functions to handle window events, such as 'hashchange' and 'onload'.
 
@@ -36,6 +36,7 @@ async function handleHashChange() {
 }
 
 window.addEventListener('hashchange', handleHashChange);
+
 
 /**
  * Window onload function that is triggered when the page finishes loading.
@@ -82,8 +83,10 @@ window.onload = async function () {
             renderSfiaOutput(sfiaJson, false);
             renderLorOutput(lorJson, false);
 
+
         } else {
             console.log('Hash does not exist, appending # to URL:', currentURL);
+
         }
 
         // Set the stored version
@@ -96,7 +99,7 @@ window.onload = async function () {
 // Initialize Ace editor
 let editor;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize Ace editor
     editor = ace.edit("ace-editor");
     editor.setTheme("ace/theme/monokai");
@@ -115,13 +118,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveKeysBtn = document.getElementById('save-keys-btn');
 
     // Toggle menu visibility
-    toggleMenu.addEventListener('click', function() {
+    toggleMenu.addEventListener('click', function () {
         menuContent.classList.toggle('hidden');
     });
 
     // Toggle password visibility
     document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const targetId = this.dataset.target;
             const input = document.getElementById(targetId);
             if (input.type === 'password') {
@@ -135,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Save API keys
-    saveKeysBtn.addEventListener('click', function() {
+    saveKeysBtn.addEventListener('click', function () {
         const cohereKey = document.getElementById('cohere-api').value;
         const huggingfaceKey = document.getElementById('huggingface-api').value;
         const selectedApi = document.querySelector('input[name="api-selector"]:checked').value;
@@ -170,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle password visibility toggle
     document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const targetId = this.dataset.target;
             const input = document.getElementById(targetId);
             const type = input.type === 'password' ? 'text' : 'password';
@@ -198,16 +201,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
 /**
  * Updates the Ace editor content with formatted SFIA and LOR content
  */
 function updateEditorContent() {
     const sfiaContent = document.getElementById('sfia-output').innerHTML;
     const lorContent = document.getElementById('lor-output').innerHTML;
-    
+
     // Convert HTML content to text and format as questions
     const formattedContent = formatContentAsQuestions(sfiaContent, lorContent);
-    
+
     // Set the formatted content in the Ace editor
     editor.setValue(formattedContent);
     editor.clearSelection();
@@ -251,7 +255,7 @@ function formatContentAsQuestions(sfiaContent, lorContent) {
 
     // Create the headers section
     let formattedHeaders = "# SFIA Skills and Responsibilities Summary\n\n";
-    
+
     // Add each level of headers with appropriate markdown heading level
     Object.entries(headers).forEach(([level, items]) => {
         if (items.length > 0) {
@@ -266,13 +270,13 @@ function formatContentAsQuestions(sfiaContent, lorContent) {
     const withoutHeaders = str => str.replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/g, '');
     // Remove any remaining HTML tags
     const stripHtml = str => str.replace(/<[^>]*>/g, '');
-    
+
     // Combine content, strip out headers and HTML tags
     const cleanedContent = stripHtml(withoutHeaders([sfiaContent, lorContent].join('\n')));
-    
+
     // Split the cleaned content into sentences (using newlines) and filter empty lines
     const sentences = cleanedContent.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-    
+
     // Convert each sentence into a question
     const questions = sentences
         .filter(sentence => sentence.length > 10) // Filter out very short sentences
@@ -368,31 +372,31 @@ document.addEventListener('DOMContentLoaded', function () {
     // Notification function
     function showNotification(message, type = 'success') {
         const container = document.getElementById('notification-container');
-        
+
         // Create notification element
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
-        
+
         // Create message text
         const messageText = document.createElement('span');
         messageText.textContent = message;
-        
+
         // Create close button
         const closeButton = document.createElement('button');
         closeButton.className = 'notification-close';
         closeButton.innerHTML = '&times;';
         closeButton.setAttribute('aria-label', 'Close notification');
-        
+
         // Assemble notification
         notification.appendChild(messageText);
         notification.appendChild(closeButton);
         container.appendChild(notification);
-        
+
         // Handle close button click
         closeButton.addEventListener('click', () => {
             removeNotification(notification);
         });
-        
+
         // Auto-remove after duration
         setTimeout(() => {
             if (notification.parentElement) {
@@ -451,28 +455,245 @@ document.addEventListener('DOMContentLoaded', function () {
     showApiKeys();
 });
 
+// API Key Management code
+const API_KEY_CONFIG = {
+
+};
+
+// Handle API key saving in the encrypted version
+saveKeysBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    try {
+        if (saveApiKeys()) {
+            showNotification('API keys encrypted and saved successfully!', 'success', 3000);
+            menuContent?.classList.add('hidden');
+        } else {
+            showNotification('Failed to save API keys', 'error', 5000);
+        }
+    } catch (error) {
+        showNotification('Error saving API keys: ' + error.message, 'error', 5000);
+    }
+});
+
 /**
- * Initialize notification handlers for existing buttons and actions
+ * Shows a notification message
+ * @param {string} message - The message to display
+ * @param {string} type - The type of notification (success, error, info)
+ * @param {number} duration - How long to show the notification in milliseconds
  */
-function initializeNotificationHandlers() {
-    // Handle export buttons
-    document.getElementById('exportHTML')?.addEventListener('click', () => {
-        showNotification('Preparing HTML export...', 'info');
+function showNotification(message, type = 'success', duration = 5000) {
+    const container = document.getElementById('notification-container');
+
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+
+    // Create message text
+    const messageText = document.createElement('span');
+    messageText.textContent = message;
+
+    // Create close button
+    const closeButton = document.createElement('button');
+    closeButton.className = 'notification-close';
+    closeButton.innerHTML = '&times;';
+    closeButton.setAttribute('aria-label', 'Close notification');
+
+    // Assemble notification
+    notification.appendChild(messageText);
+    notification.appendChild(closeButton);
+    container.appendChild(notification);
+
+    // Handle close button click
+    closeButton.addEventListener('click', () => {
+        removeNotification(notification);
     });
 
-    document.getElementById('exportCSV')?.addEventListener('click', () => {
-        showNotification('Preparing CSV export...', 'info');
-    });
+    // Auto-remove after duration
+    if (duration > 0) {
+        setTimeout(() => {
+            if (notification.parentElement) {
+                removeNotification(notification);
+            }
+        }, duration);
+    }
+}
 
-    // Handle version selection
-    document.getElementById('jsonVersionSelect')?.addEventListener('change', () => {
-        showNotification('Loading selected SFIA version...', 'info');
-    });
+/**
+ * Removes a notification with animation
+ * @param {HTMLElement} notification - The notification element to remove
+ */
+function removeNotification(notification) {
+    notification.classList.add('fade-out');
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.parentElement.removeChild(notification);
+        }
+    }, 300); // Match this with CSS transition duration
+}
 
-    // Handle content saving
-    document.querySelectorAll('button[onclick*="save"]').forEach(button => {
-        button.addEventListener('click', () => {
-            showNotification('Saving content...', 'info');
-        });
+// Replace all alert() calls with showNotification()
+// Example of usage in save API keys:
+saveKeysBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (saveApiKeys()) {
+        showNotification('API keys saved successfully!', 'success');
+        menuContent?.classList.add('hidden');
+    } else {
+        showNotification('Failed to save API keys', 'error');
+    }
+});
+
+// Replace clipboard alert with notification
+function copyToClipboard() {
+    const content = editor.getValue();
+    navigator.clipboard.writeText(content).then(() => {
+        showNotification('Content copied to clipboard!', 'success');
+    }).catch(err => {
+        console.error('Failed to copy content: ', err);
+        showNotification('Failed to copy content to clipboard', 'error');
     });
 }
+
+// Consolidate all menu-related initialization into a single function
+function initializeMenuHandlers() {
+    const toggleMenu = document.getElementById('toggle-menu');
+    const menuContent = document.getElementById('menu-content');
+    const saveKeysBtn = document.getElementById('save-keys-btn');
+
+    if (!toggleMenu || !menuContent) {
+        console.error('Menu elements not found');
+        return;
+    }
+
+    // Toggle menu visibility with animation
+    function toggleMenuVisibility(e) {
+        e.stopPropagation(); // Prevent event from bubbling
+        const isHidden = menuContent.classList.contains('hidden');
+
+        // Toggle the hidden class
+        menuContent.classList.toggle('hidden');
+
+        // Update ARIA attributes
+        toggleMenu.setAttribute('aria-expanded', isHidden);
+        menuContent.setAttribute('aria-hidden', !isHidden);
+
+        // Log state for debugging
+        console.log('Menu toggled:', isHidden ? 'showing' : 'hiding');
+    }
+
+    // Remove any existing event listeners
+    toggleMenu.removeEventListener('click', toggleMenuVisibility);
+
+    // Add fresh event listener
+    toggleMenu.addEventListener('click', toggleMenuVisibility);
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!menuContent?.contains(e.target) && !toggleMenu?.contains(e.target)) {
+            menuContent?.classList.add('hidden');
+            toggleMenu.setAttribute('aria-expanded', 'false');
+            menuContent.setAttribute('aria-hidden', 'true');
+        }
+    });
+
+    // Initialize menu state
+    menuContent.classList.add('hidden');
+    toggleMenu.setAttribute('aria-expanded', 'false');
+    menuContent.setAttribute('aria-hidden', 'true');
+
+    // Initialize menu position
+    function updateMenuPosition() {
+        const toggleRect = toggleMenu.getBoundingClientRect();
+        menuContent.style.top = `${toggleRect.bottom + window.scrollY}px`;
+        menuContent.style.right = '20px'; // Adjust this value as needed
+    }
+
+    // Update menu position on toggle and window resize
+    toggleMenu.addEventListener('click', updateMenuPosition);
+    window.addEventListener('resize', updateMenuPosition);
+
+}
+
+
+function initializeMenuHandlers() {
+    const toggleMenu = document.getElementById('toggle-menu');
+    const menuContent = document.getElementById('menu-content');
+
+    if (!toggleMenu || !menuContent) {
+        console.error('Menu elements not found');
+        return;
+    }
+
+    function toggleMenuVisibility(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const isCurrentlyHidden = menuContent.classList.contains('hidden');
+        console.log('Current menu state:', isCurrentlyHidden ? 'hidden' : 'visible');
+
+        if (isCurrentlyHidden) {
+            menuContent.classList.remove('hidden');
+            toggleMenu.setAttribute('aria-expanded', 'true');
+            menuContent.setAttribute('aria-hidden', 'false');
+            updateMenuPosition();
+            console.log('Menu showing');
+        } else {
+            hideMenu();
+        }
+    }
+
+    function hideMenu() {
+        menuContent.classList.add('hidden');
+        toggleMenu.setAttribute('aria-expanded', 'false');
+        menuContent.setAttribute('aria-hidden', 'true');
+        console.log('Menu hiding');
+    }
+
+
+    function updateMenuPosition() {
+
+
+
+        const toggleRect = toggleMenu.getBoundingClientRect();
+        const windowWidth = window.innerWidth;
+        const menuWidth = menuContent.offsetWidth;
+
+        // Calculate right position to ensure menu stays within viewport
+        let rightPosition = windowWidth - toggleRect.right;
+        if (rightPosition + menuWidth > windowWidth) {
+            rightPosition = 10; // 10px from right if menu would overflow
+        }
+
+        menuContent.style.top = `${toggleRect.bottom + 5}px`; // 5px gap
+        menuContent.style.right = `${rightPosition}px`;
+    }
+
+    // Clean up existing listeners
+    toggleMenu.removeEventListener('click', toggleMenuVisibility);
+
+    // Set up new listeners
+    toggleMenu.addEventListener('click', toggleMenuVisibility);
+
+
+
+
+    // Handle clicks outside the menu
+    document.addEventListener('click', (e) => {
+        if (!menuContent.contains(e.target) && !toggleMenu.contains(e.target)) {
+            hideMenu();
+        }
+    });
+
+    // Update position on window resize
+    window.addEventListener('resize', () => {
+        if (!menuContent.classList.contains('hidden')) {
+            updateMenuPosition();
+        }
+    });
+
+    // Ensure menu starts hidden
+    hideMenu();
+    
+}
+
+// EOF: src/windowEvents.js

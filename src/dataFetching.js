@@ -1,4 +1,4 @@
-// src/dataFetching.js
+// BOF: src/dataFetching.js
 
 // This file includes functions for asynchronously fetching data from a given URL.
 
@@ -110,3 +110,5 @@ function setupEventListenersForData(jsonData) {
     sfiaJson = jsonData; // Assign fetched data to sfiaJson
     setupEventListeners(jsonData);
 }
+
+// EOF: src/dataFetching.js

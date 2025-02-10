@@ -11,10 +11,9 @@ const SELECTED_VERSION = "selectedVersion";
 const urlHashParts = window.location.hash.substring(1).split("&&"); // Remove the "#" symbol and split by "&&"
 g_sfiahash = urlHashParts[0];
 g_lorhash = urlHashParts[1];
-;
-// src/browserUpdate.js
+;// BOF: src/browserUpdate.js
 
-// This file contains the code for appending a script tag to the document body, loading the Browser Update script
+// // This file contains the code for appending a script tag to the document body, loading the Browser Update script
 
 /**
  * Function $buo_f is responsible for appending a script tag to the
@@ -40,7 +39,8 @@ if (window.location.hostname !== '127.0.0.1') {
         window.attachEvent("onload", $buo_f);
     }
 }
-;// src/dataFetching.js
+// EOF: src/browserUpdate.js
+;// BOF: src/dataFetching.js
 
 // This file includes functions for asynchronously fetching data from a given URL.
 
@@ -95,7 +95,6 @@ function setStoredVersionToCookie(version) {
     document.cookie = `selectedVersion=${version}`;
 }
 
-
 /**
  * Sets the stored version based on the provided value.
  * @param {string} storedVersion - The version to be stored.
@@ -132,7 +131,6 @@ function setDropdownValue(storedVersion) {
     return dropdown.value;
 }
 
-
 /**
  * Fetches the selected version JSON data based on the dropdown value.
  * @param {string} dropdownValue - The value selected in the dropdown.
@@ -154,6 +152,8 @@ function setupEventListenersForData(jsonData) {
     sfiaJson = jsonData; // Assign fetched data to sfiaJson
     setupEventListeners(jsonData);
 }
+
+// EOF: src/dataFetching.js
 ;// src/exportFunctions.js
 
 function getCheckedBoxes() {
@@ -198,7 +198,6 @@ function generateCSVContent(data) {
     });
     return csvContent;
 }
-
 
 /**
  * Export the CSV content to a downloadable CSV file.
@@ -365,7 +364,6 @@ function checkSfiaPreselected(code, level) {
     return false;
 }
 
-
 /**
  * Generates a table cell element with a checkbox input. The checkbox 
  * is associated with a specific skill level of a given skill. The 
@@ -493,7 +491,7 @@ function SelectSfiaCheckboxesAndInitialize(sfiaJson) {
 
     }
 }
-;//initializeContent.js
+;// BOF: initializeContent.js
 
 /**
  * Asynchronously initializes the content by calling the functions to initialize SFIA and LOR content.
@@ -609,17 +607,13 @@ async function initializeSFIAContent(sfiaJson) {
         console.log('URL contains a hash, rendering output...');
         renderSfiaOutput(sfiaJson, false);
     }
-
 }
-
-
-// Lor content below fo //initializeContent.js
 
 /**
  * Fetches and displays Levels of Responsibility data from the 'sfia-lors-8.json' file.
  * This function retrieves the data, clears any existing content in the table,
  * and then appends new rows to the table for each data item.
- * adds a tool tip to each of the checkboxes based onthe description attribute of the lor
+ * adds a tool tip to each of the checkboxes based on the description attribute of the lor
  */
 async function initializeLorContent() {
     try {
@@ -661,9 +655,10 @@ async function initializeLorContent() {
     if (window.location.href.split("#").length > 0) {
         renderLorOutput(lorJson, false);
     }
-
 }
-;// src/tableRendering.js
+
+// EOF: initializeContent.js
+;// BOF: src/tableRendering.js
 
 // This file includes functions for rendering the output HTML based on the selected checkboxes and the provided SFIA JSON data.
 
@@ -781,9 +776,6 @@ function renderSfiaLevelDescription(html, description) {
     html.appendChild(levelDescriptionEle);
 }
 
-
-// src/tableRendering.js
-
 /**
  * Render the output HTML based on the selected Levels of Responsibility (LoR) checkboxes.
  * 
@@ -815,7 +807,9 @@ function renderLorOutput(lorJson, updateHash = true) {
 
     console.log("Exiting renderLorOutput function");
 }
-;//dataHandling.js
+
+// EOF: src/tableRendering.js
+;// BOF: src/dataHandling.js
 
 /**
  * Render LoR data to lor-output element with improved styling.
@@ -910,7 +904,9 @@ function clearLorOutput() {
     const lorOutput = document.getElementById('lor-output');
     lorOutput.innerHTML = '';
 }
-;// src/utilityFunctions.js
+
+// EOF: src/dataHandling.js
+;// BOF: src/utilityFunctions.js
 
 // This file includes utility functions, such as checking if the last export was within a specified timeout duration and searching for text in the SFIA table.
 
@@ -969,7 +965,117 @@ function searchForText() {
         console.error("An error occurred:", error.message);
     }
 }
-;// src/jsonHandling.js
+
+/**
+ * Updates the Ace editor content with formatted SFIA and LOR content
+ */
+function updateEditorContent() {
+    const sfiaContent = document.getElementById('sfia-output').innerHTML;
+    const lorContent = document.getElementById('lor-output').innerHTML;
+    
+    // Convert HTML content to text and format as questions
+    const formattedContent = formatContentAsQuestions(sfiaContent, lorContent);
+    
+    // Set the formatted content in the Ace editor
+    editor.setValue(formattedContent);
+    editor.clearSelection();
+}
+
+/**
+ * Formats the SFIA and LOR content as questions with bullet points
+ * @param {string} sfiaContent - HTML content from SFIA editor
+ * @param {string} lorContent - HTML content from LOR editor
+ * @returns {string} Formatted content with questions and bullet points
+ */
+function formatContentAsQuestions(sfiaContent, lorContent) {
+    console.log("Starting formatContentAsQuestions function");
+
+    // Extract headers and organize them hierarchically
+    const headerRegex = /<h([1-6])>([^<]+)<\/h\1>/g;
+    const headers = {
+        h1: [],
+        h2: [],
+        h3: [],
+        h4: [],
+        h5: [],
+        h6: []
+    };
+
+    // Process SFIA headers
+    let sfiaMatch;
+    while ((sfiaMatch = headerRegex.exec(sfiaContent)) !== null) {
+        const level = sfiaMatch[1];
+        const text = sfiaMatch[2].trim();
+        headers[`h${level}`].push(text);
+    }
+
+    // Process LOR headers
+    let lorMatch;
+    while ((lorMatch = headerRegex.exec(lorContent)) !== null) {
+        const level = lorMatch[1];
+        const text = lorMatch[2].trim();
+        headers[`h${level}`].push(text);
+    }
+
+    // Create the headers section
+    let formattedHeaders = "# SFIA Skills and Responsibilities Summary\n\n";
+    
+    // Add each level of headers with appropriate markdown heading level
+    Object.entries(headers).forEach(([level, items]) => {
+        if (items.length > 0) {
+            const markdownLevel = '#'.repeat(parseInt(level[1]));
+            items.forEach(item => {
+                formattedHeaders += `${markdownLevel} ${item}\n\n`;
+            });
+        }
+    });
+
+    // Helper function to remove header tags and their content
+    const withoutHeaders = str => str.replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/g, '');
+    // Remove any remaining HTML tags
+    const stripHtml = str => str.replace(/<[^>]*>/g, '');
+    
+    // Combine content, strip out headers and HTML tags
+    const cleanedContent = stripHtml(withoutHeaders([sfiaContent, lorContent].join('\n')));
+    
+    // Split the cleaned content into sentences (using newlines) and filter empty lines
+    const sentences = cleanedContent.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    
+    // Convert each sentence into a question
+    const questions = sentences
+        .filter(sentence => sentence.length > 10) // Filter out very short sentences
+        .map(sentence => {
+            sentence = sentence.replace(/[.?]+$/, '');
+            const variations = [
+                `* How would you demonstrate your ability to ${sentence.toLowerCase()}?`,
+                `* Can you give an example of how you would ${sentence.toLowerCase()}?`,
+                `* How do you think you would ${sentence.toLowerCase()}?`,
+                `* Can you describe how you would ${sentence.toLowerCase()}?`,
+                `* How would you approach ${sentence.toLowerCase()}?`,
+            ];
+            return variations[Math.floor(Math.random() * variations.length)];
+        });
+
+    const formattedContent = formattedHeaders + "\n# Questions to Consider\n\n" + questions.join('\n\n');
+    console.log("Formatted content created");
+    return formattedContent;
+}
+
+/**
+ * Copies the Ace editor content to clipboard
+ */
+function copyToClipboard() {
+    const content = editor.getValue();
+    navigator.clipboard.writeText(content).then(() => {
+        alert('Content copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy content: ', err);
+        alert('Failed to copy content to clipboard');
+    });
+}
+
+// EOF: src/utilityFunctions.js
+;// BOF: src/jsonHandling.js
 
 // This file contains a function to change the JSON version based on the selected value from a dropdown.
 
@@ -985,8 +1091,6 @@ function changeJsonVersion() {
 
     // Check if selectedVersion is empty, null, or undefined, set default
     if (!selectedVersion || selectedVersion === null || selectedVersion === undefined) {
-
-
         selectedVersion = "json_source_v8";
     }
 
@@ -996,8 +1100,6 @@ function changeJsonVersion() {
     // Get the current host
     let currentHost = window.location.origin;
 
-    // Construct the URL for the JSON file based on the selected version and current host
-    //let jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
     // Construct the URL for the JSON file based on the selected version and current host
     let jsonUrl;
 
@@ -1015,7 +1117,6 @@ function changeJsonVersion() {
         jsonUrl = currentHost + "/sfia/" + selectedVersion + ".json";
     }
 
-
     // Use Fetch API for making the request
     fetch(jsonUrl)
         .then(response => {
@@ -1028,7 +1129,6 @@ function changeJsonVersion() {
         .then(data => {
             // Handle the downloaded JSON data here
             console.log("Downloaded JSON data:", data);
-
 
             const selectElement = document.getElementById("jsonVersionSelect");
             if (selectElement) {
@@ -1052,8 +1152,9 @@ function changeJsonVersion() {
             // Log any errors that occurred during the request
             console.error('There was a problem with the fetch request:', error);
         });
-
 }
+
+// EOF: src/jsonHandling.js
 ;// src/urlHandling.js
 
 // This file includes functions for generating and updating URL hashes based on LoR data and SFIA checkboxes.
@@ -1247,7 +1348,7 @@ function setupEventListeners(sfiaJson) {
         );
     }
 }
-;// src/windowEvents.js
+;// BOF: src/windowEvents.js
 
 // This file contains functions to handle window events, such as 'hashchange' and 'onload'.
 
@@ -1348,7 +1449,7 @@ window.onload = async function () {
 // Initialize Ace editor
 let editor;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize Ace editor
     editor = ace.edit("ace-editor");
     editor.setTheme("ace/theme/monokai");
@@ -1367,13 +1468,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveKeysBtn = document.getElementById('save-keys-btn');
 
     // Toggle menu visibility
-    toggleMenu.addEventListener('click', function() {
+    toggleMenu.addEventListener('click', function () {
         menuContent.classList.toggle('hidden');
     });
 
     // Toggle password visibility
     document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const targetId = this.dataset.target;
             const input = document.getElementById(targetId);
             if (input.type === 'password') {
@@ -1387,7 +1488,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Save API keys
-    saveKeysBtn.addEventListener('click', function() {
+    saveKeysBtn.addEventListener('click', function () {
         const cohereKey = document.getElementById('cohere-api').value;
         const huggingfaceKey = document.getElementById('huggingface-api').value;
         const selectedApi = document.querySelector('input[name="api-selector"]:checked').value;
@@ -1422,7 +1523,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle password visibility toggle
     document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const targetId = this.dataset.target;
             const input = document.getElementById(targetId);
             const type = input.type === 'password' ? 'text' : 'password';
@@ -1457,10 +1558,10 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateEditorContent() {
     const sfiaContent = document.getElementById('sfia-output').innerHTML;
     const lorContent = document.getElementById('lor-output').innerHTML;
-    
+
     // Convert HTML content to text and format as questions
     const formattedContent = formatContentAsQuestions(sfiaContent, lorContent);
-    
+
     // Set the formatted content in the Ace editor
     editor.setValue(formattedContent);
     editor.clearSelection();
@@ -1504,7 +1605,7 @@ function formatContentAsQuestions(sfiaContent, lorContent) {
 
     // Create the headers section
     let formattedHeaders = "# SFIA Skills and Responsibilities Summary\n\n";
-    
+
     // Add each level of headers with appropriate markdown heading level
     Object.entries(headers).forEach(([level, items]) => {
         if (items.length > 0) {
@@ -1519,13 +1620,13 @@ function formatContentAsQuestions(sfiaContent, lorContent) {
     const withoutHeaders = str => str.replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/g, '');
     // Remove any remaining HTML tags
     const stripHtml = str => str.replace(/<[^>]*>/g, '');
-    
+
     // Combine content, strip out headers and HTML tags
     const cleanedContent = stripHtml(withoutHeaders([sfiaContent, lorContent].join('\n')));
-    
+
     // Split the cleaned content into sentences (using newlines) and filter empty lines
     const sentences = cleanedContent.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-    
+
     // Convert each sentence into a question
     const questions = sentences
         .filter(sentence => sentence.length > 10) // Filter out very short sentences
@@ -1621,31 +1722,31 @@ document.addEventListener('DOMContentLoaded', function () {
     // Notification function
     function showNotification(message, type = 'success') {
         const container = document.getElementById('notification-container');
-        
+
         // Create notification element
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
-        
+
         // Create message text
         const messageText = document.createElement('span');
         messageText.textContent = message;
-        
+
         // Create close button
         const closeButton = document.createElement('button');
         closeButton.className = 'notification-close';
         closeButton.innerHTML = '&times;';
         closeButton.setAttribute('aria-label', 'Close notification');
-        
+
         // Assemble notification
         notification.appendChild(messageText);
         notification.appendChild(closeButton);
         container.appendChild(notification);
-        
+
         // Handle close button click
         closeButton.addEventListener('click', () => {
             removeNotification(notification);
         });
-        
+
         // Auto-remove after duration
         setTimeout(() => {
             if (notification.parentElement) {
@@ -1732,31 +1833,31 @@ saveKeysBtn?.addEventListener('click', (e) => {
  */
 function showNotification(message, type = 'success', duration = 5000) {
     const container = document.getElementById('notification-container');
-    
+
     // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
-    
+
     // Create message text
     const messageText = document.createElement('span');
     messageText.textContent = message;
-    
+
     // Create close button
     const closeButton = document.createElement('button');
     closeButton.className = 'notification-close';
     closeButton.innerHTML = '&times;';
     closeButton.setAttribute('aria-label', 'Close notification');
-    
+
     // Assemble notification
     notification.appendChild(messageText);
     notification.appendChild(closeButton);
     container.appendChild(notification);
-    
+
     // Handle close button click
     closeButton.addEventListener('click', () => {
         removeNotification(notification);
     });
-    
+
     // Auto-remove after duration
     if (duration > 0) {
         setTimeout(() => {
@@ -1818,21 +1919,21 @@ function initializeMenuHandlers() {
     function toggleMenuVisibility(e) {
         e.stopPropagation(); // Prevent event from bubbling
         const isHidden = menuContent.classList.contains('hidden');
-        
+
         // Toggle the hidden class
         menuContent.classList.toggle('hidden');
-        
+
         // Update ARIA attributes
         toggleMenu.setAttribute('aria-expanded', isHidden);
         menuContent.setAttribute('aria-hidden', !isHidden);
-        
+
         // Log state for debugging
         console.log('Menu toggled:', isHidden ? 'showing' : 'hiding');
     }
 
     // Remove any existing event listeners
     toggleMenu.removeEventListener('click', toggleMenuVisibility);
-    
+
     // Add fresh event listener
     toggleMenu.addEventListener('click', toggleMenuVisibility);
 
@@ -1876,10 +1977,10 @@ function initializeMenuHandlers() {
     function toggleMenuVisibility(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         const isCurrentlyHidden = menuContent.classList.contains('hidden');
         console.log('Current menu state:', isCurrentlyHidden ? 'hidden' : 'visible');
-        
+
         if (isCurrentlyHidden) {
             menuContent.classList.remove('hidden');
             toggleMenu.setAttribute('aria-expanded', 'true');
@@ -1898,26 +1999,33 @@ function initializeMenuHandlers() {
         console.log('Menu hiding');
     }
 
+
     function updateMenuPosition() {
+
+
+
         const toggleRect = toggleMenu.getBoundingClientRect();
         const windowWidth = window.innerWidth;
         const menuWidth = menuContent.offsetWidth;
-        
+
         // Calculate right position to ensure menu stays within viewport
         let rightPosition = windowWidth - toggleRect.right;
         if (rightPosition + menuWidth > windowWidth) {
             rightPosition = 10; // 10px from right if menu would overflow
         }
-        
+
         menuContent.style.top = `${toggleRect.bottom + 5}px`; // 5px gap
         menuContent.style.right = `${rightPosition}px`;
     }
 
     // Clean up existing listeners
     toggleMenu.removeEventListener('click', toggleMenuVisibility);
-    
+
     // Set up new listeners
     toggleMenu.addEventListener('click', toggleMenuVisibility);
+
+
+
 
     // Handle clicks outside the menu
     document.addEventListener('click', (e) => {
@@ -1935,4 +2043,7 @@ function initializeMenuHandlers() {
 
     // Ensure menu starts hidden
     hideMenu();
+    
 }
+
+// EOF: src/windowEvents.js

@@ -1,4 +1,4 @@
-// src/tableRendering.js
+// BOF: src/tableRendering.js
 
 // This file includes functions for rendering the output HTML based on the selected checkboxes and the provided SFIA JSON data.
 
@@ -147,3 +147,5 @@ function renderLorOutput(lorJson, updateHash = true) {
 
     console.log("Exiting renderLorOutput function");
 }
+
+// EOF: src/tableRendering.js

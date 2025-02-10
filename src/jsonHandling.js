@@ -1,4 +1,4 @@
-// src/jsonHandling.js
+// BOF: src/jsonHandling.js
 
 // This file contains a function to change the JSON version based on the selected value from a dropdown.
 
@@ -76,3 +76,5 @@ function changeJsonVersion() {
             console.error('There was a problem with the fetch request:', error);
         });
 }
+
+// EOF: src/jsonHandling.js

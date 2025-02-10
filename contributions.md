@@ -19,6 +19,7 @@ Thank you for considering contributing to our project! We appreciate your intere
 3. **Install Grunt Plugins**: Install the necessary Grunt plugins by running the following commands:
 
     ```bash
+    npm install -g grunt-cli
     npm install grunt-contrib-watch --save-dev
     npm install grunt-exec --save-dev
     ```
