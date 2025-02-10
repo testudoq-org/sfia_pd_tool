@@ -1446,6 +1446,66 @@ window.onload = async function () {
     }
 };
 
+function startConversation() {
+    const selectedApi = localStorage.getItem('selectedApi');
+    const cohereApiKey = localStorage.getItem('cohereApiKey');
+    const huggingfaceApiKey = localStorage.getItem('huggingfaceApiKey');
+    const sfiaContent = document.getElementById('sfia-output').innerHTML;
+    const lorContent = document.getElementById('lor-output').innerHTML;
+    const formattedContent = formatContentAsQuestions(sfiaContent, lorContent);
+
+    const startButton = document.querySelector('button[onclick="startConversation()"]');
+    startButton.disabled = true;
+    startButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Communicating...';
+
+    if (selectedApi === 'cohere' && cohereApiKey) {
+        fetch('https://api.cohere.ai/generate', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${cohereApiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                prompt: formattedContent,
+                max_tokens: 100
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            editor.setValue(editor.getValue() + "\n\nSFIA Ideas:\n" + data.text);
+            startButton.disabled = false;
+            startButton.innerHTML = 'Start AI Conversation';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to communicate with Cohere API');
+            startButton.disabled = false;
+            startButton.innerHTML = 'Start AI Conversation';
+        });
+    } else if (selectedApi === 'huggingface' && huggingfaceApiKey) {
+        fetch('https://api-inference.huggingface.co/models/your-model', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${huggingfaceApiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                inputs: editorContent
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(`SFIA Ideas: ${data.generated_text}`);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to communicate with Hugging Face API');
+        });
+    } else {
+        alert('API key not found or API not selected');
+    }
+}
+
 // Initialize Ace editor
 let editor;
 
