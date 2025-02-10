@@ -1466,7 +1466,7 @@ function startConversation() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                prompt: "Reword the following questions for clarity and provide additional thought-provoking questions with examples where relevant. Only output the questions and examples—no introductions, explanations, or concluding remarks.-\n\n" + formattedContent,
+                prompt: "Reword the following questions for clarity and provide additional thought-provoking questions with examples where relevant. Only output the questions and examples—no introductions, explanations, or concluding remarks.\n\n" + formattedContent,
                 max_tokens: 1000
             })
         })
