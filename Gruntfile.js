@@ -36,7 +36,8 @@ module.exports = function (grunt) {
                 separator: ';',
             },
             dist: {
-                src: ['src/constants.js','src/browserUpdate.js', 'src/dataFetching.js', 'src/exportFunctions.js', 'src/checkboxHandling.js', 'src/initializeContent.js', 'src/tableRendering.js', 'src/dataHandling.js', 'src/utilityFunctions.js', 'src/jsonHandling.js', 'src/urlHandling.js', 'src/eventListeners.js', 'src/windowEvents.js'],
+                src: ['src/init.js',
+                    'src/theme.js', 'src/constants.js', 'src/browserUpdate.js', 'src/dataFetching.js', 'src/exportFunctions.js', 'src/checkboxHandling.js', 'src/initializeContent.js', 'src/tableRendering.js', 'src/dataHandling.js', 'src/utilityFunctions.js', 'src/jsonHandling.js', 'src/urlHandling.js', 'src/eventListeners.js', 'src/windowEvents.js'],
                 dest: 'src/sfiapdgen_func.js',
             },
         },
