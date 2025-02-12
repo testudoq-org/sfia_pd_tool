@@ -25,25 +25,6 @@
 			$('#instructions').collapse('show');
 		});
 	</script>
-	<style>
-		/* Add these styles to maintain table alignment and colors */
-		.sfia-table th, .sfia-table td {
-			padding: 0.5rem;
-			vertical-align: middle;
-			text-align: left;
-		}
-		.sfia-table th {
-			position: sticky;
-			top: 0;
-			background-color: #f8f9fa;
-			z-index: 1;
-		}
-		.table-responsive {
-			overflow-x: auto;
-			overflow-y: auto;
-			max-height: calc(100vh - 300px);
-		}
-	</style>
 </head>
 
 <body>
@@ -98,7 +79,7 @@
 				<div class="card">
 					<div class="card-header" role="heading" aria-level="3">
 						<h3 class="card-title">Instructions</h3>
-						<button class="btn btn-default pull-right" type="button" data-bs-toggle="collapse" data-bs-target="#instructions"
+						<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#instructions"
 							aria-expanded="true" aria-controls="instructions">
 							Toggle Instructions
 						</button>

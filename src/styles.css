@@ -3,6 +3,7 @@
   min-height: 0;
 }
 
+
 /* SFIA Table */
 .sfia-table {
   width: 100%;
@@ -14,6 +15,23 @@
   border-bottom: 1px solid grey;
   height: 100%;
   table-layout: fixed;
+}
+
+.sfia-table th, .sfia-table td {
+  padding: 0.5rem;
+  vertical-align: middle;
+  text-align: left;
+}
+.sfia-table th {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: 1;
+}
+.table-responsive {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 300px);
 }
 
 .sfia-table thead {
