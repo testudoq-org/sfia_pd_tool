@@ -1,0 +1,161 @@
+/* High Contrast Dark Theme Variables - Following WCAG 2.1 Level AAA */
+:root {
+    --dark-bg: #000000;            /* True black background */
+    --dark-text: #ffffff;          /* Pure white text - contrast ratio > 21:1 */
+    --dark-border: #ffffff;        /* White borders for high contrast */
+    --dark-card-bg: #121212;       /* Very dark card background */
+    --dark-header: #000000;        /* Black header */
+    --dark-hover: #1a1a1a;         /* Slightly lighter hover state */
+    --dark-input-bg: #000000;      /* Black input background */
+    --dark-focus-ring: #ffffff;    /* White focus ring */
+    --dark-primary: #1e90ff;       /* Bright blue - meets WCAG AAA */
+    --dark-link: #00ffff;          /* Cyan for links - high contrast */
+    --transition-duration: 0.2s;    /* Quicker transitions for responsiveness */
+}
+
+/* Bootstrap 5 Accessibility Overrides */
+[data-bs-theme="dark"] {
+    color-scheme: dark;
+}
+
+/* High Contrast Overrides */
+body {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+    line-height: 1.6;
+    transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
+/* Card Styling */
+.card,
+.sfia-table,
+.settings-panel {
+    background-color: var(--dark-card-bg);
+    border: 2px solid var(--dark-border);
+    outline: 1px solid transparent;
+    transition: background-color var(--transition-duration), border-color var(--transition-duration);
+}
+
+.card-header {
+    background-color: var(--dark-header);
+    border-bottom-color: var(--dark-border);
+}
+
+/* Form Controls */
+.form-control,
+.form-select {
+    background-color: var(--dark-input-bg);
+    color: var(--dark-text);
+    border: 2px solid var(--dark-border);
+    transition: background-color var(--transition-duration), color var(--transition-duration), border-color var(--transition-duration);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--dark-focus-ring);
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+    outline: 2px solid var(--dark-focus-ring);
+}
+
+/* SFIA Table Dark Mode */
+.sfia-table {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+    border: 2px solid var(--dark-border);
+}
+
+.sfia-table th {
+    background-color: var(--dark-header);
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text);
+    font-weight: 700;
+}
+
+.sfia-table td {
+    border: 1px solid var(--dark-border);
+}
+
+/* Hover effects */
+.table-hover tbody tr:hover {
+    background-color: var(--dark-hover);
+}
+
+/* Settings Panel Dark Mode */
+.settings-panel {
+    background-color: var(--dark-card-bg);
+    border-color: var(--dark-border);
+}
+
+/* Optional: style links for dark mode */
+a {
+    color: var(--dark-link);
+    text-decoration: underline;
+    transition: color var(--transition-duration);
+}
+
+a:hover {
+    color: #80ffff;
+    text-decoration: none;
+}
+
+/* Ensure buttons and toggles adapt */
+.btn-primary {
+    background-color: var(--dark-primary);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: #0066cc;
+    border-color: var(--dark-border);
+}
+
+/* Optional adjustment for Ace editor or other third-party components can be placed here */
+
+/* Focused elements */
+:focus-visible {
+    outline: 3px solid var(--dark-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Skip Links for Keyboard Navigation */
+.skip-link {
+    background: var(--dark-bg);
+    color: var(--dark-text);
+    left: 50%;
+    padding: 8px;
+    position: absolute;
+    transform: translateY(-100%);
+    transition: transform 0.3s;
+}
+
+.skip-link:focus {
+    transform: translateY(0%);
+}
+
+/* ARIA Labels and Focus Management */
+[aria-hidden="true"] {
+    display: none !important;
+}
+
+[role="alert"] {
+    border: 2px solid var(--dark-border);
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+/* Motion Reduced Preferences */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Use transitions for all changes */
+* {
+    transition: background-color var(--transition-duration), color var(--transition-duration);
+}

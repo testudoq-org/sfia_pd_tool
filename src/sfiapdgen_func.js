@@ -1074,6 +1074,20 @@ function copyToClipboard() {
     });
 }
 
+/**
+ * Save the content of the specified type (SFIA or LOR) to the corresponding editor.
+ * @param {string} type - The type of content to save ('sfia' or 'lor').
+ */
+function saveContent(type) {
+    if (type === 'sfia') {
+        var sfiaContent = $('#sfia-output').html();
+        $('#sfia-editor').val(sfiaContent);
+    } else if (type === 'lor') {
+        var lorContent = $('#lor-output').html();
+        $('#lor-editor').val(lorContent);
+    }
+}
+
 // EOF: src/utilityFunctions.js
 ;// BOF: src/jsonHandling.js
 

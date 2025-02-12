@@ -19,6 +19,9 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/ace.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/mode-markdown.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/theme-monokai.js"></script>
+	<!-- Add both stylesheets with initial light theme active -->
+	<link rel="stylesheet" href="styles-light.css" id="theme-style">
+	<link rel="stylesheet" href="styles-dark.css" disabled>
 	<script>
 		$(document).ready(function() {
 			// Automatically show the instructions on page load
@@ -64,6 +67,14 @@
 								<button class="toggle-password" data-target="huggingface-api">Show</button>
 							</div>
 							<button id="save-keys-btn" class="save-btn">Save API Keys</button>
+						</div>
+						<!-- Add Theme Toggle -->
+						<div class="theme-toggle">
+							<label for="theme-switch">Dark Mode</label>
+							<div class="switch">
+								<input type="checkbox" id="theme-switch" onchange="toggleTheme()">
+								<span class="slider round"></span>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -279,6 +290,27 @@
 			<p class="text-muted">Copyright 2024</p>
 		</div>
 	</footer>
+	<!-- Add Theme Toggle Script -->
+	<script>
+		function toggleTheme() {
+			const lightTheme = document.querySelector('link[href="styles-light.css"]');
+			const darkTheme = document.querySelector('link[href="styles-dark.css"]');
+			const isLight = !document.getElementById('theme-switch').checked;
+			
+			lightTheme.disabled = !isLight;
+			darkTheme.disabled = isLight;
+			
+			// Save preference
+			localStorage.setItem('theme', isLight ? 'light' : 'dark');
+		}
+
+		// Load saved theme preference
+		document.addEventListener('DOMContentLoaded', () => {
+			const savedTheme = localStorage.getItem('theme') || 'light';
+			document.getElementById('theme-switch').checked = savedTheme === 'dark';
+			toggleTheme();
+		});
+	</script>
 </body>
 
 </html>
