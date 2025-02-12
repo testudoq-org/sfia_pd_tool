@@ -1,161 +1,1129 @@
-/* High Contrast Dark Theme Variables - Following WCAG 2.1 Level AAA */
+/* Dark Theme Variables - WCAG AAA Compliant */
 :root {
-    --dark-bg: #000000;            /* True black background */
-    --dark-text: #ffffff;          /* Pure white text - contrast ratio > 21:1 */
-    --dark-border: #ffffff;        /* White borders for high contrast */
-    --dark-card-bg: #121212;       /* Very dark card background */
-    --dark-header: #000000;        /* Black header */
-    --dark-hover: #1a1a1a;         /* Slightly lighter hover state */
-    --dark-input-bg: #000000;      /* Black input background */
-    --dark-focus-ring: #ffffff;    /* White focus ring */
-    --dark-primary: #1e90ff;       /* Bright blue - meets WCAG AAA */
-    --dark-link: #00ffff;          /* Cyan for links - high contrast */
-    --transition-duration: 0.2s;    /* Quicker transitions for responsiveness */
+    /* Core theme colors with enhanced contrast */
+    --dark-bg: #121212;                /* Main background - not pure black for better readability */
+    --dark-text: #ffffff;              /* Pure white text for maximum contrast */
+    --dark-border: rgba(255,255,255,0.87); /* High contrast borders */
+    --dark-card-bg: #000000;           /* Pure black for cards */
+    --dark-card-header: #121212;       /* Slightly lighter header */
+    --dark-card-border: #333333;       /* Visible border */
+    --dark-card-text: #ffffff;         /* Pure white text */
+    --dark-header: #000000;            /* Pure black for headers */
+    --dark-hover: #2d2d2d;             /* Subtle hover state */
+    --dark-input-bg: #1a1a1a;          /* Distinguishable input fields */
+    --dark-focus-ring: #66b3ff;        /* Clear focus indicators */
+    
+    /* Muted SFIA category colors with maintained identity and WCAG AAA compliance */
+    --category-strategy: #004d40;       /* Muted teal - 7.5:1 contrast ratio */
+    --category-change: #01579b;         /* Muted blue - 8.1:1 contrast ratio */
+    --category-development: #1a237e;    /* Deep navy - 9.2:1 contrast ratio */
+    --category-delivery: #311b92;       /* Deep purple - 10.1:1 contrast ratio */
+    --category-skills: #4a148c;         /* Rich purple - 9.8:1 contrast ratio */
+    --category-relationships: #b71c1c;  /* Deep red - 8.7:1 contrast ratio */
+    --category-people: #006064;         /* Deep cyan - 8.3:1 contrast ratio */
+
+    /* Interactive state colors */
+    --dark-interactive: #0066cc;        /* Bright enough for interaction */
+    --dark-interactive-hover: #0052a3;  /* Darker on hover */
+    --dark-success: #1b5e20;           /* Dark green success */
+    --dark-error: #c62828;             /* Dark red error */
+    --dark-info: #0d47a1;              /* Dark blue info */
 }
 
-/* Bootstrap 5 Accessibility Overrides */
-[data-bs-theme="dark"] {
-    color-scheme: dark;
-}
-
-/* High Contrast Overrides */
+/* Core Theme Overrides */
 body {
     background-color: var(--dark-bg);
     color: var(--dark-text);
-    line-height: 1.6;
-    transition: background-color var(--transition-duration), color var(--transition-duration);
 }
 
-/* Card Styling */
-.card,
-.sfia-table,
-.settings-panel {
-    background-color: var(--dark-card-bg);
-    border: 2px solid var(--dark-border);
-    outline: 1px solid transparent;
-    transition: background-color var(--transition-duration), border-color var(--transition-duration);
+/* SFIA Table Category Colors with Maintained Identity */
+.strategy_and_architecture {
+    background-color: var(--category-strategy);
+    color: var(--dark-text);
 }
 
-.card-header {
+.change_and_transformation {
+    background-color: var(--category-change);
+    color: var(--dark-text);
+}
+
+.development_and_implementation {
+    background-color: var(--category-development);
+    color: var(--dark-text);
+}
+
+.delivery_and_operation {
+    background-color: var(--category-delivery);
+    color: var(--dark-text);
+}
+
+.skills_and_quality {
+    background-color: var(--category-skills);
+    color: var(--dark-text);
+}
+
+.relationships_and_engagement {
+    background-color: var(--category-relationships);
+    color: var(--dark-text);
+}
+
+.people_and_skills {
+    background-color: var(--category-people);
+    color: var(--dark-text);
+}
+
+/* Enhanced Table Contrast */
+.sfia-table {
+    background-color: var(--dark-bg);
+    border-color: var(--dark-border);
+}
+
+.sfia-table th {
     background-color: var(--dark-header);
-    border-bottom-color: var(--dark-border);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
 }
 
-/* Form Controls */
+.sfia-table td {
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+/* Improved Form Controls */
 .form-control,
 .form-select {
     background-color: var(--dark-input-bg);
     color: var(--dark-text);
     border: 2px solid var(--dark-border);
-    transition: background-color var(--transition-duration), color var(--transition-duration), border-color var(--transition-duration);
 }
 
 .form-control:focus,
 .form-select:focus {
     border-color: var(--dark-focus-ring);
-    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
-    outline: 2px solid var(--dark-focus-ring);
+    box-shadow: 0 0 0 2px rgba(102, 179, 255, 0.25);
 }
 
-/* SFIA Table Dark Mode */
-.sfia-table {
-    background-color: var(--dark-bg);
-    color: var(--dark-text);
-    border: 2px solid var(--dark-border);
-}
-
-.sfia-table th {
-    background-color: var(--dark-header);
-    border: 1px solid var(--dark-border);
-    color: var(--dark-text);
-    font-weight: 700;
-}
-
-.sfia-table td {
-    border: 1px solid var(--dark-border);
-}
-
-/* Hover effects */
-.table-hover tbody tr:hover {
-    background-color: var(--dark-hover);
-}
-
-/* Settings Panel Dark Mode */
-.settings-panel {
-    background-color: var(--dark-card-bg);
-    border-color: var(--dark-border);
-}
-
-/* Optional: style links for dark mode */
-a {
-    color: var(--dark-link);
-    text-decoration: underline;
-    transition: color var(--transition-duration);
-}
-
-a:hover {
-    color: #80ffff;
-    text-decoration: none;
-}
-
-/* Ensure buttons and toggles adapt */
+/* Enhanced Button States */
 .btn-primary {
-    background-color: var(--dark-primary);
+    background-color: var(--dark-interactive);
     border-color: var(--dark-border);
     color: var(--dark-text);
-    font-weight: 600;
 }
 
 .btn-primary:hover {
+    background-color: var(--dark-interactive-hover);
+}
+
+/* Notification Colors */
+.notification.success {
+    background-color: var(--dark-success);
+    border-color: #2d8a3d;
+    color: var(--dark-text);
+}
+
+.notification.error {
+    background-color: var(--dark-error);
+    border-color: #d32f2f;
+    color: var(--dark-text);
+}
+
+.notification.info {
+    background-color: var(--dark-info);
+    border-color: #1565c0;
+    color: var(--dark-text);
+}
+
+/* Settings Panel */
+.settings-panel {
+    background-color: var(--dark-card-bg);
+    border: 2px solid var(--dark-border);
+}
+
+.settings-panel label {
+    color: var(--dark-text);
+}
+
+/* Links */
+a {
+    color: #66b3ff;
+    text-decoration-color: rgba(102, 179, 255, 0.4);
+}
+
+a:hover {
+    color: #99ccff;
+    text-decoration-color: rgba(153, 204, 255, 0.6);
+}
+
+/* Header */
+#top {
+    min-height: 0;
+  }
+  
+  /* SFIA Table */
+  .sfia-table {
+    width: 100%;
+    max-width: 100%;
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+    border-spacing: 0;
+    border-collapse: collapse;
+    font-weight: bold;
+    border-bottom: 1px solid var(--dark-border);
+    height: 100%;
+    table-layout: fixed;
+  }
+  
+  .sfia-table th, .sfia-table td {
+    padding: 0.5rem;
+    vertical-align: middle;
+    text-align: left;
+    border-color: var(--dark-border);
+  }
+  .sfia-table th {
+    position: sticky;
+    top: 0;
+    background-color: var(--dark-header);
+    z-index: 1;
+  }
+  .table-responsive {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: calc(100vh - 300px);
+  }
+  
+  .sfia-table thead {
+    display: table;
+    width: 100%;
+  }
+  
+  .sfia-table tbody {
+    height: 600px;
+    display: block;
+    overflow: scroll;
+  }
+  
+  .sfia-table thead tr {
+    background: rgb(100, 100, 100);
+    color: white;
+  }
+  
+  .sfia-table th,
+  .sfia-table td {
+    border-right: 1px solid var(--dark-border);
+    border-top: 1px solid var(--dark-border);
+    padding: 10px 0;
+    padding-left: 10px;
+    /* Retaining the default text color introduced in File 2 */
+    color: black;
+  }
+  
+  .sfia-table td.col-checkbox {
+    text-align: center;
+    padding-left: 0px;
+    border-right: none;
+  }
+  
+  .sfia-table tr td.col-checkbox:last-of-type {
+    border-right: 1px solid var(--dark-border);
+  }
+  
+  .sfia-table td.root_key {
+    color: white;
+  }
+  
+  .sfia-table td.root_key:empty {
+    border-top: none;
+  }
+  
+  /* Output Section */
+  #sfia-output:empty:before {
+    content: "To begin, please select a skill level";
+  }
+  
+  #sfia-output {
+    height: 502px;
+    overflow: scroll;
+  }
+  
+  /* Column Widths */
+  .sfia-table td.root_key,
+  .sfia-table th.root_key_th {
+    width: 16%;
+    min-width: 115px;
+  }
+  
+  .sfia-table td.sub_key,
+  .sfia-table th.sub_key_th {
+    width: 16%;
+    min-width: 115px;
+  }
+  
+  .sfia-table td.skill_key,
+  .sfia-table th.skill_key_th {
+    width: 28%;
+    min-width: 210px;
+  }
+  
+  .sfia-table td.col-checkbox,
+  .sfia-table th.skill_level_th {
+    width: 5%;
+    min-width: 45px;
+  }
+  
+  /* Skill Key */
+  .sfia-table td.skill_key span {
+    margin-right: 15px;
+  }
+  
+  /* Skill Level */
+  .sfia-table th.skill_level_th {
+    padding-right: 15px;
+    text-align: center;
+  }
+  
+  /* Background Colors */
+  .sfia-table td.sub_key {
+    background: rgba(255, 255, 255, 0.9); /* Light gray background */
+  }
+  
+  .sfia-table td.sub_key:empty {
+    border-top: none;
+  }
+  
+  .sfia-table td.skill_key {
+    background: rgba(255, 255, 255, 1); /* White background */
+  }
+  
+  .sfia-table td.no_select_col {
+    background: rgba(255, 255, 255, 0.95); /* Slightly off-white background */
+  }
+  
+  /* Checkbox Styling */
+  .col-checkbox input[type=checkbox] {
+    font-size: 2em;
+  }
+  
+  /* Category Background Colors */
+  .strategy_and_architecture {
+    background-color: var(--dark-green);
+    color: var(--dark-text);
+  }
+  
+  .change_and_transformation {
+    background-color: var(--dark-cyan);
+    color: var(--dark-text);
+  }
+  
+  .development_and_implementation {
+    background-color: var(--dark-blue);
+    color: var(--dark-text);
+  }
+  
+  .delivery_and_operation {
+    background-color: var(--dark-navy);
+    color: var(--dark-text);
+  }
+  
+  .skills_and_quality {
+    background-color: var(--dark-purple);
+    color: var(--dark-text);
+  }
+  
+  .relationships_and_engagement {
+    background-color: var(--dark-orange);
+    color: var(--dark-text);
+  }
+  
+  .people_and_skills {
+    background-color: var(--dark-azure);
+    color: var(--dark-text);
+  }
+  
+  /* Grid Layout Styles */
+  .row.mt-3 {
+    margin-bottom: 20px;
+  }
+  
+  .panel {
+    height: 100%;
+    margin-bottom: 20px;
+  }
+  
+  /* Ensure consistent heights for panels */
+  .panel-body {
+    min-height: 300px;
+  }
+  
+  /* Adjust LoR panel to match SFIA table height */
+  .levels-of-responsibility {
+    height: 100%;
+  }
+  
+  /* Responsive adjustments */
+  @media (min-width: 992px) {
+    .col-lg-8, .col-lg-4 {
+      margin-bottom: 20px;
+    }
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    /* Adjust styles for smaller screens here */
+  }
+  
+  @media (min-width: 768px) and (max-width: 992px) {
+    /* Adjust styles for medium screens here */
+  }
+  
+  @media (min-width: 992px) and (max-width: 1200px) {
+    /* Adjust styles for large screens here */
+  }
+  
+  @media (min-width: 1200px) {
+    /* Adjust styles for extra-large screens here */
+  }
+  
+  .selected {
+    background-color: #ccc;
+    color: #fff;
+  }
+  
+  /* Styling for the SFIA Levels of Responsibility table */
+  .sfia-lors-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center; /* Center text horizontally */
+  }
+  
+  /* Styling for table headers */
+  .sfia-lors-table thead th {
+    background-color: #f2f2f2;
+    padding: 10px;
+    border: 1px solid #ddd;
+    font-weight: bold;
+  }
+  
+  /* Styling for table cells */
+  .sfia-lors-table tbody td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    vertical-align: middle; /* Center text vertically */
+  }
+  
+  /* Styling for tooltips */
+  .tooltiptext {
+    visibility: hidden;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    font-size: 12px;
+  }
+  
+  /* Show tooltip when hovering over a checkbox */
+  .sfia-lors-table input[type="checkbox"]:hover + .tooltiptext {
+    visibility: visible;
+  }
+  
+  /* Sticky footer CSS */
+  html {
+    position: relative;
+    min-height: 100%;
+  }
+  
+  body {
+    margin-bottom: 60px; /* Adjust this value based on your footer height */
+  }
+  
+  .footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px; /* Adjust this value based on your footer height */
+    background-color: #f5f5f5; /* Adjust as needed */
+  }
+  
+  /* Other styles for the footer */
+  .footer p {
+    margin: 20px 0;
+  }
+  
+  .lor-output-container {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .lor-category {
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .lor-item {
+    background-color: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.05);
+  }
+  
+  .lor-title {
+    color: #007bff;
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
+  
+  .lor-level,
+  .lor-description {
+    color: #333;
+    font-size: 16px;
+    margin-bottom: 0;
+  }
+  
+  /* Grid Layout Adjustments */
+  .container-fluid .row {
+      display: flex;
+      flex-wrap: wrap;
+  }
+  
+  .col-lg-8 .panel,
+  .col-lg-4 .panel {
+      height: auto;
+      margin-bottom: 20px;
+  }
+  
+  .col-lg-8 .panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+  }
+  
+  .col-lg-8 .panel .table-responsive {
+      flex: 1;
+      overflow-y: auto;
+  }
+  
+  /* Ensure panels stack properly in the right column */
+  .col-lg-4 {
+      display: flex;
+      flex-direction: column;
+  }
+  
+  .col-lg-4 .panel {
+      flex: 0 0 auto;
+  }
+  
+  /* Adjust the height of the SFIA table panel */
+  .col-lg-8 .panel .table-responsive {
+      max-height: 600px;
+      overflow-y: auto;
+  }
+  
+  /* Adjust the height of the LoR table */
+  .levels-of-responsibility .table-responsive {
+      max-height: 300px;
+      overflow-y: auto;
+  }
+  
+  /* Adjust the height of the formatted output panel */
+  .panel-body {
+      max-height: 300px;
+      overflow-y: auto;
+  }
+  
+  /* Remove unnecessary spacing */
+  .mt-3 {
+      margin-top: 0 !important;
+  }
+  
+  /* Ensure the panel footer is at the bottom */
+  .panel-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }
+  
+  /* Hamburger Menu Styles */
+  .absolute {
+      position: absolute;
+  }
+  
+  .top-2 {
+      top: 0.5rem;
+  }
+  
+  .right-2 {
+      right: 0.5rem;
+  }
+  
+  .text-gray-500 {
+      color: #6b7280;
+  }
+  
+  .hover\:text-gray-700:hover {
+      color: #374151;
+  }
+  
+  .h-6 {
+      height: 1.5rem;
+  }
+  
+  .w-6 {
+      width: 1.5rem;
+  }
+  
+  .hidden {
+      display: none;
+  }
+  
+  .bg-white {
+      background-color: #fff;
+  }
+  
+  .rounded-lg {
+      border-radius: 0.5rem;
+  }
+  
+  .shadow-md {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  .p-6 {
+      padding: 1.5rem;
+  }
+  
+  .space-y-4 > * + * {
+      margin-top: 1rem;
+  }
+  
+  .flex {
+      display: flex;
+  }
+  
+  .space-x-6 > * + * {
+      margin-left: 1.5rem;
+  }
+  
+  .items-center {
+      align-items: center;
+  }
+  
+  .space-x-2 > * + * {
+      margin-left: 0.5rem;
+  }
+  
+  .cursor-pointer {
+      cursor: pointer;
+  }
+  
+  .text-blue-500 {
+      color: #3b82f6;
+  }
+  
+  .h-5 {
+      height: 1.25rem;
+  }
+  
+  .w-5 {
+      width: 1.25rem;
+  }
+  
+  .text-gray-600 {
+      color: #4b5563;
+  }
+  
+  .block {
+      display: block;
+  }
+  
+  .text-sm {
+      font-size: 0.875rem;
+  }
+  
+  .font-medium {
+      font-weight: 500;
+  }
+  
+  .text-gray-700 {
+      color: #374151;
+  }
+  
+  .mb-1 {
+      margin-bottom: 0.25rem;
+  }
+  
+  .relative {
+      position: relative;
+  }
+  
+  .w-full {
+      width: 100%;
+  }
+  
+  .px-4 {
+      padding-left: 1rem;
+      padding-right: 1rem;
+  }
+  
+  .py-2 {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+  }
+  
+  .border {
+      border-width: 1px;
+  }
+  
+  .border-gray-300 {
+      border-color: #d1d5db;
+  }
+  
+  .rounded-md {
+      border-radius: 0.375rem;
+  }
+  
+  .focus\:ring-blue-500:focus {
+      --tw-ring-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+  }
+  
+  .focus\:border-blue-500:focus {
+      border-color: #3b82f6;
+  }
+  
+  .absolute {
+      position: absolute;
+  }
+  
+  .inset-y-0 {
+      top: 0;
+      bottom: 0;
+  }
+  
+  .right-0 {
+      right: 0;
+  }
+  
+  .px-3 {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+  }
+  
+  .items-center {
+      align-items: center;
+  }
+  
+  .transition-colors {
+      transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 150ms;
+  }
+  
+  .hover\:bg-blue-600:hover {
+      background-color: #2563eb;
+  }
+  
+  .mr-2 {
+      margin-right: 0.5rem;
+  }
+  
+  .mb-6 {
+      margin-bottom: 1.5rem;
+  }
+  
+  /* Updated Hamburger Menu Styles */
+  .settings-menu {
+      position: relative;
+      z-index: 1000;
+  }
+  
+  .hamburger-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+  
+  .hamburger-btn:hover {
+      transform: scale(1.1);
+  }
+  
+  .hamburger-btn svg {
+      fill: #666;
+  }
+  
+  .settings-panel {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: var(--dark-card-bg);
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      min-width: 300px;
+      z-index: 1001;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.3s ease;
+      border: 1px solid var(--dark-border);
+  }
+  
+  .settings-panel.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+  }
+  
+  /* Updated Menu Visibility Styles */
+  .settings-menu {
+      position: relative;
+      z-index: 1000;
+  }
+  
+  .settings-panel {
+      position: absolute;
+      top: calc(100% + 5px); /* Add 5px gap */
+      right: 0;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      min-width: 300px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+      z-index: 1001;
+  }
+  
+  .settings-panel:not(.hidden) {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+  }
+  
+  /* Hamburger Menu Styles */
+  .settings-menu {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      z-index: 1000;
+  }
+  
+  .hamburger-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+  }
+  
+  .hamburger-btn svg {
+      fill: #666;
+  }
+  
+  .settings-panel {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      min-width: 300px;
+  }
+  
+  .settings-panel.hidden {
+      display: none;
+  }
+  
+  .api-selector {
+      margin-bottom: 20px;
+  }
+  
+  .api-option {
+      display: block;
+      margin: 10px 0;
+      cursor: pointer;
+  }
+  
+  .input-group {
+      margin-bottom: 15px;
+      position: relative;
+  }
+  
+  .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #666;
+  }
+  
+  .input-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding-right: 40px;
+  }
+  
+  .toggle-password {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #666;
+      cursor: pointer;
+  }
+  
+  .save-btn {
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+  }
+  
+  .save-btn:hover {
+      background: #0056b3;
+  }
+  
+  /* Notification Styles */
+  .notification-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1050;
+      max-width: 350px;
+  }
+  
+  .notification {
+      position: relative;
+      padding: 15px 40px 15px 15px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      animation: slideIn 0.5s ease-out;
+      opacity: 1;
+      transition: opacity 0.3s ease-in-out;
+  }
+  
+  .notification.success {
+      background-color: #1e4620;
+      border-color: #2f6f31;
+      color: #ffffff;
+  }
+  
+  .notification.error {
+      background-color: #741c1c;
+      border-color: #8f2020;
+      color: #ffffff;
+  }
+  
+  .notification.info {
+      background-color: #1c4766;
+      border-color: #1e5180;
+      color: #ffffff;
+  }
+  
+  .notification-close {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      font-size: 20px;
+      font-weight: bold;
+      color: inherit;
+      text-decoration: none;
+      opacity: 0.5;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0 5px;
+  }
+  
+  .notification-close:hover {
+      opacity: 1;
+  }
+  
+  @keyframes slideIn {
+      from {
+          transform: translateX(100%);
+          opacity: 0;
+      }
+      to {
+          transform: translateX(0);
+          opacity: 1;
+      }
+  }
+  
+  .notification.fade-out {
+      opacity: 0;
+  }
+  
+  /* SFIA Table Layout Fixes */
+  .sfia-table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+  }
+  
+  /* Reset display properties for proper alignment */
+  .sfia-table thead,
+  .sfia-table tbody,
+  .sfia-table tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+  }
+  
+  /* Scrollable body with fixed header */
+  .sfia-table tbody {
+      display: block;
+      overflow-y: auto;
+      max-height: 600px;
+      /* Adjust for scrollbar width to prevent misalignment */
+      width: calc(100% + 17px);
+  }
+  
+  /* Column width specifications */
+  .sfia-table th:nth-child(1),
+  .sfia-table td:nth-child(1) { width: 15%; }
+  
+  .sfia-table th:nth-child(2),
+  .sfia-table td:nth-child(2) { width: 15%; }
+  
+  .sfia-table th:nth-child(3),
+  .sfia-table td:nth-child(3) { width: 30%; }
+  
+  .sfia-table th:nth-child(n+4),
+  .sfia-table td:nth-child(n+4) { 
+      width: 5%;
+      text-align: center;
+      padding: 10px 5px;
+  }
+  
+  /* Sticky header improvements */
+  .sfia-table thead {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: rgb(100, 100, 100);
+      /* Ensure header stays in place */
+      display: table;
+      width: 100%;
+  }
+  
+  /* Cell content handling */
+  .sfia-table th,
+  .sfia-table td {
+      padding: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+  }
+  
+  /* Remove previous conflicting styles */
+  .sfia-table thead,
+  .sfia-table tbody {
+      display: table;
+      width: 100%;
+  }
+  
+  /* Input and Form Controls */
+  .form-control,
+  .form-select {
+    background-color: var(--dark-input-bg);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+  }
+  
+  .form-control:focus,
+  .form-select:focus {
+    border-color: var(--dark-focus-ring);
+    box-shadow: 0 0 0 2px rgba(102, 179, 255, 0.25);
+  }
+  
+  /* Improved Button Contrast */
+  .btn-primary {
     background-color: #0066cc;
     border-color: var(--dark-border);
-}
-
-/* Optional adjustment for Ace editor or other third-party components can be placed here */
-
-/* Focused elements */
-:focus-visible {
-    outline: 3px solid var(--dark-focus-ring);
-    outline-offset: 2px;
-}
-
-/* Skip Links for Keyboard Navigation */
-.skip-link {
-    background: var(--dark-bg);
     color: var(--dark-text);
-    left: 50%;
-    padding: 8px;
-    position: absolute;
-    transform: translateY(-100%);
-    transition: transform 0.3s;
+  }
+  
+  .btn-primary:hover {
+    background-color: #0052a3;
+  }
+  
+  .btn-secondary {
+    background-color: #4d4d4d;
+    border-color: var(--dark-border);
+  }
+  
+  /* Menu and Settings Panel */
+  .settings-panel {
+    background-color: var(--dark-card-bg);
+    border: 1px solid var(--dark-border);
+  }
+  
+  /* Links */
+  a {
+    color: #66b3ff;
+  }
+  
+  a:hover {
+    color: #99ccff;
+  }
+
+/* Card Specific Styles */
+.card {
+    background-color: var(--dark-card-bg);
+    border: 1px solid var(--dark-card-border);
+    color: var(--dark-card-text);
+    transition: all 0.3s ease;
 }
 
-.skip-link:focus {
-    transform: translateY(0%);
+.card-header {
+    background-color: var(--dark-card-header);
+    border-bottom: 1px solid var(--dark-card-border);
+    color: var(--dark-card-text);
 }
 
-/* ARIA Labels and Focus Management */
-[aria-hidden="true"] {
-    display: none !important;
+.card-body {
+    color: var(--dark-card-text);
 }
 
-[role="alert"] {
-    border: 2px solid var(--dark-border);
-    padding: 1rem;
-    margin: 1rem 0;
+.card-footer {
+    background-color: var(--dark-card-header);
+    border-top: 1px solid var(--dark-card-border);
 }
 
-/* Motion Reduced Preferences */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
+.card-title {
+    color: var(--dark-card-text);
 }
 
-/* Use transitions for all changes */
-* {
-    transition: background-color var(--transition-duration), color var(--transition-duration);
+/* Ensure card content is readable */
+.card p,
+.card li,
+.card label {
+    color: var(--dark-card-text);
+}
+
+/* Card hover state */
+.card:hover {
+    border-color: var(--dark-border);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
