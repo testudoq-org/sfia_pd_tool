@@ -1756,24 +1756,37 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 300); // Match this with CSS transition duration
     }
 
-    // Save API keys to cookies with encryption
+    // Save API keys to cookies with encryption and update UI
     if (saveKeysBtn) {
         saveKeysBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            const cohereKey = cohereApiInput.value.trim();
-            const huggingfaceKey = huggingfaceApiInput.value.trim();
+            try {
+                const cohereKey = cohereApiInput.value.trim();
+                const huggingfaceKey = huggingfaceApiInput.value.trim();
+                const selectedApi = document.querySelector('input[name="api-selector"]:checked')?.value;
 
-            if (cohereKey) {
-                const { encrypted: encryptedCohere, salt: saltCohere } = encryptApiKey(cohereKey);
-                setCookie('cohereApi', encryptedCohere, 7, saltCohere);
+                // Save API selection if available
+                if (selectedApi) {
+                    localStorage.setItem('selectedApi', selectedApi);
+                }
+
+                // Save API keys if provided
+                if (cohereKey) {
+                    const { encrypted: encryptedCohere, salt: saltCohere } = encryptApiKey(cohereKey);
+                    setCookie('cohereApi', encryptedCohere, 7, saltCohere);
+                }
+
+                if (huggingfaceKey) {
+                    const { encrypted: encryptedHuggingface, salt: saltHuggingface } = encryptApiKey(huggingfaceKey);
+                    setCookie('huggingfaceApi', encryptedHuggingface, 7, saltHuggingface);
+                }
+
+                // Success notification and UI update
+                showNotification('API keys encrypted and saved successfully!', 'success', 3000);
+                menuContent?.classList.add('hidden');
+            } catch (error) {
+                showNotification('Error saving API keys: ' + error.message, 'error', 5000);
             }
-
-            if (huggingfaceKey) {
-                const { encrypted: encryptedHuggingface, salt: saltHuggingface } = encryptApiKey(huggingfaceKey);
-                setCookie('huggingfaceApi', encryptedHuggingface, 7, saltHuggingface);
-            }
-
-            showNotification('API keys saved securely!', 'success');
         });
     }
 
@@ -1796,25 +1809,7 @@ document.addEventListener('DOMContentLoaded', function () {
     showApiKeys();
 });
 
-// API Key Management code
-const API_KEY_CONFIG = {
-
-};
-
-// Handle API key saving in the encrypted version
-saveKeysBtn?.addEventListener('click', (e) => {
-    e.preventDefault();
-    try {
-        if (saveApiKeys()) {
-            showNotification('API keys encrypted and saved successfully!', 'success', 3000);
-            menuContent?.classList.add('hidden');
-        } else {
-            showNotification('Failed to save API keys', 'error', 5000);
-        }
-    } catch (error) {
-        showNotification('Error saving API keys: ' + error.message, 'error', 5000);
-    }
-});
+// API Key Management code moved inside DOMContentLoaded
 
 /**
  * Shows a notification message
@@ -1872,17 +1867,7 @@ function removeNotification(notification) {
     }, 300); // Match this with CSS transition duration
 }
 
-// Replace all alert() calls with showNotification()
-// Example of usage in save API keys:
-saveKeysBtn?.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (saveApiKeys()) {
-        showNotification('API keys saved successfully!', 'success');
-        menuContent?.classList.add('hidden');
-    } else {
-        showNotification('Failed to save API keys', 'error');
-    }
-});
+// Notification usage examples moved to appropriate event handlers in DOMContentLoaded
 
 // Replace clipboard alert with notification
 function copyToClipboard() {
