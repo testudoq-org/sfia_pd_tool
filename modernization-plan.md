@@ -1,97 +1,89 @@
-# SFIA PD Generator Modernization Plan
+# Grunt Build Modernization Plan
 
-## 1. Dependencies Update
+## Current Structure
+- Existing build task combines clean, copy, string-replace, and concat
+- Test tasks for local, dist, and production environments
+- File watching capability for development
 
-### Current Dependencies
-- Bootstrap 3.3.7
-- jQuery 3.5.1
-- wysihtml5 0.3.0
-- Ace editor 1.32.6
+## Planned Changes
 
-### Planned Updates
-- Bootstrap -> 5.3.x
-  - Replace all Bootstrap 3 classes with Bootstrap 5 equivalents
-  - Update grid system classes
-  - Replace panels with cards
-  - Modernize navbar structure
-- jQuery -> 3.7.1
-- Remove wysihtml5 completely
-- Ace editor -> latest stable (currently 1.32.6 -> 1.32.8)
+### 1. New Dependencies
+- Add `grunt-contrib-uglify` for JavaScript minification
 
-## 2. Layout Improvements
+### 2. Build Task Updates
 
-### Navigation
-- Update navbar structure to Bootstrap 5 format
-- Improve hamburger menu implementation
-- Enhanced mobile responsiveness
+#### src build task
+- Will only concatenate JavaScript files into sfiapdgen_func.js
+- Preserves source readability for development
+- Task sequence:
+  1. concat (existing configuration)
 
-### Grid System
-- Replace old grid classes:
-  - col-xs-12 -> col-12
-  - col-lg-8 -> col-lg-8 (remains same)
-  - Add proper gutters and spacing
-  - Implement consistent container usage
+#### dist build task
+- Creates production-ready distribution
+- Minifies JavaScript and updates references
+- Task sequence:
+  1. clean (existing)
+  2. copy (existing)
+  3. uglify (new)
+  4. string-replace (modified)
 
-### Components
-- Replace panels with cards
-- Update form layouts
-- Improve button styling
-- Add proper spacing utilities
-- Enhanced table responsiveness
+### 3. Configuration Changes
 
-### Editor Integration
-- Remove wysihtml5 editors
-- Expand Ace editor implementation
-- Improve editor layout and controls
+#### New Uglify Configuration
+```javascript
+uglify: {
+    dist: {
+        files: {
+            'dist/sfiapdgen_func.min.js': ['dist/sfiapdgen_func.js']
+        }
+    }
+}
+```
 
-## 3. JavaScript Considerations
+#### Updated String Replace
+```javascript
+'string-replace': {
+    dist: {
+        files: {
+            'dist/sfiapdgen.html': 'dist/sfiapdgen.html'
+        },
+        options: {
+            replacements: [{
+                pattern: 'sfiapdgen_func.js',
+                replacement: 'sfiapdgen_func.min.js'
+            }]
+        }
+    }
+}
+```
 
-### Build Process Impact
-- sfiapdgen_func.js is built from multiple source files:
-  - constants.js
-  - browserUpdate.js
-  - dataFetching.js
-  - exportFunctions.js
-  - checkboxHandling.js
-  - initializeContent.js
-  - tableRendering.js
-  - dataHandling.js
-  - utilityFunctions.js
-  - jsonHandling.js
-  - urlHandling.js
-  - eventListeners.js
-  - windowEvents.js
+### 4. New Task Definitions
+```javascript
+grunt.registerTask('build:src', ['concat']);
+grunt.registerTask('build:dist', ['clean', 'copy', 'uglify', 'string-replace']);
+```
 
-### Required JavaScript Updates
-- Update jQuery selectors and methods if needed
-- Remove wysihtml5 initialization and related code
-- Update Bootstrap JavaScript initialization
-- Enhance Ace editor integration
-- Ensure compatibility with concatenated build
+## Benefits
+1. Clearer separation between development and production builds
+2. Optimized production code through minification
+3. Maintained test infrastructure
+4. Improved build process organization
 
-## 4. Testing Considerations
+## Implementation Steps
+1. Install new dependency
+2. Update Gruntfile.js with new configurations
+3. Test both build processes
+4. Verify file references and minification
+5. Ensure all tests continue to pass
 
-The Gruntfile includes multiple test configurations:
-- Local testing
-- Distribution testing
-- Production testing
+## Testing Plan
+1. Test src build
+   - Verify sfiapdgen_func.js is properly concatenated
+   - Check source readability
+   - Run local tests
 
-Need to ensure all updates are tested across these environments.
-
-## Implementation Strategy
-
-1. Create backup of current working version
-2. Update core dependencies first
-3. Implement layout improvements
-4. Remove wysihtml5 and enhance Ace editor
-5. Test thoroughly using existing test configurations
-6. Create documentation for changes
-
-## Timeline
-
-1. Dependencies Update: 2-3 hours
-2. Layout Improvements: 4-5 hours
-3. JavaScript Updates: 3-4 hours
-4. Testing and Fixes: 2-3 hours
-
-Total Estimated Time: 11-15 hours
+2. Test dist build
+   - Verify minification
+   - Check HTML references
+   - Ensure all files are copied correctly
+   - Run dist tests

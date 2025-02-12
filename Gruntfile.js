@@ -14,20 +14,23 @@ module.exports = function (grunt) {
                 ]
             }
         },
+        uglify: {
+            dist: {
+                files: {
+                    'dist/sfiapdgen_func.min.js': ['dist/sfiapdgen_func.js']
+                }
+            }
+        },
         'string-replace': {
             dist: {
                 files: {
-                    'dist/sfiapdgen.html': 'dist/sfiapdgen.html',
-                    'dist/sfiapdgen_func.js': 'dist/sfiapdgen_func.js',
+                    'dist/sfiapdgen.html': 'dist/sfiapdgen.html'
                 },
                 options: {
-                    replacements: [
-                        {
-                            pattern: 'sfiapdgen_func.js',
-                            replacement: 'sfiapdgen_func.js'
-                        },
-                        // ... (other replacements)
-                    ]
+                    replacements: [{
+                        pattern: 'sfiapdgen_func.js',
+                        replacement: 'sfiapdgen_func.min.js'
+                    }]
                 }
             }
         },
@@ -37,7 +40,10 @@ module.exports = function (grunt) {
             },
             dist: {
                 src: ['src/init.js',
-                    'src/theme.js', 'src/constants.js', 'src/browserUpdate.js', 'src/dataFetching.js', 'src/exportFunctions.js', 'src/checkboxHandling.js', 'src/initializeContent.js', 'src/tableRendering.js', 'src/dataHandling.js', 'src/utilityFunctions.js', 'src/jsonHandling.js', 'src/urlHandling.js', 'src/eventListeners.js', 'src/windowEvents.js'],
+                    'src/theme.js', 'src/constants.js', 'src/browserUpdate.js', 'src/dataFetching.js', 
+                    'src/exportFunctions.js', 'src/checkboxHandling.js', 'src/initializeContent.js', 
+                    'src/tableRendering.js', 'src/dataHandling.js', 'src/utilityFunctions.js', 
+                    'src/jsonHandling.js', 'src/urlHandling.js', 'src/eventListeners.js', 'src/windowEvents.js'],
                 dest: 'src/sfiapdgen_func.js',
             },
         },
@@ -69,16 +75,22 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-string-replace');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-exec');
 
-    grunt.registerTask('build', ['clean', 'copy', 'string-replace', 'concat']);
+    // Source build - only concatenates the files
+    grunt.registerTask('build:src', ['concat']);
+
+    // Distribution build - full process including minification
+    grunt.registerTask('build:dist', ['clean', 'copy', 'concat', 'uglify', 'string-replace']);
+
+    // Legacy build task for compatibility
+    grunt.registerTask('build', ['build:src']);
 
     grunt.registerTask('testSpecificFile', ['exec:codeceptjsLocalSpecific']);
-
-    grunt.registerTask('testLocal', ['exec:codeceptjsLocal', 'copy']); // Added 'copy' task as dependency
-
-    grunt.registerTask('testDist', ['exec:codeceptjsDist']); // TODO 'ftp-copy' task as dependency
-    grunt.registerTask('testProduction', ['exec:codeceptjsProduction']); // removed 'copy' task as dependency
+    grunt.registerTask('testLocal', ['exec:codeceptjsLocal', 'copy']);
+    grunt.registerTask('testDist', ['exec:codeceptjsDist']);
+    grunt.registerTask('testProduction', ['exec:codeceptjsProduction']);
 
     grunt.registerTask('delayedBuild', function () {
         var done = this.async();
