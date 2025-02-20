@@ -7,9 +7,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('DOM Content Loaded - Initializing application...');
 
     try {
-        // Show instructions on page load
-        $('#instructions').collapse('show');
-
         // Set up version selection handling
         initializeVersionSelection();
 
@@ -21,6 +18,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Initialize content with appropriate data loading
         await initializeContent();
+
 
     } catch (error) {
         console.error('Error during application initialization:', error);
