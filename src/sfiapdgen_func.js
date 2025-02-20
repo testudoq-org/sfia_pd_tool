@@ -1,7 +1,119 @@
-$(document).ready(function() {
-    // Automatically show the instructions on page load
-    $('#instructions').collapse('show');
+// BOF: init.js
+
+/**
+ * Initialize the application when the DOM is fully loaded
+ */
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('DOM Content Loaded - Initializing application...');
+
+    try {
+        // Show instructions on page load
+        $('#instructions').collapse('show');
+
+        // Set up version selection handling
+        initializeVersionSelection();
+
+        // Hide the local JSON loading button by default
+        const loadBtn = document.getElementById('localJsonLoadBtn');
+        if (loadBtn) {
+            loadBtn.style.display = 'none';
+        }
+
+        // Initialize content with appropriate data loading
+        await initializeContent();
+
+    } catch (error) {
+        console.error('Error during application initialization:', error);
+        showNotification('Error initializing application: ' + error.message, 'error');
+    }
 });
+
+/**
+ * Initialize version selection dropdown and handle changes
+ */
+function initializeVersionSelection() {
+    const versionSelect = document.getElementById('jsonVersionSelect');
+    if (!versionSelect) {
+        console.error('Version selection dropdown not found');
+        return;
+    }
+
+    // Only show version selector for HTTP protocol
+    if (window.location.protocol !== 'file:') {
+        // Load saved version preference from cookie
+        const savedVersion = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('selectedVersion='));
+        
+        if (savedVersion) {
+            const version = savedVersion.split('=')[1];
+            versionSelect.value = version;
+        }
+
+        // Handle version changes
+        versionSelect.addEventListener('change', async function() {
+            const selectedVersion = this.value;
+            
+            try {
+                // Save version preference
+                document.cookie = `selectedVersion=${selectedVersion}; path=/`;
+                
+                // Reload content with new version
+                await initializeContent();
+                
+                showNotification(`Successfully switched to SFIA ${selectedVersion}`, 'success');
+            } catch (error) {
+                console.error('Error switching versions:', error);
+                showNotification('Error switching versions: ' + error.message, 'error');
+            }
+        });
+    } else {
+        // Hide version selector for file:/// protocol
+        versionSelect.parentElement.style.display = 'none';
+    }
+}
+
+/**
+ * Shows a notification to the user
+ * @param {string} message - The message to display
+ * @param {string} type - The type of notification ('success', 'error', 'info')
+ */
+function showNotification(message, type = 'info') {
+    const container = document.getElementById('notification-container');
+    if (!container) {
+        console.error('Notification container not found');
+        return;
+    }
+
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show`;
+    notification.role = 'alert';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+
+    container.appendChild(notification);
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 150);
+    }, 5000);
+}
+
+// Initialize local JSON loading if using file:/// protocol
+// This ensures the button only appears and functions with file:/// URLs
+if (window.location.protocol === 'file:') {
+    document.addEventListener('DOMContentLoaded', function() {
+        const loadBtn = document.getElementById('localJsonLoadBtn');
+        if (loadBtn) {
+            loadBtn.style.display = 'inline-block';
+        }
+    });
+}
+
+// EOF: init.js
 ;/**
  * Toggle between light and dark themes.
  */
@@ -67,31 +179,136 @@ if (window.location.hostname !== '127.0.0.1') {
 // EOF: src/browserUpdate.js
 ;// BOF: src/dataFetching.js
 
-// This file includes functions for asynchronously fetching data from a given URL.
+/**
+ * Initialize local JSON loading functionality - only used with file:/// protocol
+ */
+function initializeLocalJsonLoading() {
+    if (window.location.protocol !== 'file:') {
+        return;
+    }
+
+    console.log('Initializing local JSON loading...');
+    const loadBtn = document.getElementById('localJsonLoadBtn');
+    const fileInput = document.getElementById('localJsonFileInput');
+
+    if (!loadBtn || !fileInput) {
+        console.error('Required elements for local JSON loading not found');
+        return;
+    }
+
+    // Show the button only when running under file:/// protocol
+    loadBtn.style.display = 'inline-block';
+
+    // Show the file chooser when clicking the button
+    loadBtn.addEventListener('click', () => fileInput.click());
+
+    // Handle file selection
+    if (!fileInput.dataset.listenerBound) {
+        fileInput.addEventListener('change', handleLocalFileSelection);
+        fileInput.dataset.listenerBound = 'true';
+    }
+}
+
+/**
+ * Handles the selection of a local JSON file
+ * @param {Event} event - The file input change event
+ */
+async function handleLocalFileSelection(event) {
+    const file = event.target.files[0];
+    if (!file) {
+        showNotification('No file selected', 'warning');
+        return;
+    }
+
+    if (!file.name.toLowerCase().endsWith('.json')) {
+        showNotification('Please select a JSON file', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const jsonData = JSON.parse(e.target.result);
+            
+            // Set pseudo-version for local file
+            document.cookie = 'selectedVersion=localFile; path=/';
+            
+            // Update global state
+            window.sfiaJson = jsonData;
+            
+            // Initialize content with loaded data
+            if (typeof initializeSFIAContent === 'function') {
+                await initializeSFIAContent(jsonData);
+                showNotification('JSON file loaded successfully', 'success');
+            } else {
+                throw new Error('Required initialization function not found');
+            }
+        } catch (error) {
+            console.error('Error processing JSON:', error);
+            showNotification('Error processing JSON file: ' + error.message, 'error');
+        }
+    };
+
+    reader.onerror = () => {
+        showNotification('Error reading file', 'error');
+    };
+
+    reader.readAsText(file);
+}
 
 /**
  * Asynchronously fetches data from a given URL.
- * 
  * @param {string} url - The URL to fetch data from.
  * @return {Promise} A Promise that resolves to the parsed JSON response.
  * @throws {Error} If the HTTP response is not ok.
  */
 async function fetchData(url) {
     try {
-        // Fetch the data from the given URL
-        const response = await fetch(url);
+        // For file:/// protocol, use local file loading
+        if (window.location.protocol === 'file:') {
+            return await new Promise((resolve, reject) => {
+                const fileInput = document.getElementById('localJsonFileInput');
+                if (!fileInput) {
+                    reject(new Error('File input element not found'));
+                    return;
+                }
 
-        // Check if the response is ok (status code 200-299)
-        if (!response.ok) {
-            // Throw an error with the HTTP status code
-            throw new Error(`HTTP error! Status: ${response.status}`);
+                const handleChange = (event) => {
+                    const file = event.target.files[0];
+                    if (!file) {
+                        reject(new Error('No file selected'));
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const jsonData = JSON.parse(e.target.result);
+                            resolve(jsonData);
+                        } catch (error) {
+                            reject(new Error('Invalid JSON file'));
+                        }
+                    };
+                    reader.onerror = () => reject(new Error('Error reading file'));
+                    reader.readAsText(file);
+
+                    fileInput.removeEventListener('change', handleChange);
+                };
+
+                fileInput.addEventListener('change', handleChange);
+                fileInput.click();
+            });
         }
 
-        // Parse the response body as JSON and return it
+        // For HTTP/HTTPS, use fetch
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         return await response.json();
     } catch (error) {
-        // Log any errors that occur during the fetch or parsing process
         console.error('Error fetching data:', error);
+        throw error;
     }
 }
 
@@ -101,28 +318,24 @@ async function fetchData(url) {
  * @returns {string|undefined} The value of the cookie, or undefined if not found.
  */
 function getCookie(name) {
-    // Prepend a semicolon and the document's cookie value.
     const value = `; ${document.cookie}`;
-
-    // Split the value based on the cookie name and a semicolon.
     const parts = value.split(`; ${name}=`);
-
-    // If the array has a length of 2, return the value after the cookie name.
-    // Otherwise, return undefined.
     if (parts.length === 2) {
-        // Extract the value of the cookie by removing the trailing semicolon and any following characters.
         return parts.pop().split(';').shift();
     }
 }
 
-// Function to set the selected version in the cookie
+/**
+ * Sets the selected version in the cookie
+ * @param {string} version - The version to store
+ */
 function setStoredVersionToCookie(version) {
     document.cookie = `selectedVersion=${version}`;
 }
 
 /**
- * Sets the stored version based on the provided value.
- * @param {string} storedVersion - The version to be stored.
+ * Sets the stored version and initializes content
+ * @param {string} storedVersion - The version to be stored
  */
 function setStoredVersion(storedVersion) {
     const storedVersionFromCookie = getStoredVersionFromCookie();
@@ -132,37 +345,32 @@ function setStoredVersion(storedVersion) {
 }
 
 /**
- * Retrieves the stored version from the cookie, if any.
- * @returns {string} The stored version from the cookie or null if not found.
+ * Gets the stored version from cookie
+ * @returns {string} The stored version or null
  */
 function getStoredVersionFromCookie() {
-    let storedVersionFromCookie = getCookie("selectedVersion");
-    return storedVersionFromCookie || null;
+    return getCookie("selectedVersion") || null;
 }
 
 /**
- * Sets the selected version in the dropdown element.
- * @param {string} storedVersion - The version to be set in the dropdown.
- * @returns {string} The selected version.
+ * Sets the dropdown value based on stored version
+ * @param {string} storedVersion - Version to set
+ * @returns {string} The selected version
  */
 function setDropdownValue(storedVersion) {
     let dropdown = document.getElementById("jsonVersionSelect");
-
-    // Check if dropdown value is empty, null, or undefined
     if (!dropdown.value || dropdown.value === null || dropdown.value === undefined) {
         dropdown.value = storedVersion;
     }
-
     return dropdown.value;
 }
 
 /**
- * Fetches the selected version JSON data based on the dropdown value.
- * @param {string} dropdownValue - The value selected in the dropdown.
- * @returns {Object} The JSON data for the selected version.
+ * Fetches JSON data for selected version
+ * @param {string} dropdownValue - Selected version
+ * @returns {Promise<Object>} JSON data
  */
 async function fetchSelectedVersionData(dropdownValue) {
-    // Set default value if dropdownValue is empty or null
     dropdownValue = dropdownValue || "json_source_v8";
     const jsonUrl = dropdownValue + ".json";
     const jsonData = await fetchData(jsonUrl);
@@ -170,12 +378,17 @@ async function fetchSelectedVersionData(dropdownValue) {
 }
 
 /**
- * Sets up event listeners based on the provided JSON data.
- * @param {Object} jsonData - The JSON data for the selected version.
+ * Sets up event listeners for JSON data
+ * @param {Object} jsonData - The JSON data
  */
 function setupEventListenersForData(jsonData) {
-    sfiaJson = jsonData; // Assign fetched data to sfiaJson
+    window.sfiaJson = jsonData;
     setupEventListeners(jsonData);
+}
+
+// Initialize local JSON loading if using file:/// protocol
+if (window.location.protocol === 'file:') {
+    document.addEventListener('DOMContentLoaded', initializeLocalJsonLoading);
 }
 
 // EOF: src/dataFetching.js
