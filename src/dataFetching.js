@@ -191,11 +191,34 @@ function setDropdownValue(storedVersion) {
  * @param {string} dropdownValue - Selected version
  * @returns {Promise<Object>} JSON data
  */
+/**
+ * Fetches JSON data for selected version
+ * @param {string} dropdownValue - Selected version from dropdown
+ * @returns {Promise<Object>} JSON data
+ */
 async function fetchSelectedVersionData(dropdownValue) {
+    // Default to SFIA v8 if no version specified
     dropdownValue = dropdownValue || "json_source_v8";
-    const jsonUrl = dropdownValue + ".json";
-    const jsonData = await fetchData(jsonUrl);
-    return jsonData;
+    
+    // Ensure valid version format
+    if (!dropdownValue.match(/^json_source_v[7-9]$/)) {
+        console.warn(`Invalid version format: ${dropdownValue}, defaulting to SFIA v8`);
+        dropdownValue = "json_source_v8";
+    }
+    
+    try {
+        const jsonUrl = dropdownValue + ".json";
+        const jsonData = await fetchData(jsonUrl);
+        return jsonData;
+    } catch (error) {
+        console.error(`Error loading ${dropdownValue}:`, error);
+        // If selected version fails and it's not already v8, try falling back to v8
+        if (dropdownValue !== "json_source_v8") {
+            console.log("Attempting fallback to SFIA v8...");
+            return await fetchData("json_source_v8.json");
+        }
+        throw error; // Re-throw if v8 also fails
+    }
 }
 
 /**

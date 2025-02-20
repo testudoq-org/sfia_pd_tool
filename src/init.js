@@ -38,9 +38,9 @@ function initializeVersionSelection() {
         return;
     }
 
-    // Only show version selector for HTTP protocol
+    // Show version selector for HTTP/HTTPS protocol
     if (window.location.protocol !== 'file:') {
-        // Load saved version preference from cookie
+        // Load saved version preference from cookie, default to v8 if none found
         const savedVersion = document.cookie
             .split('; ')
             .find(row => row.startsWith('selectedVersion='));
@@ -48,29 +48,36 @@ function initializeVersionSelection() {
         if (savedVersion) {
             const version = savedVersion.split('=')[1];
             versionSelect.value = version;
+        } else {
+            // Set v8 as default if no cookie exists
+            versionSelect.value = 'json_source_v8';
+            document.cookie = 'selectedVersion=json_source_v8; path=/';
         }
 
-        // Handle version changes
-        versionSelect.addEventListener('change', async function() {
-            const selectedVersion = this.value;
-            
-            try {
-                // Save version preference
-                document.cookie = `selectedVersion=${selectedVersion}; path=/`;
-                
-                // Reload content with new version
-                await initializeContent();
-                
-                showNotification(`Successfully switched to SFIA ${selectedVersion}`, 'success');
-            } catch (error) {
-                console.error('Error switching versions:', error);
-                showNotification('Error switching versions: ' + error.message, 'error');
-            }
-        });
+        // Show version selector
+        versionSelect.parentElement.style.display = 'flex';
     } else {
         // Hide version selector for file:/// protocol
         versionSelect.parentElement.style.display = 'none';
     }
+
+    // Handle version changes
+    versionSelect.addEventListener('change', async function() {
+        const selectedVersion = this.value;
+        
+        try {
+            // Save version preference
+            document.cookie = `selectedVersion=${selectedVersion}; path=/`;
+            
+            // Reload content with new version
+            await initializeContent();
+            
+            showNotification(`Successfully switched to SFIA ${selectedVersion.replace('json_source_v', '')}`, 'success');
+        } catch (error) {
+            console.error('Error switching versions:', error);
+            showNotification('Error switching versions: ' + error.message, 'error');
+        }
+    });
 }
 
 /**
@@ -102,15 +109,13 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-// Initialize local JSON loading if using file:/// protocol
-// This ensures the button only appears and functions with file:/// URLs
-if (window.location.protocol === 'file:') {
-    document.addEventListener('DOMContentLoaded', function() {
-        const loadBtn = document.getElementById('localJsonLoadBtn');
-        if (loadBtn) {
-            loadBtn.style.display = 'inline-block';
-        }
-    });
-}
+// Initialize local JSON loading
+document.addEventListener('DOMContentLoaded', function() {
+    const loadBtn = document.getElementById('localJsonLoadBtn');
+    if (loadBtn) {
+        // Only show button for file:/// protocol
+        loadBtn.style.display = window.location.protocol === 'file:' ? 'inline-block' : 'none';
+    }
+});
 
 // EOF: init.js
