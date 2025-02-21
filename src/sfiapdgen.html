@@ -83,12 +83,12 @@
 				<div class="card">
 					<div class="card-header" role="heading" aria-level="3">
 						<h3 class="card-title">Instructions</h3>
-						<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#instructions"
-							aria-expanded="true" aria-controls="instructions">
+						<button class="btn btn-primary collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#instructions"
+						aria-expanded="false" aria-controls="instructions">
 							Toggle Instructions
 						</button>
 					</div>
-					<div class="card-body collapse show" id="instructions">
+					<div class="card-body collapse" id="instructions">
 						<p>Welcome to the PD generator tool, built upon the <a href="https://www.sfia-online.org">SFIA Skills
 								Framework</a>. This tool is designed to help you create comprehensive position
 							descriptions (PD) based on the skills and competencies defined in the SFIA framework.</p>
@@ -156,28 +156,6 @@
 			</div>
 		</div>
 
-		<!-- Export Options and Version Select -->
-		<div class="row g-3 mt-3">
-			<div class="col-12">
-				<div class="card">
-					<div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
-						<div class="btn-group" role="group" aria-label="Export Options">
-							<a href="#" class="btn btn-primary" id="exportHTML" onclick="exportHTML(event);">Export to HTML</a>
-							<a href="#" class="btn btn-primary" id="exportCSV" onclick="exportCSV(event, sfiaJson)">Export to CSV</a>
-						</div>
-						<div class="d-flex align-items-center gap-2">
-							<label for="jsonVersionSelect">Select SFIA Version:</label>
-							<select id="jsonVersionSelect" class="form-select" onchange="changeJsonVersion()">
-								<option value="json_source_v9">version 9</option>
-								<option value="json_source_v8" selected>version 8</option>
-								<option value="json_source_v7">version 7</option>
-							</select>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
 		<!-- SFIA Table -->
 		<div class="row g-3 mt-3">
 			<div class="col-12">
@@ -238,6 +216,28 @@
 			</div>
 		</div>
 
+		<!-- Export Options and Version Select -->
+		<div class="row g-3 mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+						<div class="btn-group" role="group" aria-label="Export Options">
+							<a href="#" class="btn btn-primary" id="exportHTML" onclick="exportHTML(event);">Export to HTML</a>
+							<a href="#" class="btn btn-primary" id="exportCSV" onclick="exportCSV(event, sfiaJson)">Export to CSV</a>
+						</div>
+						<div class="d-flex align-items-center gap-2">
+							<label for="jsonVersionSelect">Select SFIA Version:</label>
+							<select id="jsonVersionSelect" class="form-select" onchange="changeJsonVersion()">
+								<option value="json_source_v9">version 9</option>
+								<option value="json_source_v8" selected>version 8</option>
+								<option value="json_source_v7">version 7</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- Formatted Output -->
 		<div class="row g-3 mt-3">
 			<div class="col-12">
@@ -283,27 +283,6 @@
 			<p class="text-muted">Copyright 2024</p>
 		</div>
 	</footer>
-	<!-- Add Theme Toggle Script -->
-	<script>
-		function toggleTheme() {
-			const lightTheme = document.querySelector('link[href="styles-light.css"]');
-			const darkTheme = document.querySelector('link[href="styles-dark.css"]');
-			const isLight = !document.getElementById('theme-switch').checked;
-			
-			lightTheme.disabled = !isLight;
-			darkTheme.disabled = isLight;
-			
-			// Save preference
-			localStorage.setItem('theme', isLight ? 'light' : 'dark');
-		}
-
-		// Load saved theme preference
-		document.addEventListener('DOMContentLoaded', () => {
-			const savedTheme = localStorage.getItem('theme') || 'light';
-			document.getElementById('theme-switch').checked = savedTheme === 'dark';
-			toggleTheme();
-		});
-	</script>
 </body>
 
 </html>
