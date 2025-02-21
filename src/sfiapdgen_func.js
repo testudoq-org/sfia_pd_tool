@@ -1,6 +1,6 @@
 $(document).ready(function() {
-    // Automatically show the instructions on page load
-    $('#instructions').collapse('show');
+    // Automatically hide the instructions on page load
+    $('#instructions').collapse('hide');
 });
 ;/**
  * Toggle between light and dark themes.
