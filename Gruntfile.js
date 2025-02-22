@@ -3,57 +3,122 @@ module.exports = function (grunt) {
     var pkg = grunt.file.readJSON('package.json');
 
     grunt.initConfig({
+        // Clean task configuration
         clean: {
-            minFiles: ['dist/**/*.*min.*']
+            dev: ['package/dev/**/*'],
+            prd: ['package/prd/**/*']
         },
+
+        // Copy task configuration
         copy: {
-            main: {
+            dev: {
                 files: [
-                    { expand: true, cwd: 'src', src: ['**/*.html', '**/*.css', '**/*.json', '**/*.ico'], dest: 'dist/', filter: 'isFile' },
-                    { expand: true, cwd: 'src', src: ['**/sfiapdgen_func.js', '!**/*.min.*'], dest: 'dist/', filter: 'isFile' }
+                    { expand: true, cwd: 'src', src: ['**/*.html', '**/*.css', '**/*.json', '**/*.ico'], dest: 'package/dev/', filter: 'isFile' },
+                    { expand: true, cwd: 'src', src: ['**/sfiapdgen_func.js', '!**/*.min.*'], dest: 'package/dev/', filter: 'isFile' }
+                ]
+            },
+            prd: {
+                files: [
+                    { expand: true, cwd: 'src', src: ['**/*.html', '**/*.css', '**/*.json', '**/*.ico'], dest: 'package/prd/', filter: 'isFile' },
+                    { expand: true, cwd: 'src', src: ['**/sfiapdgen_func.js', '!**/*.min.*'], dest: 'package/prd/', filter: 'isFile' }
                 ]
             }
         },
+
+        // Uglify task configuration
         uglify: {
-            dist: {
+            options: {
+                compress: {
+                    drop_console: true,
+                    drop_debugger: true
+                },
+                mangle: true,
+                output: {
+                    comments: false
+                }
+            },
+            prd: {
                 files: {
-                    'dist/sfiapdgen_func.min.js': ['dist/sfiapdgen_func.js']
+                    'package/prd/sfiapdgen_func.min.js': ['package/prd/sfiapdgen_func.js']
                 }
             }
         },
+
+        // String replace task configuration
         'string-replace': {
-            dist: {
+            dev: {
                 files: {
-                    'dist/sfiapdgen.html': 'dist/sfiapdgen.html'
+                    'package/dev/sfiapdgen.html': 'package/dev/sfiapdgen.html'
                 },
                 options: {
                     replacements: [{
                         pattern: 'sfiapdgen_func.js',
-                        replacement: 'sfiapdgen_func.min.js'
+                        replacement: 'sfiapdgen_func.js'
                     }]
+                }
+            },
+            prd: {
+                files: {
+                    'package/prd/sfiapdgen.html': 'package/prd/sfiapdgen.html'
+                },
+                options: {
+                    replacements: [
+                        {
+                            pattern: 'sfiapdgen_func.js',
+                            replacement: 'sfiapdgen_func.min.js'
+                        },
+                        {
+                            pattern: '<head>',
+                            replacement: '<head>\n' +
+                                '    <meta http-equiv="Content-Security-Policy" content="default-src \'self\'">\n' +
+                                '    <meta http-equiv="X-Content-Type-Options" content="nosniff">\n' +
+                                '    <meta http-equiv="X-Frame-Options" content="DENY">'
+                        }
+                    ]
                 }
             }
         },
+
+        // Concat task configuration
         concat: {
             options: {
                 separator: ';',
+                sourceMap: true
             },
-            dist: {
+            dev: {
+                options: {
+                    sourceMap: true,
+                    sourceMapStyle: 'inline'
+                },
                 src: ['src/init.js',
                     'src/theme.js', 'src/constants.js', 'src/browserUpdate.js', 'src/dataFetching.js', 
                     'src/exportFunctions.js', 'src/checkboxHandling.js', 'src/initializeContent.js', 
                     'src/tableRendering.js', 'src/dataHandling.js', 'src/utilityFunctions.js', 
                     'src/jsonHandling.js', 'src/urlHandling.js', 'src/eventListeners.js', 'src/windowEvents.js'],
-                dest: 'src/sfiapdgen_func.js',
+                dest: 'package/dev/sfiapdgen_func.js'
             },
+            prd: {
+                src: ['src/init.js',
+                    'src/theme.js', 'src/constants.js', 'src/browserUpdate.js', 'src/dataFetching.js', 
+                    'src/exportFunctions.js', 'src/checkboxHandling.js', 'src/initializeContent.js', 
+                    'src/tableRendering.js', 'src/dataHandling.js', 'src/utilityFunctions.js', 
+                    'src/jsonHandling.js', 'src/urlHandling.js', 'src/eventListeners.js', 'src/windowEvents.js'],
+                dest: 'package/prd/sfiapdgen_func.js'
+            }
         },
+
+        // Watch task configuration
         watch: {
             options: {
                 debounceDelay: 3000
             },
-            files: ['src/**/*', 'src/sfiapdgen_func.js'],
-            tasks: ['delayedBuild']
+            dev: {
+                files: ['src/**/*'],
+                tasks: ['build:dev']
+            }
         },
+
+        // Test execution configuration
         exec: {
             codeceptjsLocalSpecific: {
                 cmd: 'npx codeceptjs run --config=codecept.local.conf.js --grep="check_levels_of_responsibility.local.test.js"'
@@ -65,11 +130,12 @@ module.exports = function (grunt) {
                 cmd: 'npx codeceptjs run --config=codecept.dist.conf.js'
             },
             codeceptjsProduction: {
-                cmd: 'npx codeceptjs run --config=codecept.production.conf.js'
+                cmd: 'npx codeceptjs run --config=codecept.prod.conf.js'
             }
         }
     });
 
+    // Load NPM tasks
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-string-replace');
@@ -78,31 +144,50 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-exec');
 
-    // Source build - only concatenates the files
-    grunt.registerTask('build:src', ['concat']);
+    // Development build - concatenates files with sourcemaps
+    grunt.registerTask('build:dev', [
+        'clean:dev',
+        'copy:dev',
+        'concat:dev',
+        'string-replace:dev'
+    ]);
 
-    // Distribution build - full process including minification
-    grunt.registerTask('build:dist', ['clean', 'copy', 'concat', 'uglify', 'string-replace']);
+    // Production build - full process including minification
+    grunt.registerTask('build:prd', [
+        'clean:prd',
+        'copy:prd',
+        'concat:prd',
+        'uglify:prd',
+        'string-replace:prd'
+    ]);
 
     // Legacy build task for compatibility
-    grunt.registerTask('build', ['build:src']);
+    grunt.registerTask('build', ['build:dev']);
 
+    // Test tasks
     grunt.registerTask('testSpecificFile', ['exec:codeceptjsLocalSpecific']);
-    grunt.registerTask('testLocal', ['exec:codeceptjsLocal', 'copy']);
+    grunt.registerTask('testLocal', ['exec:codeceptjsLocal', 'copy:dev']);
     grunt.registerTask('testDist', ['exec:codeceptjsDist']);
     grunt.registerTask('testProduction', ['exec:codeceptjsProduction']);
 
+    // Delayed build task
     grunt.registerTask('delayedBuild', function () {
         var done = this.async();
         setTimeout(function () {
-            grunt.task.run('build');
+            grunt.task.run('build:dev');
             done();
         }, 1000);
     });
 
-    grunt.registerTask('default', ['testLocal']);
+    // Default task
+    grunt.registerTask('default', ['build:dev']);
 
+    // Debug task with enhanced logging
     grunt.registerTask('debug', 'Debug task', function () {
-        grunt.log.writeln('Replacements have been made successfully.');
+        grunt.log.writeln('Build configuration:');
+        grunt.log.writeln('- Source files concatenated');
+        grunt.log.writeln('- Sourcemaps generated');
+        grunt.log.writeln('- Output directory: package/dev/');
+        grunt.log.writeln('Build completed successfully.');
     });
 };
