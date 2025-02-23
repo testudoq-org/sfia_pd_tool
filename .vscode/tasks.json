@@ -3,54 +3,15 @@
   "tasks": [
     {
       "label": "prepare-dev",
-      "dependsOn": [
-        "grunt build:dev",
-        "Start Live Server"
-      ],
-      "dependsOrder": "sequence"
-    },
-    {
-      "label": "prepare-prod",
-      "dependsOn": [
-        "grunt build:prd",
-        "Start Live Server"
-      ],
-      "dependsOrder": "sequence"
-    },
-    {
-      "label": "grunt build:dev",
       "type": "shell",
       "command": "grunt build:dev",
       "group": "build"
     },
     {
-      "label": "grunt build:prd",
+      "label": "prepare-prod",
       "type": "shell",
       "command": "grunt build:prd",
       "group": "build"
-    },
-    {
-      "label": "Start Live Server",
-      "type": "shell",
-      "command": "npm run start-server",
-      "group": "none",
-      "isBackground": true,
-      "problemMatcher": {
-        "pattern": {
-          "regexp": "^$"
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "Live Server started",
-          "endsPattern": "Live Server started"
-        }
-      }
-    },
-    {
-      "label": "Stop Live Server",
-      "type": "shell",
-      "command": "npm run stop-server",
-      "group": "none"
     }
   ]
 }

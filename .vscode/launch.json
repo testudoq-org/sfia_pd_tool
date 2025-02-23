@@ -5,53 +5,32 @@
       "name": "DEV Build and Launch Edge",
       "type": "msedge",
       "request": "launch",
-      "url": "http://127.0.0.1:5500/package/dev/sfiapdgen.html",
+      "url": "http://127.0.0.1:5501/package/dev/sfiapdgen.html",
       "webRoot": "${workspaceFolder}",
-      "outFiles": ["${workspaceFolder}/package/dev/*.js"],
-      "preLaunchTask": "prepare-dev",
-      "postDebugTask": "Stop Live Server",
-      "sourceMapPathOverrides": {
-        "webpack:///src/*": "${webRoot}/src/*"
-      }
+      "preLaunchTask": "prepare-dev"
     },
     {
       "name": "DEV Launch Chrome",
       "type": "chrome",
       "request": "launch",
-      "url": "http://127.0.0.1:5500/package/dev/sfiapdgen.html",
-      "webRoot": "${workspaceFolder}",
-      "outFiles": ["${workspaceFolder}/package/dev/*.js"],
-      "preLaunchTask": "prepare-dev",
-      "postDebugTask": "Stop Live Server",
-      "sourceMapPathOverrides": {
-        "webpack:///src/*": "${webRoot}/src/*"
-      }
+      "url": "http://127.0.0.1:5501/package/dev/sfiapdgen.html",
+      "preLaunchTask": "prepare-dev"
     },
     {
       "name": "PRD Launch Edge",
       "type": "msedge",
       "request": "launch",
-      "url": "http://127.0.0.1:5500/package/prd/sfiapdgen.html",
+      "url": "http://127.0.0.1:5501/package/prd/sfiapdgen.html",
       "webRoot": "${workspaceFolder}",
-      "outFiles": ["${workspaceFolder}/package/prd/*.js"],
-      "preLaunchTask": "prepare-prod",
-      "postDebugTask": "Stop Live Server",
-      "sourceMapPathOverrides": {
-        "webpack:///src/*": "${webRoot}/src/*"
-      }
+      "preLaunchTask": "prepare-prod"
     },
     {
       "name": "PRD Launch Chrome",
       "type": "chrome",
       "request": "launch",
-      "url": "http://127.0.0.1:5500/package/prd/sfiapdgen.html",
+      "url": "http://127.0.0.1:5501/package/prd/sfiapdgen.html",
       "webRoot": "${workspaceFolder}",
-      "outFiles": ["${workspaceFolder}/package/prd/*.js"],
-      "preLaunchTask": "prepare-prod",
-      "postDebugTask": "Stop Live Server",
-      "sourceMapPathOverrides": {
-        "webpack:///src/*": "${webRoot}/src/*"
-      }
+      "preLaunchTask": "prepare-prod"
     }
   ]
 }
