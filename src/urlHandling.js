@@ -2,6 +2,35 @@
 
 // This file includes functions for generating and updating URL hashes based on LoR data and SFIA checkboxes.
 
+/**
+ * LoR category to abbreviated code mapping
+ */
+const LOR_ABBREVIATIONS = {
+    'Autonomy': 'AUTO',
+    'Influence': 'INFL',
+    'Complexity': 'COMP',
+    'Business': 'BUSI',
+    'Knowledge': 'KNOW'
+};
+
+/**
+ * Convert full LoR category name to standardized abbreviation
+ * @param {string} category - Full LoR category name
+ * @returns {string} Standardized 4-letter abbreviation
+ */
+function getStandardizedLorCode(category) {
+    // First check if it's already a standard code
+    if (Object.values(LOR_ABBREVIATIONS).includes(category)) {
+        return category;
+    }
+    // Then check if we have a mapping for it
+    const abbreviated = LOR_ABBREVIATIONS[category];
+    if (abbreviated) {
+        return abbreviated;
+    }
+    // If no mapping exists, create a standardized 4-letter code
+    return category.substring(0, 4).toUpperCase();
+}
 
 /**
  * Update the URL hash based on filtered SFIA data.
@@ -57,27 +86,58 @@ function updateCombinedUrlHash() {
 /**
  * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
  * This function retrieves all LoR checkboxes on the page, filters them to only include
- * the checked ones, retrieves their 'id' attribute, and joins them with '+' as a separator.
- * The resulting string is then set as the URL hash.
- * 
- * @param {string} hash - The combined LoR hash string.
+ * the checked ones, retrieves their value attribute, and joins them with '+' as a separator.
+ *
+ * @param {string} hash - The combined LoR hash string (optional).
  */
 function updateURLWithLorCheckboxes(hash) {
-    // Retrieve all LoR checkboxes on the page.
-    const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
+    // If hash is provided, update g_lorhash directly
+    if (hash) {
+        g_lorhash = hash;
+        updateCombinedUrlHash();
+        return;
+    }
 
-    // Filter the checkboxes to only include the checked ones.
+    // Otherwise, gather checked checkboxes
+    const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
     const selectedLorCheckboxes = Array.from(lorCheckboxes)
         .filter(checkbox => checkbox.checked)
-        // Retrieve the 'id' attribute of each checked LoR checkbox.
-        .map(checkbox => checkbox.value);
+        .map(checkbox => {
+            // Extract the value and standardize it
+            const [category, level] = checkbox.value.split('-');
+            return `${getStandardizedLorCode(category)}-${level}`;
+        });
 
-    // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
     g_lorhash = selectedLorCheckboxes.join('+');
-
-    // Join the selected LoR checkboxes with '+' as a separator and set it as the URL hash.
-
     updateCombinedUrlHash();
+}
+
+/**
+ * Select checkboxes based on the URL hash and trigger the renderLorOutput function.
+ * Uses the new parseLorValuesFromHash function to correctly parse LoR values.
+ *
+ * @param {Object} lorJson - The LoR JSON data.
+ */
+function selectLorCheckboxesAndInitialize(lorJson) {
+    // Parse LoR values from the hash
+    const lorValues = parseLorValuesFromHash();
+    
+    // If no LoR values found, initialize empty content
+    if (lorValues.length === 0) {
+        initializeLorContent(lorJson);
+        return;
+    }
+
+    // Select checkboxes based on parsed values
+    lorValues.forEach(({ lorCategory, lorLevel }) => {
+        const checkbox = document.querySelector(`input[type=checkbox][value="${lorCategory}-${lorLevel}"]`);
+        if (checkbox) {
+            checkbox.checked = true;
+        }
+    });
+
+    // Trigger render with the selected values
+    renderLorOutput(lorJson, true);
 }
 
 // src/urlHandling.js
@@ -89,10 +149,37 @@ function updateURLWithLorCheckboxes(hash) {
  * @param {Object} sfiaJson - The SFIA JSON data.
  * @returns {string} - Combined URL hash string.
  */
+/**
+ * Parse LoR values from the URL hash.
+ * @returns {Array} Array of parsed LoR values.
+ */
+function parseLorValuesFromHash() {
+    const hash = window.location.hash.substring(1);
+    const parts = hash.split("&&");
+    // LoR hash is second part if it exists, otherwise check if the only part contains a LoR code
+    const lorPart = parts[1] || (Object.values(LOR_ABBREVIATIONS).some(code => parts[0].includes(code)) ? parts[0] : "");
+    if (!lorPart) return [];
+    
+    return lorPart.split("+").filter(Boolean).map(item => {
+        const [category, level] = item.split("-");
+        // Standardize the category code
+        return {
+            lorCategory: getStandardizedLorCode(category),
+            lorLevel: parseInt(level)
+        };
+    });
+}
+
+/**
+ * Generate URL hash based on combined LoR and SFIA data.
+ * @param {Object} lorJson - The LoR JSON data.
+ * @param {Object} sfiaJson - The SFIA JSON data.
+ * @returns {string} - Combined URL hash string using && separator.
+ */
 function generateUrlHash(lorJson, sfiaJson) {
     const lorHash = generateLorHash(lorJson);
     const sfiaHash = generateSfiaHash(sfiaJson);
-    return `${lorHash}+${sfiaHash}`; // Combine LoR and SFIA hashes
+    return lorHash && sfiaHash ? `${sfiaHash}&&${lorHash}` : lorHash || sfiaHash;
 }
 
 // src/urlHandling.js
@@ -107,7 +194,9 @@ function generateLorHash(lorJson) {
     const urlHash = [];
 
     for (const { lorCategory, lorLevel } of lorJson) {
-        urlHash.push(`${lorCategory}-${lorLevel}`);
+        // Ensure category is in standardized format
+        const standardizedCategory = getStandardizedLorCode(lorCategory);
+        urlHash.push(`${standardizedCategory}-${lorLevel}`);
     }
 
     return urlHash.join("+");
