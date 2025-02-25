@@ -2,7 +2,7 @@ Feature('Search Functionality');
 
 Scenario('Verify search functionality', async ({ I }) => {
    // Open the page
-   I.amOnPage('http://127.0.0.1:5500/src/sfiapdgen.html');
+   I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
    I.seeInTitle('SFIA POSITION DESCRIPTION Generator'); // Add this line for the title assertion
 
   // Enter a search query

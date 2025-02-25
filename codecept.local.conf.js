@@ -26,7 +26,7 @@ exports.config = {
     // Configure Playwright helper (e.g., browser, url, executablePath)
     Playwright: {
       browser: 'firefox', // Specify the browser to be used for testing
-      url: 'http://127.0.0.1:5500/src/sfiapdgen.html', // Specify the base URL of your application
+      url: 'http://127.0.0.1:5501/package/dev/sfiapdgen.html', // Specify the base URL of your application
       executablePath: 'D:\\Program Files\\Mozilla Firefox\\firefox.exe', // Specify the path to the browser executable
       show: true // Show the browser window during tests (set to false for headless mode)
     },
