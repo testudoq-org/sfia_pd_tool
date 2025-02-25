@@ -2,44 +2,35 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Full Build and Launch Edge predefined URL",
+      "name": "DEV Build and Launch Edge",
       "type": "msedge",
       "request": "launch",
-      "url": "http://127.0.0.1:5500/src/sfiapdgen.html#BPTS-3+BSMO-4",
+      "url": "http://127.0.0.1:5501/package/dev/sfiapdgen.html",
       "webRoot": "${workspaceFolder}",
-      "outFiles": ["${workspaceFolder}/src/*.js"],
-      "preLaunchTask": "Start Live Server",
-      "postDebugTask": "Stop Live Server"
+      "preLaunchTask": "prepare-dev"
     },
     {
-      "name": "Full Launch Edge against root URL",
-      "type": "msedge",
+      "name": "DEV Launch Chrome",
+      "type": "chrome",
       "request": "launch",
-      "url": "http://127.0.0.1:5500/src/sfiapdgen.html",
-      "webRoot": "${workspaceFolder}",
-      "outFiles": ["${workspaceFolder}/src/*.js"],
-      "preLaunchTask": "Start Live Server",
-      "postDebugTask": "Stop Live Server"
+      "url": "http://127.0.0.1:5501/package/dev/sfiapdgen.html",
+      "preLaunchTask": "prepare-dev"
     },
     {
-      "name": "Launch Edge predefined URL",
+      "name": "PRD Launch Edge",
       "type": "msedge",
       "request": "launch",
-      "url": "http://127.0.0.1:5500/src/sfiapdgen.html#BPTS-3+BSMO-4",
+      "url": "http://127.0.0.1:5501/package/prd/sfiapdgen.html",
       "webRoot": "${workspaceFolder}",
-      "outFiles": ["${workspaceFolder}/src/*.js"],
-      "preLaunchTask": "Start Live Server",
-      "postDebugTask": "Stop Live Server"
+      "preLaunchTask": "prepare-prod"
     },
     {
-      "name": " Launch Edge against root URL",
-      "type": "msedge",
+      "name": "PRD Launch Chrome",
+      "type": "chrome",
       "request": "launch",
-      "url": "http://127.0.0.1:5500/src/sfiapdgen.html",
+      "url": "http://127.0.0.1:5501/package/prd/sfiapdgen.html",
       "webRoot": "${workspaceFolder}",
-      "outFiles": ["${workspaceFolder}/src/*.js"],
-      "preLaunchTask": "Start Live Server",
-      "postDebugTask": "Stop Live Server"
+      "preLaunchTask": "prepare-prod"
     }
   ]
 }

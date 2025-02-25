@@ -6,6 +6,7 @@ node_modules-del2/
 # Build output
 dist/
 build/
+package/
 
 # Environment files
 .env

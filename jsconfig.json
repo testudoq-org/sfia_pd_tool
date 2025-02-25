@@ -3,6 +3,7 @@
     "allowJs": true
   },
   "exclude": [
-    "src"
+    "src",
+    "package"
   ]
 }

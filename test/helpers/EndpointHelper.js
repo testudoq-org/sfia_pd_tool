@@ -72,13 +72,13 @@ class EndpointHelper extends Helper {
         console.log('Using local base URL');
 
         // Return the local base URL
-        return 'http://127.0.0.1:5500/src';
+        return 'http://127.0.0.1:5501/package/dev';
       case 'dist':
         // Log that the dist base URL is being used
         console.log('Using dist base URL');
 
         // Return the dist base URL
-        return 'http://127.0.0.1:5500/dist';
+        return 'http://127.0.0.1:5501/package/dist';
       case 'production':
         // Log that the production base URL is being used
         console.log('Using production base URL');

@@ -1,0 +1,6 @@
+Feature('Verify Setup');
+
+Scenario('basic test', ({ I }) => {
+  I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
+  I.see('SFIA');
+});

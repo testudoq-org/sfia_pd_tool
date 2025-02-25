@@ -74,19 +74,31 @@ window.onload = async function () {
         console.info('Current URL is:', currentURL);
 
         if (currentURL.includes('#')) {
-            // Parse URL hash and pre-select checkboxes
             console.log('Hash exists in URL:', currentURL);
-            const urlHash = window.location.hash.replace('#', '');
-            const selectedCheckboxes = urlHash.split('+');
-
-            // Pre-select checkboxes if needed
-            renderSfiaOutput(sfiaJson, false);
-            renderLorOutput(lorJson, false);
-
-
+            // Get LoR values from hash
+            const lorValues = parseLorValuesFromHash();
+            
+            if (lorValues.length > 0) {
+                console.log('LoR values found in hash:', lorValues);
+                // Pre-select checkboxes and render output
+                lorValues.forEach(({ lorCategory, lorLevel }) => {
+                    const checkbox = document.querySelector(`input[type=checkbox][value="${lorCategory}-${lorLevel}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+                renderLorOutput(lorJson, false);
+            }
+            
+            // Handle SFIA hash separately
+            const urlHashParts = window.location.hash.substring(1).split("&&");
+            if (urlHashParts[0] && urlHashParts[0] !== "") {
+                console.log('SFIA hash found:', urlHashParts[0]);
+                renderSfiaOutput(sfiaJson, false);
+            }
         } else {
-            console.log('Hash does not exist, appending # to URL:', currentURL);
-
+            console.log('No hash in URL');
+            window.location.hash = "";
         }
 
         // Set the stored version
