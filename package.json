@@ -10,7 +10,7 @@
         "codeceptjs": "codeceptjs run --steps",
         "codeceptjs:headless": "HEADLESS=true codeceptjs run --steps",
         "codeceptjs:ui": "codecept-ui --app",
-        "start-server": "echo y | npx live-server --port=5500 --open=src/sfiapdgen.html",
+        "start-server": "echo y | npx live-server --port=5501 --open=src/sfiapdgen.html",
         "stop-server": "taskkill /IM node.exe /F",
         "testLocal": "grunt testLocal",
         "test:export": "npx codeceptjs run ./test/ui/check_export_csv.local.test.js --steps --verbose"

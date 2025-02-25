@@ -1,54 +1,47 @@
-// Import necessary functions from '@codeceptjs/configure'
-const { setHeadlessWhen, setCommonPlugins } = require('@codeceptjs/configure');
+const { setHeadlessWhen } = require('@codeceptjs/configure');
 
-// Configure CodeceptJS to run in headless mode based on the HEADLESS environment variable
+// turn on headless mode when running with HEADLESS=true environment variable
 setHeadlessWhen(process.env.HEADLESS);
 
-// Enable all common plugins for CodeceptJS
-setCommonPlugins();
-
-// Export the configuration object
 exports.config = {
-  // Other configuration options...
-
-  // Define the location of your test files
-  tests: './test/ui/*.local.test.js',
-
-  // Define the output directory for test reports
+  tests: './test/ui/*test.js',
   output: './output',
-
-  // Configure helpers (e.g., Playwright, EndpointHelper, FileHelper)
   helpers: {
-    // Define custom helper 'EndpointHelper' and specify its location
-    EndpointHelper: {
-      require: './test/helpers/EndpointHelper.js'
-    },
-    // Configure Playwright helper (e.g., browser, url, executablePath)
     Playwright: {
-      browser: 'firefox', // Specify the browser to be used for testing
-      url: 'http://127.0.0.1:5501/package/dev/sfiapdgen.html', // Specify the base URL of your application
-      executablePath: 'D:\\Program Files\\Mozilla Firefox\\firefox.exe', // Specify the path to the browser executable
-      show: true // Show the browser window during tests (set to false for headless mode)
-    },
-    // Define custom helper 'FileHelper' and specify its location
-    FileHelper: {
-      require: './test/helpers/FileHelper.js'
+      url: 'http://127.0.0.1:5501/package/dev',
+      show: true,
+      browser: 'chromium',
+      waitForTimeout: 30000, // Increased timeout for element waits
+      trace: true,
+      video: true,
+      windowSize: '1280x720', // Match CI environment
+      chromium: {
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      },
+      timeout: 30000, // Global timeout
+      navigation: 'networkidle' // Modern navigation strategy
     }
   },
-
-  // Define custom steps file to include additional actions for tests
   include: {
-    I: './steps/steps_file.js' // Specify the location of the steps file
+    I: './steps/steps_file.js'
   },
-
-  // Define the name of your test suite
-  name: 'sfia',
-
-  // Configure reporters for generating test reports
+  plugins: {
+    screenshotOnFail: {
+      enabled: true
+    },
+    retryFailedStep: {
+      enabled: true,
+      retries: 2
+    },
+    tryTo: {
+      enabled: true
+    }
+  },
+  bootstrap: null,
   mocha: {
     reporterOptions: {
-      reportDir: 'output', // Specify the output directory for test reports
-      // Additional reporter options can be added here as needed
+      reportDir: 'output'
     }
-  }
+  },
+  name: 'sfia-local'
 };
