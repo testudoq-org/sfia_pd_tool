@@ -11,15 +11,24 @@ exports.config = {
       url: 'http://127.0.0.1:5501/package/dev',
       show: true,
       browser: 'chromium',
-      waitForTimeout: 30000, // Increased timeout for element waits
+      waitForTimeout: 30000,
       trace: true,
       video: true,
-      windowSize: '1280x720', // Match CI environment
+      windowSize: '1280x720',
       chromium: {
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--allow-insecure-localhost',
+          '--disable-web-security'
+        ]
       },
-      timeout: 30000, // Global timeout
-      navigation: 'networkidle' // Modern navigation strategy
+      browserContext: 'default',
+      bypassCSP: true,
+      permissions: ['clipboard-read', 'clipboard-write'],
+      ignoreHTTPSErrors: true,
+      timeout: 30000,
+      navigation: 'networkidle'
     }
   },
   include: {
