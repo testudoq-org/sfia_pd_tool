@@ -8,15 +8,20 @@ class SearchPage extends BasePage {
       searchInput: '#myInput',
       searchResults: '.sfia-table',
       resultRows: '.sfia-table tbody tr',
-      skillCell: 'td:first-child'
+      skillCell: 'td:first-child',
+      instructions: '#instructions',
+      instructionsToggle: '#instructionsToggle'
     };
   }
 
   async navigateToSearch() {
     await this.I.amOnPage('/sfiapdgen.html');
-    await this.I.waitForElement(this.selectors.searchInput);
-    await this.I.waitForElement(this.selectors.searchResults);
-    await this.I.seeInTitle('SFIA POSITION DESCRIPTION Generator');
+    // Use waitForLoadState to ensure page is fully loaded
+    await this.I.page.waitForLoadState('networkidle');
+    // Use locator API for better auto-waiting
+    await this.I.locator(this.selectors.searchInput).waitFor();
+    await this.I.locator(this.selectors.searchResults).waitFor();
+    await expect(this.I.page).toHaveTitle(/SFIA POSITION DESCRIPTION Generator/);
   }
 
   // Removed searchFor and waitForSearchResults methods since we handle search directly in the test
@@ -51,15 +56,23 @@ class SearchPage extends BasePage {
   }
 
   async toggleInstructions() {
-    // Wait for and click toggle button
-    await this.I.waitForElement(this.selectors.instructionsToggle, 20);
-    await this.I.click(this.selectors.instructionsToggle);
+    const toggle = this.I.locator(this.selectors.instructionsToggle);
+    await toggle.waitFor({ state: 'visible', timeout: 5000 });
+    await toggle.click();
     
-    // Wait for Bootstrap collapse animation
-    await this.I.wait(0.5);
-    
-    // Verify instructions element is visible/hidden
-    await this.I.waitForElement(this.selectors.instructions, 20);
+    // Wait for animation to complete
+    await this.I.page.waitForTimeout(500);
+  }
+
+  async getInstructionsVisibility() {
+    const instructions = this.I.locator(this.selectors.instructions);
+    try {
+      await instructions.waitFor({ state: 'visible', timeout: 5000 });
+      const isVisible = await instructions.isVisible();
+      return isVisible;
+    } catch (e) {
+      return false;
+    }
   }
 
   async toggleFilters() {
