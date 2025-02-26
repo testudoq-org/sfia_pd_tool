@@ -1,8 +1,24 @@
 const assert = require('assert');
+const path = require('path');
+
+const envPath = path.resolve(__dirname, '../../.env');
+console.log('Loading .env file from:', envPath);
+
+const result = require('dotenv').config({
+  path: envPath
+});
+
+if (result.error) {
+  console.error('Error loading .env file:', result.error);
+}
+
+if (!process.env.TEST_API_KEY) {
+  throw new Error('TEST_API_KEY environment variable is required. Please add it to your .env file.');
+}
 
 Feature('SFIA Profile Generator');
 
-const TEST_API_KEY = 'Ej7rVt4IhCfOGsZky4GgVIOnqIcI94IxeWnj9ORd';
+const TEST_API_KEY = process.env.TEST_API_KEY;
 const SKILL_NAME = 'Acceptance testing';
 const SKILL_CODE = 'BPTS';
 const SKILL_LEVEL = 2;

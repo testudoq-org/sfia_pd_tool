@@ -30,7 +30,15 @@ test/
 ```bash
 npm install
 ```
-3. Local development server running:
+3. Environment setup:
+```bash
+# Copy the example environment file
+cp .env.example .env
+
+# Edit .env and add your API keys
+# TEST_API_KEY - Required for API key management tests
+```
+4. Local development server running:
 ```bash
 npm run start-server
 ```
