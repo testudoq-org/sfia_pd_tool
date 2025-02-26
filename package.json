@@ -10,7 +10,7 @@
         "codeceptjs": "codeceptjs run --steps",
         "codeceptjs:headless": "HEADLESS=true codeceptjs run --steps",
         "codeceptjs:ui": "codecept-ui --app",
-        "start-server": "echo y | npx live-server --port=5500 --open=src/sfiapdgen.html",
+        "start-server": "echo y | npx live-server --port=5501 --open=src/sfiapdgen.html",
         "stop-server": "taskkill /IM node.exe /F",
         "testLocal": "grunt testLocal",
         "test:export": "npx codeceptjs run ./test/ui/check_export_csv.local.test.js --steps --verbose"
@@ -24,6 +24,7 @@
         "@linthtml/linthtml": "^0.9.6",
         "clean-webpack-plugin": "^4.0.0",
         "codeceptjs": "^3.7.2",
+        "dotenv": "^16.4.7",
         "playwright": "^1.50.1",
         "webpack": "^5.91.0",
         "webpack-cli": "^5.1.4"

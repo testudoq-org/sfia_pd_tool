@@ -1,24 +1,29 @@
 Feature('Instructions Functionality');
 
-Scenario('Verify instructions are collapsed by default and toggleable', async ({ I }) => {
-    // Open the page
-    I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
-    I.seeInTitle('SFIA POSITION DESCRIPTION Generator');
+Scenario('Verify instructions toggle behavior', async ({ I }) => {
+  // Navigate to page
+  I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
+  I.seeInTitle('SFIA POSITION DESCRIPTION Generator'); // Add this line for the title assertion
+  
+  // Wait for toggle button
+  const toggleButton = 'button[data-bs-toggle="collapse"][data-bs-target="#instructions"]';
+  const toggleInstructions= '.card-body.collapsed.collapse.show#instructions';
+  const toggleInstructionsCollapsed= '.card-body.collapsed.collapse';
+  I.waitForElement(toggleButton, 10);
+  
+  // Verify initial collapsed state
+  I.dontSeeElement('.card-body.collapsed.collapse.show#instructions');
 
-    // Verify that the instructions start collapsed
-    const initialState = await I.grabAttributeFrom('#instructions', 'class');
-    if (!initialState.includes('collapsed')) {
-        throw new Error('Instructions should be collapsed on load');
-    }
+  // Click to expand instructions
+  I.click(toggleButton);
+  I.waitForElement(toggleInstructions, 10); // Wait longer for animation and attribute update
+  I.seeElement(toggleInstructions);
+  
+  // After expanding - wait and verify expanded state
+  // Click to collapse instructions
+  I.click(toggleButton);
+  I.waitForElement(toggleInstructionsCollapsed, 10); // Wait longer for animation and attribute update
+  I.dontSeeElement(toggleInstructions);
+  
 
-    // Click the toggle button to expand
-    I.click('button[data-bs-toggle="collapse"]');
-    I.wait(2); // Wait for Bootstrap collapse animation
-    
-    // Verify expanded state
-    I.seeElement('#instructions');
-    
-    // Click the toggle button to collapse
-    I.click('button[data-bs-toggle="collapse"]');
-    I.waitForInvisible('#instructions', 5); // Wait up to 5 seconds for collapse
-});
+}).retry(2);

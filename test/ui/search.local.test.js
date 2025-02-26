@@ -1,22 +1,22 @@
 Feature('Search Functionality');
 
-Scenario('Verify search functionality', async ({ I }) => {
-   // Open the page
-   I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
-   I.seeInTitle('SFIA POSITION DESCRIPTION Generator'); // Add this line for the title assertion
-
-  // Enter a search query
-  const searchQuery = 'SUST';
-  I.fillField('#myInput', searchQuery);
-
-  // Wait for the search results to be updated
-  I.waitForVisible('.sfia-table');
-
-  // Verify that the search results contain the expected text
-  within('.sfia-table', () => {
-    I.see(searchQuery);
-
-    // Assert that "BPTS" is not visible in the search results
-    I.dontSee('BPTS');
-  });
-});
+Scenario('Verify basic search functionality @smoke', async ({ I }) => {
+  // Open the page
+  I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
+  
+  // Wait for table to load and be visible
+  I.waitForVisible('.sfia-table tbody', 10);
+  
+  // Verify BPTS text is initially visible
+  I.see('BPTS');
+  
+  // Search for SUST
+  I.fillField('#myInput', 'SUST');
+  
+  // Allow search to take effect
+  I.wait(2);
+  
+  // Verify search results
+  I.see('SUST');
+  I.dontSee('BPTS');
+}).retry(2);

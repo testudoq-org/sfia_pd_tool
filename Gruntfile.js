@@ -20,7 +20,9 @@ module.exports = function (grunt) {
             prd: {
                 files: [
                     { expand: true, cwd: 'src', src: ['**/*.html', '**/*.css', '**/*.json', '**/*.ico'], dest: 'package/prd/', filter: 'isFile' },
-                    { expand: true, cwd: 'src', src: ['**/sfiapdgen_func.js', '!**/*.min.*'], dest: 'package/prd/', filter: 'isFile' }
+                    { expand: true, cwd: 'src', src: ['**/sfiapdgen_func.js', '!**/*.min.*'], dest: 'package/prd/', filter: 'isFile' },
+                    { expand: true, cwd: 'src/vendor', src: ['*.css', '*.js'], dest: 'package/prd/vendor/', filter: 'isFile' },
+                    { expand: true, cwd: 'src/vendor/ace', src: ['*.js'], dest: 'package/prd/vendor/ace/', filter: 'isFile' }
                 ]
             }
         },
@@ -30,12 +32,18 @@ module.exports = function (grunt) {
             options: {
                 compress: {
                     drop_console: true,
-                    drop_debugger: true
+                    drop_debugger: true,
+                    passes: 1,
+                    unsafe: false
                 },
-                mangle: true,
+                mangle: {
+                    keep_fnames: true
+                },
                 output: {
-                    comments: false
-                }
+                    comments: false,
+                    max_line_len: 500
+                },
+                sourceMap: false
             },
             prd: {
                 files: {
@@ -64,15 +72,46 @@ module.exports = function (grunt) {
                 options: {
                     replacements: [
                         {
+                            pattern: '<head>',
+                            replacement: '<head>\n' +
+                                '    <meta http-equiv="Content-Security-Policy" content="default-src \'self\'; style-src \'self\' \'unsafe-inline\'; script-src \'self\' \'unsafe-inline\'; img-src \'self\' data:">\n' +
+                                '    <meta http-equiv="X-Content-Type-Options" content="nosniff">'
+                        },
+                        {
+                            // Handle Bootstrap CSS
+                            pattern: /<link[^>]*bootstrap[^>]*>/,
+                            replacement: '<link href="vendor/bootstrap.min.css" rel="stylesheet">'
+                        },
+                        {
+                            // Handle jQuery
+                            pattern: '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>',
+                            replacement: '<script src="vendor/jquery.min.js"></script>'
+                        },
+                        {
+                            // Handle Bootstrap JS bundle
+                            pattern: /<script[^>]*bootstrap\.bundle\.min\.js[^>]*>[\s\S]*?<\/script>/,
+                            replacement: '<script src="vendor/bootstrap.bundle.min.js"></script>'
+                        },
+                        {
+                            // Handle main app JS
                             pattern: 'sfiapdgen_func.js',
                             replacement: 'sfiapdgen_func.min.js'
                         },
                         {
-                            pattern: '<head>',
-                            replacement: '<head>\n' +
-                                '    <meta http-equiv="Content-Security-Policy" content="default-src \'self\'">\n' +
-                                '    <meta http-equiv="X-Content-Type-Options" content="nosniff">\n' +
-                                '    <meta http-equiv="X-Frame-Options" content="DENY">'
+                            pattern: '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>',
+                            replacement: '<script src="vendor/crypto-js.min.js"></script>'
+                        },
+                        {
+                            pattern: '<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/ace.js"></script>',
+                            replacement: '<script src="vendor/ace/ace.js"></script>'
+                        },
+                        {
+                            pattern: '<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/mode-markdown.js"></script>',
+                            replacement: '<script src="vendor/ace/mode-markdown.js"></script>'
+                        },
+                        {
+                            pattern: '<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/theme-monokai.js"></script>',
+                            replacement: '<script src="vendor/ace/theme-monokai.js"></script>'
                         }
                     ]
                 }
