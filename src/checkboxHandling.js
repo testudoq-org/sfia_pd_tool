@@ -12,12 +12,22 @@
 function checkSfiaPreselected(code, level) {
     // Check if the URL hash exists and is not empty
     if (window.location.hash) {
-        // Get the levels from the URL hash
-        const hashLevels = window.location.hash.substring(1).split("+");
+        // Get the SFIA part of the hash (before &&)
+        const hash = window.location.hash.substring(1);
+        const sfiaPart = hash.split('&&')[0];
+        
+        // If no SFIA part exists, return false
+        if (!sfiaPart) return false;
+
+        // Get the levels from the SFIA hash part
+        const hashLevels = sfiaPart.split("+");
+        
         // Iterate through the levels in reverse order
         for (let i = hashLevels.length - 1; i >= 0; i--) {
             // Get the code and level from the current level
             const hashLevel = hashLevels[i].split("-");
+            if (hashLevel.length !== 2) continue; // Skip malformed entries
+            
             const check_code = hashLevel[0];
             const check_level = parseInt(hashLevel[1]);
 
@@ -129,32 +139,39 @@ function selectLorCheckboxesAndInitialize(lorJson) {
  * @param {Object} sfiaJson - The SFIA JSON data.
  */
 function SelectSfiaCheckboxesAndInitialize(sfiaJson) {
-    // Parse URL hash and pre-select checkboxes
-    const urlHash = window.location.hash.replace('#', '');
-    const selectedCheckboxes = urlHash.split('+');
+    // Parse URL hash and get SFIA part
+    const hash = window.location.hash.replace('#', '');
+    const sfiaPart = hash.split('&&')[0];
+
+    // If no SFIA selections, initialize empty content
+    if (!sfiaPart) {
+        initializeSFIAContent(sfiaJson);
+        return;
+    }
+
+    const selectedCheckboxes = sfiaPart.split('+').filter(Boolean);
 
     // If there are selected checkboxes, pre-select them
     if (selectedCheckboxes.length > 0) {
         // Iterate over each selected checkbox
         selectedCheckboxes.forEach(selectedCheckbox => {
             // Split the selected checkbox into code and level
-            const [code, level] = selectedCheckbox.split('-');
+            const parts = selectedCheckbox.split('-');
+            if (parts.length !== 2) return; // Skip malformed entries
+            
+            const [code, level] = parts;
 
             // Find the corresponding checkbox and pre-select it
-            const checkbox = document.querySelector(`input[type=checkbox][data-code="${code}"][data-level="${level}"]`);
+            const checkbox = document.querySelector(`input[type=checkbox][id="sfia-checkbox-${code}-${level}"]`);
             if (checkbox) {
                 checkbox.checked = true;
             }
         });
 
-        // Trigger the renderSfiaOutput function or any other logic
-        // needed after checkboxes are pre-selected
+        // Trigger the renderSfiaOutput function
         renderSfiaOutput(sfiaJson, true);
-
-   
     } else {
-        // If there are no selected checkboxes, initialize SFIA content
+        // If no valid checkboxes found, initialize empty content
         initializeSFIAContent(sfiaJson);
-
     }
 }
