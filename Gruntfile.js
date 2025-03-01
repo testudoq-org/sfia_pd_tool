@@ -129,19 +129,43 @@ module.exports = function (grunt) {
                     sourceMap: true,
                     sourceMapStyle: 'inline'
                 },
-                src: ['src/init.js',
-                    'src/theme.js', 'src/constants.js', 'src/browserUpdate.js', 'src/dataFetching.js', 
-                    'src/exportFunctions.js', 'src/checkboxHandling.js', 'src/initializeContent.js', 
-                    'src/tableRendering.js', 'src/dataHandling.js', 'src/utilityFunctions.js', 
-                    'src/jsonHandling.js', 'src/urlHandling.js', 'src/eventListeners.js', 'src/windowEvents.js'],
+                src: [
+                    'src/constants.js',
+                    'src/dataFetching.js',
+                    'src/init.js',
+                    'src/theme.js',
+                    'src/browserUpdate.js',
+                    'src/exportFunctions.js',
+                    'src/checkboxHandling.js',
+                    'src/initializeContent.js',
+                    'src/tableRendering.js',
+                    'src/dataHandling.js',
+                    'src/utilityFunctions.js',
+                    'src/jsonHandling.js',
+                    'src/urlHandling.js',
+                    'src/eventListeners.js',
+                    'src/windowEvents.js'
+                    ],
                 dest: 'package/dev/sfiapdgen_func.js'
             },
             prd: {
-                src: ['src/init.js',
-                    'src/theme.js', 'src/constants.js', 'src/browserUpdate.js', 'src/dataFetching.js', 
-                    'src/exportFunctions.js', 'src/checkboxHandling.js', 'src/initializeContent.js', 
-                    'src/tableRendering.js', 'src/dataHandling.js', 'src/utilityFunctions.js', 
-                    'src/jsonHandling.js', 'src/urlHandling.js', 'src/eventListeners.js', 'src/windowEvents.js'],
+                src: [
+                    'src/constants.js',
+                    'src/dataFetching.js',
+                    'src/init.js',
+                    'src/theme.js',
+                    'src/browserUpdate.js',
+                    'src/exportFunctions.js',
+                    'src/checkboxHandling.js',
+                    'src/initializeContent.js',
+                    'src/tableRendering.js',
+                    'src/dataHandling.js',
+                    'src/utilityFunctions.js',
+                    'src/jsonHandling.js',
+                    'src/urlHandling.js',
+                    'src/eventListeners.js',
+                    'src/windowEvents.js'
+                    ],
                 dest: 'package/prd/sfiapdgen_func.js'
             }
         },
