@@ -4,6 +4,10 @@
   },
   "exclude": [
     "src",
-    "package"
+    "package",
+    "node_modules",
+    "node_modules-del",
+    "node_modules-del2",
+    "dist"
   ]
 }

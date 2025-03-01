@@ -41,6 +41,7 @@ function filterSfiaData(sfiaJson, checkedBoxes) {
  * @param {Object} filteredData - Filtered SFIA data.
  */
 function renderSfiaHtmlOutput(filteredData) {
+
     const html = document.getElementById('sfia-output');
     html.innerHTML = '';
     for (const category in filteredData) {

@@ -1,5 +1,10 @@
 // BOF: src/dataFetching.js
 
+let isSfiaDataLoaded = false; // State variable to track if SFIA data is loaded
+let sfiaDataLoadedPromise = new Promise((resolve) => {
+    window.resolveSfiaDataLoaded = resolve;
+});
+
 // This file includes functions for asynchronously fetching data from a given URL.
 
 /**
@@ -99,6 +104,11 @@ async function fetchSelectedVersionData(dropdownValue) {
     dropdownValue = dropdownValue || "json_source_v8";
     const jsonUrl = dropdownValue + ".json";
     const jsonData = await fetchData(jsonUrl);
+    isSfiaDataLoaded = true; // Set the state variable to true once data is loaded
+    console.log('SFIA data loaded:', isSfiaDataLoaded);
+    isSfiaDataLoaded = true; // Set the state variable to true once data is loaded
+    console.log('SFIA data loaded:', isSfiaDataLoaded);
+    window.resolveSfiaDataLoaded(); // Resolve the promise
     return jsonData;
 }
 

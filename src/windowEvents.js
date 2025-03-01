@@ -92,9 +92,12 @@ window.onload = async function () {
             
             // Handle SFIA hash separately
             const urlHashParts = window.location.hash.substring(1).split("&&");
-            if (urlHashParts[0] && urlHashParts[0] !== "") {
-                console.log('SFIA hash found:', urlHashParts[0]);
-                renderSfiaOutput(sfiaJson, false);
+            console.log('Checking if SFIA data is loaded:', isSfiaDataLoaded);
+            if (urlHashParts[0] && urlHashParts[0] !== "" && isSfiaDataLoaded) {
+                console.log('SFIA hash found and data is loaded:', urlHashParts[0], isSfiaDataLoaded);
+                sfiaDataLoadedPromise.then(() => {
+                    renderSfiaOutput(sfiaJson, false);
+                });
             }
         } else {
             console.log('No hash in URL');
