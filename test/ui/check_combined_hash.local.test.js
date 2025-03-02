@@ -14,8 +14,10 @@ Scenario('Verify SFIA skills with LoR in URL hash', async ({ I }) => {
   I.seeCheckboxIsChecked("#sfia-checkbox-BSMO-4");
   
   // Verify SFIA content is displayed @bug this is undefined bug - should not say undefined should provide description
-  I.see('Acceptance testing - undefined', '#sfia-output');
-  I.see('Business modelling - undefined', '#sfia-output');
+  I.dontSee('Acceptance testing - undefined', '#sfia-output');
+  I.see('Acceptance testing - BPTS');
+  I.dontSee('Business modelling - undefined', '#sfia-output');
+  I.see('Business modelling - BSMO');
 
   // Verify LoR checkboxes are checked
   I.seeCheckboxIsChecked("#lor-checkbox-0-Autonomy-4");
@@ -37,8 +39,9 @@ Scenario('Verify only SFIA skills in URL hash', async ({ I }) => {
   I.seeCheckboxIsChecked("#sfia-checkbox-BSMO-4");
   
   // Verify SFIA content is displayed @bug this is undefined bug - should not say undefined should provide description
-  I.see('Acceptance testing - undefined', '#sfia-output');
-  I.see('Business modelling - undefined', '#sfia-output');
+  I.dontSee('Acceptance testing - undefined', '#sfia-output');
+  I.dontSee('Business modelling - undefined', '#sfia-output');
+  I.see('Acceptance testing - BPTS');
 });
 
 Scenario('Verify only LoR in URL hash', async ({ I }) => {

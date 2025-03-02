@@ -9,8 +9,8 @@ Scenario('Verify SFIA content in output div', async ({ I }) => {
 
     // Check text specifically within sfia-output element
     within('#sfia-output', () => {
-        I.dontSee('Acceptance testing - BPTS');
-        I.see('Acceptance testing - undefined');
+        I.see('Acceptance testing - BPTS');
+        I.dontSee('Acceptance testing - undefined');
     });
 });
 
@@ -25,7 +25,7 @@ Scenario('Verify SFIA Page Refresh content in output div', async ({ I }) => {
 
     // Check text specifically within sfia-output element
     within('#sfia-output', () => {
-        I.dontSee('Acceptance testing - BPTS');
-        I.see('Acceptance testing - undefined');
+        I.see('Acceptance testing - BPTS');
+        I.dontSee('Acceptance testing - undefined');
     });
 });
