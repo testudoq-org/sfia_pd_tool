@@ -1,5 +1,10 @@
 // BOF: src/dataFetching.js
 
+let isSfiaDataLoaded = false; // State variable to track if SFIA data is loaded
+let sfiaDataLoadedPromise = new Promise((resolve) => {
+    window.resolveSfiaDataLoaded = resolve;
+});
+
 // This file includes functions for asynchronously fetching data from a given URL.
 
 /**
@@ -98,16 +103,56 @@ async function fetchSelectedVersionData(dropdownValue) {
     // Set default value if dropdownValue is empty or null
     dropdownValue = dropdownValue || "json_source_v8";
     const jsonUrl = dropdownValue + ".json";
-    const jsonData = await fetchData(jsonUrl);
-    return jsonData;
+
+    // Set a timeout for data loading (10 seconds)
+    const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Data loading timeout')), 10000)
+    );
+
+    try {
+        console.log(`Fetching selected version data from URL: ${jsonUrl}`);
+        // Race between data fetching and timeout
+        const jsonData = await Promise.race([
+            fetchData(jsonUrl),
+            timeout
+        ]);
+
+        if (!jsonData || !Object.keys(jsonData).length) {
+            throw new Error('Invalid or empty SFIA data received');
+        }
+        
+        // Set the state variable to true once data is loaded
+        isSfiaDataLoaded = true;
+        console.log('SFIA data loaded:', isSfiaDataLoaded);
+        
+        // Resolve the promise with the loaded data
+        window.resolveSfiaDataLoaded(jsonData);
+        
+        // Update global state
+        sfiaJson = jsonData;
+        
+        return jsonData;
+    } catch (error) {
+        console.error('Error in fetchSelectedVersionData:', error);
+        isSfiaDataLoaded = false;
+        sfiaJson = null;
+        throw error;
+    }
 }
 
 /**
  * Sets up event listeners based on the provided JSON data.
  * @param {Object} jsonData - The JSON data for the selected version.
+ * @throws {Error} If jsonData is invalid or undefined
  */
 function setupEventListenersForData(jsonData) {
-    sfiaJson = jsonData; // Assign fetched data to sfiaJson
+    if (!jsonData || !Object.keys(jsonData).length) {
+        isSfiaDataLoaded = false;
+        throw new Error('Cannot setup listeners: Invalid or empty SFIA data');
+    }
+    
+    console.log('Setting up event listeners with SFIA data:', jsonData);
+    // We don't need to assign to sfiaJson here as it's handled in fetchSelectedVersionData
     setupEventListeners(jsonData);
 }
 
