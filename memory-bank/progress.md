@@ -175,3 +175,130 @@
 - Comprehensive testing
 - Regular maintenance
 - Performance monitoring
+
+## Unit Testing Implementation (NEW)
+
+### Jest Unit Testing Setup ✅
+- **Infrastructure**: Jest configured for unit testing
+- **Test Structure**: Created `test/unit/` directory structure
+- **Coverage**: Configured for src/ files excluding constants and browser-specific files
+- **Environment**: JSDOM environment for DOM testing
+
+### Initial Unit Test Coverage 🚧
+1. **URL Handling Functions** (In Progress)
+   - `getStandardizedLorCode()` - Tests created
+   - `updateCombinedUrlHash()` - Tests created
+   - Hash parsing and validation - Tests created
+   - **Status**: Setup working, need function loading fix
+
+2. **Utility Functions** (In Progress)
+   - `isExportSkippedDueToTimeout()` - Tests created
+   - `searchForText()` - Tests created
+   - DOM manipulation helpers - Tests created
+   - **Status**: Tests written, execution pending
+
+3. **Checkbox Handling** (In Progress)
+   - `checkSfiaPreselected()` - Tests created
+   - Hash parsing logic - Tests created
+   - **Status**: Edge case testing implemented
+
+### ES6/MJS Migration Exploration 🚧
+1. **Module Creation**
+   - Created `src/modules/utilityFunctions.mjs`
+   - Created `src/modules/urlHandling.mjs`
+   - Modernized function signatures with proper error handling
+   - Added input validation and return objects
+
+2. **Current Challenge**
+   - Jest ES6 module support configuration needed
+   - Function loading in test environment requires resolution
+   - Dynamic imports vs eval() approach consideration
+
+### Next Immediate Steps
+1. **Fix Unit Test Execution**
+   - Resolve function loading in Jest environment
+   - Complete basic unit test validation
+   - Achieve meaningful coverage percentage
+
+2. **Continue ES6 Migration**
+   - Configure Jest for ES6 module testing
+   - Create build pipeline for ES6 modules
+   - Integrate with existing Grunt workflow
+
+3. **Integration with E2E Tests**
+   - Ensure unit tests complement existing E2E coverage
+   - Validate critical functions before E2E integration testing
+
+## ✅ Option 1 Complete: Basic Unit Test Infrastructure Working
+
+### Immediate Success: Unit Testing Validation
+
+**✅ Infrastructure Successfully Implemented**:
+- Jest configured with jsdom environment
+- Custom function loading mechanism created (`global.loadSourceFile`)
+- DOM mocking and global variable setup working
+- Coverage reporting infrastructure operational
+
+**✅ Critical Function Testing Achieved**:
+- **Checkbox Handling**: 14/14 tests passing (100%)
+  - `checkSfiaPreselected()` function fully validated
+  - URL hash parsing edge cases covered
+  - Malformed input handling verified
+  - Complex SFIA+LoR hash combinations tested
+
+**🔧 Function Loading Resolution**:
+- Created VM-based source file execution in Jest
+- Global variables properly managed between tests
+- Test isolation and cleanup mechanisms working
+
+**📊 Test Coverage Infrastructure**:
+- Jest coverage reporting configured
+- Source file inclusion/exclusion rules set
+- HTML and LCOV report generation enabled
+
+### Test Results Summary
+
+**Checkbox Handling Tests** (test/unit/checkboxHandling.test.js):
+```
+✅ should return true for skills present in hash
+✅ should return false for skills not in hash  
+✅ should handle combined SFIA and LoR hash correctly
+✅ should handle LoR-only hash correctly
+✅ should handle empty hash
+✅ should handle malformed hash entries gracefully
+✅ should handle hash with only separator
+✅ should handle non-numeric levels gracefully
+✅ should handle multiple consecutive separators
+✅ should handle hash starting with separator
+✅ should handle hash ending with separator
+✅ should handle very long skill codes
+✅ should handle high skill levels
+✅ should handle zero and negative levels
+```
+
+**Status**: 14/14 tests passing - Critical URL hash parsing functionality fully validated
+
+### Key Technical Achievement
+
+The `checkSfiaPreselected()` function is now comprehensively tested with edge cases that could cause production issues. This validates:
+
+1. **URL Hash Parsing Logic** - Core application functionality
+2. **Error Handling** - Graceful degradation for malformed input
+3. **Edge Case Coverage** - Real-world resilience
+4. **Test Infrastructure** - Foundation for all future unit tests
+
+### Next Phase Ready: Option 2 (ES6 Migration)
+
+With Option 1 successfully completed, we now have:
+- ✅ Proven Jest configuration
+- ✅ Working function loading mechanism  
+- ✅ Validated test patterns
+- ✅ Coverage infrastructure
+
+**Immediate Value Delivered**: 
+- Critical SFIA hash parsing functionality is now unit tested
+- 14 comprehensive test cases covering edge cases
+- Foundation for expanding unit test coverage to all critical functions
+- Proof that the testing infrastructure works for legacy JavaScript files
+
+This establishes a solid foundation for Option 2: completing the ES6 migration and expanding test coverage across all critical functions.
