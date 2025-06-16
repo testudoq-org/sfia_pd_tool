@@ -2,7 +2,7 @@ Feature('URL Test with checkbox');
 
 Scenario('Check opening URL is correct', async ({ I }) => {
     // Navigate to a specific URL
-    I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
+    I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
 
     // Grab and store the current URL
     const currentUrl = await I.grabCurrentUrl();
@@ -14,7 +14,7 @@ Scenario('Check opening URL is correct', async ({ I }) => {
 
 Scenario('Check opening URL is correct with chechbox added', async ({ I }) => {
     // Navigate to a specific URL
-    I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
+    I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
 
     // Click on the checkbox with value "BPTS-2"
     I.click('#sfia-checkbox-BPTS-2');
@@ -29,13 +29,13 @@ Scenario('Check opening URL is correct with chechbox added', async ({ I }) => {
     console.log('Current URL:', currentUrl);
 
     // Assert that the current URL contains the expected hash value
-    const expectedUrl = 'http://127.0.0.1:5501/package/dev/sfiapdgen.html#BPTS-2';
+    const expectedUrl = 'http://127.0.0.1:5501/sfiapdgen.html#BPTS-2';
     I.seeInCurrentUrl(expectedUrl);
 });
 
 Scenario('Check multiple skills are added to URL with correct format SFIA-1+SFIA-2', async ({ I }) => {
     // Navigate to a specific URL
-    I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
+    I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
 
     // Click on the checkbox with value "BPTS-2"
     I.click('#sfia-checkbox-BPTS-2');
@@ -53,14 +53,14 @@ Scenario('Check multiple skills are added to URL with correct format SFIA-1+SFIA
     console.log('Current URL:', currentUrl);
 
     // Assert that the current URL contains the expected hash value
-    const expectedUrl = 'http://127.0.0.1:5501/package/dev/sfiapdgen.html#BPTS-2+BSMO-2';
+    const expectedUrl = 'http://127.0.0.1:5501/sfiapdgen.html#BPTS-2+BSMO-2';
     I.seeInCurrentUrl(expectedUrl);
 });
 
 
 Scenario('Check multiple skills are added to URL with correct format SFIA-1+LOR-2', async ({ I }) => {
     // Navigate to a specific URL
-    I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
+    I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
 
     // Click on the checkbox with value "BPTS-2"
     I.click('#sfia-checkbox-BPTS-2');
@@ -81,6 +81,6 @@ Scenario('Check multiple skills are added to URL with correct format SFIA-1+LOR-
     console.log('Current URL:', currentUrl);
 
     // Assert that the current URL contains the expected hash value
-    const expectedUrl = 'http://127.0.0.1:5501/package/dev/sfiapdgen.html#BPTS-2+BSMO-2&&AUTO-1';
+    const expectedUrl = 'http://127.0.0.1:5501/sfiapdgen.html#BPTS-2+BSMO-2&&AUTO-1';
     I.seeInCurrentUrl(expectedUrl);
 });

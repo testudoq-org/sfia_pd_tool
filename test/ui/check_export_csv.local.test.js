@@ -1,7 +1,7 @@
 Feature('Export Functionality');
 
 Scenario('Should export CSV file', async ({ I }) => {
-    await I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
+    await I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
     await I.see('SFIA PD Generator', '.navbar-brand');
 
     // Select a skill

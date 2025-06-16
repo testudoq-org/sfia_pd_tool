@@ -31,8 +31,11 @@ function changeJsonVersion() {
             jsonUrl = currentHost + "/dist/" + selectedVersion + ".json";
         } else if (window.location.pathname.includes('/src/')) {
             jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
+        } else if (window.location.pathname.includes('package/dev/') || window.location.pathname === '/sfiapdgen.html') {
+            // Serving from package/dev directory - use relative path
+            jsonUrl = selectedVersion + ".json";
         } else {
-            // Default to '/src/' for localhost if neither '/dist/' nor '/src/' is found
+            // Default to '/src/' for localhost if no other pattern matches
             jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
         }
     } else {

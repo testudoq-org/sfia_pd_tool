@@ -1,6 +1,6 @@
 Scenario('Verify Levels of Responsibility display and selection', async ({ I }) => {
   // Open the page
-  I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
+  I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
   I.seeInTitle('SFIA POSITION DESCRIPTION Generator'); // Add this line for the title assertion
 
     // Verify that the New section for Levels of Responsibility is present

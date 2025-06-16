@@ -2,7 +2,7 @@ Feature('Search Functionality');
 
 Scenario('Verify basic search functionality @smoke', async ({ I }) => {
   // Open the page
-  I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
+  I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
   
   // Wait for table to load and be visible
   I.waitForVisible('.sfia-table tbody', 10);

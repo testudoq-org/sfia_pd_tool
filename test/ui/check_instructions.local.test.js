@@ -2,7 +2,7 @@ Feature('Instructions Functionality');
 
 Scenario('Verify instructions toggle behavior', async ({ I }) => {
   // Navigate to page
-  I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html');
+  I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
   I.seeInTitle('SFIA POSITION DESCRIPTION Generator'); // Add this line for the title assertion
   
   // Wait for toggle button

@@ -8,7 +8,7 @@ exports.config = {
   output: './output',
   helpers: {
     Playwright: {
-      url: 'http://127.0.0.1:5501/package/dev',
+      url: 'http://127.0.0.1:5501',
       show: true,
       browser: 'chromium',
       waitForTimeout: 30000,

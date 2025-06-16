@@ -2,7 +2,7 @@ Feature('Check Skill Functionality on URL hash #');
 
 Scenario('Verify adding skill to formatted output', async ({ I }) => {
   // Open the page
-  I.amOnPage('http://127.0.0.1:5501/package/dev/sfiapdgen.html#BPTS-2+BPTS-3+BPTS-4');
+  I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html#BPTS-2+BPTS-3+BPTS-4');
 
   // Wait for the URL to change
   I.waitForURL();
