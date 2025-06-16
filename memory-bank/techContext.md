@@ -3,26 +3,26 @@
 ### 1. Testing Strategy
 ```mermaid
 graph TD
-    A[Testing Strategy] --> B[Unit Tests]
-    A --> C[Integration Tests]
-    A --> D[UI Tests]
-    A --> E[Browser Tests]
+    A[Testing Strategy] --> B[Unit Tests (Planned)]
+    A --> C[Integration Tests (Ad-hoc/Covered by E2E)]
+    A --> D[UI Tests (E2E - CodeceptJS)]
+    A --> E[Browser Tests (Covered by E2E)]
     
-    B --> F[Component Functions]
-    B --> G[URL Processing]
-    B --> H[Data Validation]
+    B --> F[Component Functions (Target for Jest)]
+    B --> G[URL Processing (Target for Jest)]
+    B --> H[Data Validation (Target for Jest)]
     
-    C --> I[Data Loading]
-    C --> J[State Management]
-    C --> K[Event Handling]
+    C --> I[Data Loading (Currently verified via E2E)]
+    C --> J[State Management (Currently verified via E2E)]
+    C --> K[Event Handling (Currently verified via E2E)]
     
     D --> L[Checkbox Behavior]
     D --> M[Table Generation]
     D --> N[Content Display]
     
-    E --> O[Cross-browser Testing]
-    E --> P[Responsive Design]
-    E --> Q[Performance Testing]
+    E --> O[Cross-browser Testing (Primarily Chrome via Playwright)]
+    E --> P[Responsive Design (Manual & E2E checks)]
+    E --> Q[Performance Testing (Manual/Ad-hoc)]
 ```
 
 ### 2. Browser Compatibility Matrix
@@ -188,15 +188,15 @@ const browserSupport = {
    ```javascript
    const automationConfig = {
        unit: {
-           runner: "jest",
-           coverage: "80%"
+           runner: "jest", // Planned
+           coverage: "0%"  // Not yet implemented
        },
-       integration: {
-           runner: "cypress",
-           coverage: "70%"
+       integration: { // Not formally implemented with a separate runner
+           runner: "N/A (Covered by E2E or manual testing)",
+           coverage: "N/A"
        },
-       browser: {
-           runner: "selenium",
-           platforms: ["chrome", "firefox", "edge"]
+       browser_e2e: { // Renamed for clarity
+           runner: "CodeceptJS with Playwright",
+           platforms: ["chromium"] // Primary target
        }
    };

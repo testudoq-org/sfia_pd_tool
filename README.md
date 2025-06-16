@@ -11,6 +11,9 @@ Efficiency is at the core of this tool's design. Simply select the desired skill
 **Online Accessibility:**
 Access the tool conveniently [online](https://testudo.co.nz/sfia/sfiapdgen.html) to streamline your position description creation process. The user-friendly interface ensures a smooth experience as you navigate through the customization options.
 
+**Development Setup, Build, and Test:**
+For instructions on setting up the development environment, building the project, and running tests, please refer to our [Contributions Guide](contributions.md:1). This guide provides detailed steps for getting started with development.
+
 **Open Source and Licensing:**
 The source code of the SFIA POSITION DESCRIPTION Tool is made available under the Attribution-NonCommercial 3.0 NZ Creative Commons License. You are encouraged to explore, modify, and contribute to the tool, adhering to the terms of the [CC BY-NC 3.0](https://creativecommons.org/licenses/by-nc/3.0/nz/deed.en) license.
 

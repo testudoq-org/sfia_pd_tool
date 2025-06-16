@@ -7,7 +7,9 @@ This document outlines the test automation framework and processes for the SFIA 
 - **Test Framework**: CodeceptJS
 - **Browser Automation**: Playwright
 - **Browser**: Chromium
-- **Test Types**: UI/E2E Tests
+- **Test Types**:
+  - UI/E2E Tests (CodeceptJS with Playwright)
+  - Unit Tests (Planned - Jest, to be located in `test/unit/`)
 
 ## 📁 Test Structure
 ```
@@ -19,7 +21,8 @@ test/
 │   └── skillsets/      # SFIA skill definitions
 ├── helpers/            # Test helper functions
 ├── pages/              # Page Object Models
-└── ui/                 # UI Test Suites
+└── ui/                 # UI Test Suites (CodeceptJS)
+├── unit/               # Unit Test Suites (Planned - Jest)
 ```
 
 ## 🚀 Running Tests

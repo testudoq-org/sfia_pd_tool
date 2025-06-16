@@ -123,10 +123,10 @@
 ## Testing Status
 
 ### 1. Test Coverage
-- Unit Tests: 65%
-- Integration Tests: 80%
-- UI Tests: 75%
-- Total Coverage: 73%
+- Unit Tests: 0% (Planned with Jest, to be located in `test/unit/`)
+- Integration Tests: Not formally implemented or tracked separately.
+- UI Tests (E2E with CodeceptJS): ~75% (as previously noted, requires ongoing verification)
+- Total Coverage: Primarily reflects UI E2E test coverage.
 
 ### 2. Test Priorities
 1. URL hash handling

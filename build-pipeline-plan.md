@@ -1,9 +1,9 @@
 # Build Pipeline Modernization Plan
 
 ## 1. Directory Structure Changes
-- Replace `dist/**/*` with:
-  - Development: `package/dev/**`
-  - Production: `package/prd/**`
+- Current build output directories:
+  - Development: `package/dev/`
+  - Production: `package/prd/`
 
 ## 2. Task Reconfigurations
 
@@ -14,7 +14,7 @@
 - Copy static assets
 - Enable detailed logging
 - Skip minification
-- Output to `package/dev/`
+- Output to `package/dev/` (Handled by `grunt build:dev`)
 
 ### Production Build (`build:prd`)
 - Clean production directory
@@ -23,7 +23,7 @@
 - Add security headers
 - Strip debug/console statements
 - Generate build report
-- Output to `package/prd/`
+- Output to `package/prd/` (Handled by `grunt build:prd`)
 
 ## 3. Configuration Updates
 

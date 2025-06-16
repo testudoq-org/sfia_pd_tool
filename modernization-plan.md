@@ -12,29 +12,34 @@
 
 ### 2. Build Task Updates
 
-#### src build task
-- Will only concatenate JavaScript files into sfiapdgen_func.js
-- Preserves source readability for development
-- Task sequence:
-  1. concat (existing configuration)
+#### build:dev task
+- Concatenates JavaScript files into `package/dev/sfiapdgen_func.js`.
+- Includes copying assets, and string replacement for development.
+- Preserves source readability for development (includes source maps as per `Gruntfile.js`).
+- Task sequence (as per `Gruntfile.js`):
+  1. `clean:dev`
+  2. `copy:dev`
+  3. `concat:dev`
+  4. `string-replace:dev`
 
-#### dist build task
-- Creates production-ready distribution
-- Minifies JavaScript and updates references
-- Task sequence:
-  1. clean (existing)
-  2. copy (existing)
-  3. uglify (new)
-  4. string-replace (modified)
+#### build:prd task
+- Creates production-ready distribution in `package/prd/`.
+- Minifies JavaScript to `package/prd/sfiapdgen_func.min.js` and updates references.
+- Task sequence (as per `Gruntfile.js`):
+  1. `clean:prd`
+  2. `copy:prd`
+  3. `concat:prd`
+  4. `uglify:prd`
+  5. `string-replace:prd`
 
 ### 3. Configuration Changes
 
 #### New Uglify Configuration
 ```javascript
 uglify: {
-    dist: {
+    prd: { // Align with Gruntfile.js task target
         files: {
-            'dist/sfiapdgen_func.min.js': ['dist/sfiapdgen_func.js']
+            'package/prd/sfiapdgen_func.min.js': ['package/prd/sfiapdgen_func.js']
         }
     }
 }
@@ -43,14 +48,15 @@ uglify: {
 #### Updated String Replace
 ```javascript
 'string-replace': {
-    dist: {
+    prd: { // Align with Gruntfile.js task target
         files: {
-            'dist/sfiapdgen.html': 'dist/sfiapdgen.html'
+            'package/prd/sfiapdgen.html': 'package/prd/sfiapdgen.html'
         },
         options: {
             replacements: [{
                 pattern: 'sfiapdgen_func.js',
                 replacement: 'sfiapdgen_func.min.js'
+                // Note: Gruntfile.js also includes CSP header replacements here for prd
             }]
         }
     }
@@ -59,8 +65,12 @@ uglify: {
 
 ### 4. New Task Definitions
 ```javascript
-grunt.registerTask('build:src', ['concat']);
-grunt.registerTask('build:dist', ['clean', 'copy', 'uglify', 'string-replace']);
+// Actual tasks from Gruntfile.js are:
+// grunt.registerTask('build:dev', ['clean:dev', 'copy:dev', 'concat:dev', 'string-replace:dev']);
+// grunt.registerTask('build:prd', ['clean:prd', 'copy:prd', 'concat:prd', 'uglify:prd', 'string-replace:prd']);
+// This document describes the modernization plan which led to these tasks.
+// The plan's conceptual 'build:src' aligns with 'build:dev' but 'build:dev' is more comprehensive.
+// The plan's conceptual 'build:dist' aligns with 'build:prd'.
 ```
 
 ## Benefits
@@ -77,13 +87,13 @@ grunt.registerTask('build:dist', ['clean', 'copy', 'uglify', 'string-replace']);
 5. Ensure all tests continue to pass
 
 ## Testing Plan
-1. Test src build
-   - Verify sfiapdgen_func.js is properly concatenated
-   - Check source readability
-   - Run local tests
+1. Test `build:dev`
+   - Verify `package/dev/sfiapdgen_func.js` is properly concatenated.
+   - Check source readability and inline sourcemaps.
+   - Run local tests (e.g., `grunt testLocal` which uses `package/dev`).
 
-2. Test dist build
-   - Verify minification
-   - Check HTML references
-   - Ensure all files are copied correctly
-   - Run dist tests
+2. Test `build:prd`
+   - Verify minification to `package/prd/sfiapdgen_func.min.js`.
+   - Check HTML references in `package/prd/sfiapdgen.html`.
+   - Ensure all assets are correctly copied to `package/prd`.
+   - Run production tests (e.g., `grunt testProduction` which uses `package/prd`).

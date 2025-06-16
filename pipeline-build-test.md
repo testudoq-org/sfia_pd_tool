@@ -48,6 +48,8 @@ test/
 ├── helpers/              # Test helpers and utilities
 ├── data/                 # Test data
 └── config/               # Environment configurations
+test/
+├── unit/                  # Unit Test files (Planned - Jest)
 ```
 
 ## Best Practices
@@ -98,7 +100,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run tests
-        run: npx codeceptjs run-workers 3
+        run: npx codeceptjs run-workers 3 # Runs E2E tests
+      # Add a step for unit tests when implemented, e.g.:
+      # - name: Run Unit Tests
+      #   run: npm run test:unit
 ```
 
 ### 2. Reporting and Monitoring

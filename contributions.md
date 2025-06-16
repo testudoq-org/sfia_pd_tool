@@ -76,19 +76,24 @@ Thank you for considering contributing to our project! We appreciate your intere
 
 The project uses Grunt for task automation. Here are the key Grunt commands you need to know:
 
-1. **Build the Project**: The `build` task concatenates various JavaScript files into a single file and performs other build-related tasks.
-
+1. **Development Build**: The `build:dev` task creates a development version of the application in the `package/dev/` directory. It includes concatenation of JavaScript files with source maps.
     ```bash
-    grunt build
+    grunt build:dev
+    ```
+   (Note: `grunt build` is a legacy alias for `build:dev`).
+
+2. **Production Build**: The `build:prd` task creates an optimized production version in the `package/prd/` directory. This includes minification and other production-specific adjustments.
+    ```bash
+    grunt build:prd
     ```
 
-2. **Distribute to `dist` Folder**: The `testDist` task is used to distribute the built code to the `dist` folder. This task might include running tests and copying files to the `dist` directory.
-
+3. **Testing Production Build**: The `testProduction` task is used to run tests against the production build located in `package/prd/`.
     ```bash
-    grunt testDist
+    grunt testProduction
     ```
+   (The `testDist` task mentioned previously is likely superseded by `testProduction` or was part of an older configuration).
 
-3. **Watch for Changes**: The `watch` task monitors files for changes and automatically triggers a build when changes are detected.
+4. **Watch for Changes**: The `watch` task monitors files in the `src/` directory for changes and automatically triggers the `build:dev` task.
 
     ```bash
     grunt watch
