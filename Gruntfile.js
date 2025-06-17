@@ -123,8 +123,7 @@ module.exports = function (grunt) {
             options: {
                 separator: ';',
                 sourceMap: true
-            },
-            dev: {
+            },            dev: {
                 options: {
                     sourceMap: true,
                     sourceMapStyle: 'inline'
@@ -147,8 +146,7 @@ module.exports = function (grunt) {
                     'src/windowEvents.js'
                     ],
                 dest: 'package/dev/sfiapdgen_func.js'
-            },
-            prd: {
+            },            prd: {
                 src: [
                     'src/constants.js',
                     'src/dataFetching.js',

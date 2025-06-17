@@ -3,18 +3,24 @@
 ## Core Architecture
 
 ### Build System
-- **Build Tool**: Webpack (replaces Grunt)
-- **Source Format**: ES6 modules (`.mjs`)
+- **Primary Build Tool**: Hybrid Grunt + Webpack
+- **Source Format**: ES6 modules (`.mjs`) + Legacy JavaScript (`.js`)
 - **Development Output**: `package/dev/` (unminified, sourcemaps)
 - **Production Output**: `package/prd/` (minified, optimized)
-- **Legacy Support**: `.js` files still supported, but `.mjs` is preferred
+- **Legacy Support**: `.js` files maintained for backward compatibility
+- **Future Direction**: Gradual migration to pure ES6 modules
 
 ### Operational Mechanics
-- **Entry Points**: All `.mjs` modules in `src/modules/` and main HTML in `src/`
-- **Bundling**: Webpack bundles all JS/ES6 modules, CSS, and assets
+- **Entry Points**: 
+  - ES6 modules: `src/modules/*.mjs` bundled by Webpack
+  - Legacy files: Concatenated by Grunt, included in HTML
+- **Bundling Strategy**: 
+  - Webpack bundles ES6 modules with Babel transpilation
+  - Grunt concatenates legacy JavaScript files
+  - Both outputs combined in final HTML
 - **Transpilation**: Babel transpiles ES6+ code for browser compatibility
-- **Asset Handling**: HTML, CSS, JSON, and static assets are copied and optimized
-- **Sourcemaps**: Generated for development builds
+- **Asset Handling**: HTML, CSS, JSON, and static assets copied by Grunt
+- **Sourcemaps**: Generated for development builds (both Grunt and Webpack)
 - **Minification**: Enabled for production builds
 - **Output Structure**:
   - `package/dev/`: Unminified JS, full sourcemaps, all assets
@@ -22,21 +28,23 @@
 
 ### Build Commands
 ```bash
-npm run build:dev   # Development build (unminified, sourcemaps)
-npm run build:prd   # Production build (minified, optimized)
+npm run build:dev   # Development: Grunt concat + Webpack bundle
+npm run build:prd   # Production: Grunt + Webpack + minification
 ```
 
-### Critical Features Preserved from Grunt
-- Asset copying (HTML, CSS, JSON, images)
-- Minification and sourcemaps
-- Environment-specific builds (dev/prod)
-- Content Security Policy for production
-- All legacy Grunt features are mapped to Webpack plugins/tasks
+### Critical Features Preserved from Legacy System
+- Asset copying (HTML, CSS, JSON, images) - **Grunt**
+- JavaScript concatenation for legacy files - **Grunt** 
+- Minification and sourcemaps - **Grunt + Webpack**
+- Environment-specific builds (dev/prod) - **Both**
+- Content Security Policy for production - **Grunt**
+- All legacy functionality mapped to modern equivalents
 
-### Migration Notes
-- All new logic should be written as `.mjs` modules
-- Legacy `.js` files are still included for backward compatibility
-- See `webpack.config.js` for detailed configuration
+### Migration Strategy
+- **Phase 1** ✅: ES6 infrastructure established (url handling, utilities)
+- **Phase 2**: Gradually convert legacy `.js` files to `.mjs` modules  
+- **Phase 3**: Full Webpack migration when all files are ES6
+- **Backward Compatibility**: Legacy functions remain accessible during transition
 
 ### Application Structure
 
