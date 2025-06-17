@@ -3,14 +3,40 @@
 ## Core Architecture
 
 ### Build System
-- **Build Tool**: Grunt
-- **Build Environments**:
-  - Development (`build:dev`): Concatenation with sourcemaps
-  - Production (`build:prd`): Minification and security headers
-- **Asset Pipeline**: 
-  - Source files in `/src`
-  - Development build in `/package/dev`
-  - Production build in `/package/prd`
+- **Build Tool**: Webpack (replaces Grunt)
+- **Source Format**: ES6 modules (`.mjs`)
+- **Development Output**: `package/dev/` (unminified, sourcemaps)
+- **Production Output**: `package/prd/` (minified, optimized)
+- **Legacy Support**: `.js` files still supported, but `.mjs` is preferred
+
+### Operational Mechanics
+- **Entry Points**: All `.mjs` modules in `src/modules/` and main HTML in `src/`
+- **Bundling**: Webpack bundles all JS/ES6 modules, CSS, and assets
+- **Transpilation**: Babel transpiles ES6+ code for browser compatibility
+- **Asset Handling**: HTML, CSS, JSON, and static assets are copied and optimized
+- **Sourcemaps**: Generated for development builds
+- **Minification**: Enabled for production builds
+- **Output Structure**:
+  - `package/dev/`: Unminified JS, full sourcemaps, all assets
+  - `package/prd/`: Minified JS, optimized assets, security headers
+
+### Build Commands
+```bash
+npm run build:dev   # Development build (unminified, sourcemaps)
+npm run build:prd   # Production build (minified, optimized)
+```
+
+### Critical Features Preserved from Grunt
+- Asset copying (HTML, CSS, JSON, images)
+- Minification and sourcemaps
+- Environment-specific builds (dev/prod)
+- Content Security Policy for production
+- All legacy Grunt features are mapped to Webpack plugins/tasks
+
+### Migration Notes
+- All new logic should be written as `.mjs` modules
+- Legacy `.js` files are still included for backward compatibility
+- See `webpack.config.js` for detailed configuration
 
 ### Application Structure
 

@@ -17,4 +17,15 @@ For instructions on setting up the development environment, building the project
 **Open Source and Licensing:**
 The source code of the SFIA POSITION DESCRIPTION Tool is made available under the Attribution-NonCommercial 3.0 NZ Creative Commons License. You are encouraged to explore, modify, and contribute to the tool, adhering to the terms of the [CC BY-NC 3.0](https://creativecommons.org/licenses/by-nc/3.0/nz/deed.en) license.
 
+## ES6 Modules and Modern Build Process
+
+This project now uses modern JavaScript ES6 modules (`.mjs` files) for core application logic. These modules provide improved maintainability, tree-shaking, and future compatibility. The build process is handled by Webpack, which bundles, transpiles, and optimizes all `.mjs` and related assets for both development and production environments.
+
+- **Source modules**: Located in `src/modules/*.mjs`
+- **Development build**: Output to `package/dev/` (unminified, with sourcemaps)
+- **Production build**: Output to `package/prd/` (minified, optimized)
+- **Legacy support**: Legacy `.js` files are still supported for backward compatibility, but all new development should use `.mjs` modules.
+
+See [Contributions Guide](contributions.md) for details on building and contributing with the new system.
+
 Enhance your position description creation process with the SFIA POSITION DESCRIPTION Tool, a collaborative effort combining practicality and inspiration.

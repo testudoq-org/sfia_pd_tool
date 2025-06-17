@@ -72,6 +72,18 @@ global.loadSourceFile = function(relativePath) {
   });
 };
 
+// Enhanced ES6 module loading support
+global.loadES6Module = async function(modulePath) {
+  try {
+    // For ES6 modules, use dynamic import
+    const module = await import(modulePath);
+    return module;
+  } catch (error) {
+    console.warn(`Failed to load ES6 module ${modulePath}:`, error);
+    return null;
+  }
+};
+
 // Reset mocks before each test
 beforeEach(() => {
   jest.clearAllMocks();

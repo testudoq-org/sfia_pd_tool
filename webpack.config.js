@@ -1,63 +1,74 @@
+// Modern Webpack config for ES6 .mjs SFIA app - Hybrid approach
 const path = require('path');
-const TerserPlugin = require('terser-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
-module.exports = {
+module.exports = (env, argv) => {
+  const isProd = argv.mode === 'production';
+  const outDir = isProd ? 'package/prd' : 'package/dev';
+
+  return {
     entry: {
-        javascript: './dist/sfiapdgen_func.js'
+      // ES6 modules entry point
+      es6_modules: {
+        import: [
+          path.resolve(__dirname, 'src/modules/urlHandling.mjs'),
+          path.resolve(__dirname, 'src/modules/utilityFunctions.mjs')
+        ],
+        filename: 'es6_modules.js'
+      }
     },
     output: {
-        filename: 'sfiapdgen_func.min.js',
-        path: path.resolve(__dirname, 'dist')
+      path: path.resolve(__dirname, outDir),
+      clean: false, // Don't clean, we want to preserve Grunt-built files
+      library: {
+        name: 'ES6Modules',
+        type: 'var'
+      }
     },
+    devtool: isProd ? false : 'source-map',
     module: {
-        rules: [
-            {
-                test: /\.json$/i,
-                type: "asset/resource",
+      rules: [
+        {
+          test: /\.m?js$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env']
             }
-        ]
+          }
+        }
+      ]
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            template: './dist/sfiapdgen.html',
-            filename: 'sfiapdgen.html',
-            minify: {
-                collapseWhitespace: true,
-                removeComments: true,
-                removeRedundantAttributes: true,
-                removeScriptTypeAttributes: true,
-                removeStyleLinkTypeAttributes: true,
-                useShortDoctype: true
-            }
-        }),
-        // Rename .json files to .min.json
-        new CopyWebpackPlugin({
-            patterns: [
-                // Rename .css files to .min.css
-                {
-                    from: './dist/*.css',
-                    to: './[name].min.css'
-                }
-            ]
-        }),
-        new CleanWebpackPlugin({
-            cleanOnceBeforeBuildPatterns: ['**/*', '!*.html', '!*.min.js', '!*.json', '!*.ico', '!*.min.css']
-        })
+      // Only copy assets if they don't exist (Grunt already handles them)
+      new CopyWebpackPlugin({
+        patterns: [
+          { from: 'src/*.css', to: '[name][ext]', noErrorOnMissing: true },
+          { from: 'src/*.json', to: '[name][ext]', noErrorOnMissing: true },
+          { from: 'src/favicon.ico', to: 'favicon.ico', noErrorOnMissing: true },
+          { from: 'src/sfia-skills-table.html', to: 'sfia-skills-table.html', noErrorOnMissing: true },
+          { from: 'src/vendor', to: 'vendor', noErrorOnMissing: true },
+        ]
+      })
     ],
     optimization: {
-        minimize: true,
-        minimizer: [
-            new TerserPlugin({
-                terserOptions: {
-                    compress: {
-                        drop_console: true,
-                    },
-                    mangle: true,
-                },
-            }),
-        ],
+      minimize: isProd,
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            compress: { drop_console: isProd },
+            mangle: true,
+          },
+        })
+      ],
     },
+    performance: {
+      hints: false
+    },
+    resolve: {
+      extensions: ['.mjs', '.js', '.json']
+    }
+  };
 };

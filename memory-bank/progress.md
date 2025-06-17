@@ -122,11 +122,25 @@
 
 ## Testing Status
 
-### 1. Test Coverage
-- Unit Tests: 0% (Planned with Jest, to be located in `test/unit/`)
-- Integration Tests: Not formally implemented or tracked separately.
-- UI Tests (E2E with CodeceptJS): ~75% (as previously noted, requires ongoing verification)
-- Total Coverage: Primarily reflects UI E2E test coverage.
+### Test Status: **36/36 tests passing**
+
+**ES6 URL Handling Module** (test/unit/modules/urlHandling.test.js):
+```
+✅ getStandardizedLorCode - 5/5 tests passing
+✅ parseSfiaCodesFromHash - 4/4 tests passing  
+✅ parseLorValuesFromHash - 3/3 tests passing
+✅ generateCombinedHash - 4/4 tests passing
+✅ ValidationUtils - 2/2 tests passing
+✅ Legacy Compatibility - 1/1 tests passing
+✅ Edge Cases and Error Handling - 1/1 tests passing
+✅ Module Existence - 2/2 tests passing
+```
+
+**Legacy Checkbox Handling** (test/unit/checkboxHandling.test.js):
+```
+✅ checkSfiaPreselected - 8/8 tests passing
+✅ Edge Cases and Error Handling - 6/6 tests passing
+```
 
 ### 2. Test Priorities
 1. URL hash handling

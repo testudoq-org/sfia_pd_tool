@@ -1,64 +1,112 @@
-// src/modules/urlHandling.mjs
-/**
- * ES6 Module for URL handling functions
- * Modernized version of src/urlHandling.js
- */
+// Clean ES6 URL Handling Module for SFIA PD Generator
+// Contains enhanced URL processing functionality
 
 /**
- * LoR category to abbreviated code mapping
+ * Level of Responsibility abbreviations mapping
  */
 const LOR_ABBREVIATIONS = {
-    'Autonomy': 'AUTO',
+    'Autonomy': 'AUTN',
     'Influence': 'INFL',
-    'Complexity': 'COMP',
-    'Business': 'BUSI',
+    'Complexity': 'CPLX',
+    'Business Skills': 'BSKL',
     'Knowledge': 'KNOW'
 };
 
 /**
- * Convert full LoR category name to standardized abbreviation
- * @param {string} category - Full LoR category name
- * @returns {string} Standardized 4-letter abbreviation
+ * Validation utilities for SFIA codes and levels
+ */
+export const ValidationUtils = {
+    /**
+     * Validates if a skill code is properly formatted
+     * @param {string} code - The skill code to validate
+     * @returns {boolean} True if valid, false otherwise
+     */
+    isValidSkillCode(code) {
+        if (typeof code !== 'string') return false;
+        return /^[A-Z]{2,6}$/.test(code);
+    },
+
+    /**
+     * Validates if a skill level is within SFIA range (1-7)
+     * @param {number} level - The skill level to validate
+     * @returns {boolean} True if valid, false otherwise
+     */
+    isValidLevel(level) {
+        const num = parseInt(level);
+        return !isNaN(num) && num >= 1 && num <= 7;
+    }
+};
+
+/**
+ * Converts full LoR category names to standardized abbreviations
+ * @param {string} category - LoR category
+ * @returns {Object} Result object with success status and data
  */
 export function getStandardizedLorCode(category) {
     // Input validation
     if (typeof category !== 'string') {
-        console.warn('getStandardizedLorCode: Invalid input type, expected string');
-        return '';
+        return {
+            success: false,
+            error: 'getStandardizedLorCode: Invalid input type, expected string',
+            data: ''
+        };
     }
     
     // First check if it's already a standard code
     if (Object.values(LOR_ABBREVIATIONS).includes(category)) {
-        return category;
+        return {
+            success: true,
+            data: category
+        };
     }
     
     // Then check if we have a mapping for it
     const abbreviated = LOR_ABBREVIATIONS[category];
     if (abbreviated) {
-        return abbreviated;
+        return {
+            success: true,
+            data: abbreviated
+        };
     }
     
     // If no mapping exists, create a standardized 4-letter code
-    return category.substring(0, 4).toUpperCase();
+    return {
+        success: true,
+        data: category.substring(0, 4).toUpperCase(),
+        warnings: [`No standard mapping found for "${category}", using truncated version`]
+    };
 }
 
 /**
  * Parse SFIA codes from URL hash
  * @param {string} hash - URL hash string (optional, defaults to current location)
- * @returns {Array} Array of parsed SFIA skill objects
+ * @returns {Object} Result object with success status and parsed data
  */
-export function parseSfiaCodesFromHash(hash = window.location.hash) {
+export function parseSfiaCodesFromHash(hash = null) {
     try {
-        if (!hash) return [];
+        const targetHash = hash || (typeof window !== 'undefined' ? window.location.hash : '');
+        
+        if (!targetHash) {
+            return {
+                success: true,
+                data: []
+            };
+        }
         
         // Remove # symbol and get SFIA part (before &&)
-        const cleanHash = hash.substring(1);
+        const cleanHash = targetHash.substring(1);
         const sfiaPart = cleanHash.split('&&')[0];
         
-        if (!sfiaPart) return [];
+        if (!sfiaPart) {
+            return {
+                success: true,
+                data: []
+            };
+        }
         
         const hashLevels = sfiaPart.split("+").filter(level => level.trim());
         const parsedSkills = [];
+        const warnings = [];
         
         for (const level of hashLevels) {
             const parts = level.split("-");
@@ -66,36 +114,64 @@ export function parseSfiaCodesFromHash(hash = window.location.hash) {
                 const code = parts[0].trim();
                 const skillLevel = parseInt(parts[1]);
                 
-                if (code && !isNaN(skillLevel)) {
+                if (code && ValidationUtils.isValidLevel(skillLevel)) {
                     parsedSkills.push({ code, level: skillLevel });
+                } else {
+                    warnings.push(`Invalid SFIA entry: ${level}`);
                 }
+            } else {
+                warnings.push(`Malformed SFIA entry: ${level}`);
             }
         }
         
-        return parsedSkills;
+        return {
+            success: true,
+            data: parsedSkills,
+            warnings: warnings.length > 0 ? warnings : undefined
+        };
     } catch (error) {
-        console.error('Error parsing SFIA codes from hash:', error);
-        return [];
+        return {
+            success: false,
+            error: `Error parsing SFIA codes from hash: ${error.message}`,
+            data: []
+        };
     }
 }
 
 /**
  * Parse LoR values from URL hash
  * @param {string} hash - URL hash string (optional, defaults to current location)
- * @returns {Array} Array of parsed LoR objects
+ * @returns {Object} Result object with success status and parsed data
  */
-export function parseLorValuesFromHash(hash = window.location.hash) {
+export function parseLorValuesFromHash(hash = null) {
     try {
-        if (!hash) return [];
+        const targetHash = hash || (typeof window !== 'undefined' ? window.location.hash : '');
+        
+        if (!targetHash) {
+            return {
+                success: true,
+                data: []
+            };
+        }
         
         // Remove # symbol and get LoR part (after &&)
-        const cleanHash = hash.substring(1);
+        const cleanHash = targetHash.substring(1);
         const hashParts = cleanHash.split('&&');
         
-        if (hashParts.length < 2) return [];
+        if (hashParts.length < 2) {
+            return {
+                success: true,
+                data: []
+            };
+        }
         
         const lorPart = hashParts[1];
-        if (!lorPart) return [];
+        if (!lorPart) {
+            return {
+                success: true,
+                data: []
+            };
+        }
         
         const lorLevels = lorPart.split("+").filter(level => level.trim());
         const parsedLor = [];
@@ -103,180 +179,81 @@ export function parseLorValuesFromHash(hash = window.location.hash) {
         for (const level of lorLevels) {
             const parts = level.split("-");
             if (parts.length === 2) {
-                const lorCategory = parts[0].trim();
-                const lorLevel = parseInt(parts[1]);
+                const category = parts[0].trim();
+                const levelNum = parseInt(parts[1]);
                 
-                if (lorCategory && !isNaN(lorLevel)) {
-                    parsedLor.push({ lorCategory, lorLevel });
+                if (category && !isNaN(levelNum)) {
+                    // Standardize the category
+                    const standardResult = getStandardizedLorCode(category);
+                    if (standardResult.success) {
+                        parsedLor.push({ 
+                            category: standardResult.data, 
+                            level: levelNum 
+                        });
+                    }
                 }
             }
         }
         
-        return parsedLor;
+        return {
+            success: true,
+            data: parsedLor
+        };
     } catch (error) {
-        console.error('Error parsing LoR values from hash:', error);
-        return [];
+        return {
+            success: false,
+            error: `Error parsing LoR values from hash: ${error.message}`,
+            data: []
+        };
     }
 }
 
 /**
- * Generate SFIA hash string from skill selections
- * @param {Array} skills - Array of skill objects with code and level
- * @returns {string} Generated hash string
+ * Generate a combined hash string from SFIA and LoR data
+ * @param {Array} sfiaData - Array of SFIA skill objects {code, level}
+ * @param {Array} lorData - Array of LoR objects {category, level}
+ * @returns {Object} Result object with success status and generated hash
  */
-export function generateSfiaHash(skills) {
+export function generateCombinedHash(sfiaData = [], lorData = []) {
     try {
-        if (!Array.isArray(skills) || skills.length === 0) {
-            return '';
+        // Validate inputs
+        if (!Array.isArray(sfiaData) || !Array.isArray(lorData)) {
+            return {
+                success: false,
+                error: 'generateCombinedHash: Both parameters must be arrays',
+                data: ''
+            };
         }
         
-        const validSkills = skills.filter(skill => 
-            skill && 
-            typeof skill.code === 'string' && 
-            skill.code.trim() &&
-            typeof skill.level === 'number' && 
-            skill.level > 0
-        );
+        let hashParts = [];
         
-        return validSkills.map(skill => `${skill.code}-${skill.level}`).join('+');
-    } catch (error) {
-        console.error('Error generating SFIA hash:', error);
-        return '';
-    }
-}
-
-/**
- * Generate LoR hash string from LoR selections
- * @param {Array} lorValues - Array of LoR objects with category and level
- * @returns {string} Generated LoR hash string
- */
-export function generateLorHash(lorValues) {
-    try {
-        if (!Array.isArray(lorValues) || lorValues.length === 0) {
-            return '';
+        // Build SFIA part
+        if (sfiaData.length > 0) {
+            const sfiaStrings = sfiaData.map(skill => `${skill.code}-${skill.level}`);
+            hashParts.push(sfiaStrings.join('+'));
         }
         
-        const validLorValues = lorValues.filter(lor => 
-            lor && 
-            typeof lor.lorCategory === 'string' && 
-            lor.lorCategory.trim() &&
-            typeof lor.lorLevel === 'number' && 
-            lor.lorLevel > 0
-        );
-        
-        return validLorValues.map(lor => {
-            const standardizedCode = getStandardizedLorCode(lor.lorCategory);
-            return `${standardizedCode}-${lor.lorLevel}`;
-        }).join('+');
-    } catch (error) {
-        console.error('Error generating LoR hash:', error);
-        return '';
-    }
-}
-
-/**
- * Update the URL with combined SFIA and LoR hashes
- * @param {string} sfiaHash - SFIA hash string
- * @param {string} lorHash - LoR hash string
- * @returns {Object} Result object with success status and new hash
- */
-export function updateCombinedUrlHash(sfiaHash = '', lorHash = '') {
-    try {
-        let newHash = '';
-        
-        if (sfiaHash && lorHash) {
-            newHash = `${sfiaHash}&&${lorHash}`;
-        } else if (sfiaHash) {
-            newHash = sfiaHash;
-        } else if (lorHash) {
-            newHash = `&&${lorHash}`;
+        // Build LoR part
+        if (lorData.length > 0) {
+            const lorStrings = lorData.map(lor => `${lor.category}-${lor.level}`);
+            if (hashParts.length > 0) {
+                hashParts.push('&&' + lorStrings.join('+'));
+            } else {
+                hashParts.push('&&' + lorStrings.join('+'));
+            }
         }
-        
-        window.location.hash = newHash;
         
         return {
             success: true,
-            hash: newHash,
-            sfiaHash,
-            lorHash
+            data: hashParts.join('')
         };
     } catch (error) {
-        console.error('Error updating combined URL hash:', error);
         return {
             success: false,
-            error: error.message,
-            hash: '',
-            sfiaHash,
-            lorHash
+            error: `Error generating combined hash: ${error.message}`,
+            data: ''
         };
     }
 }
 
-/**
- * Validate hash format
- * @param {string} hash - Hash string to validate
- * @returns {Object} Validation result with details
- */
-export function validateHashFormat(hash) {
-    const result = {
-        isValid: false,
-        errors: [],
-        warnings: [],
-        sfiaPart: '',
-        lorPart: ''
-    };
-    
-    try {
-        if (!hash || typeof hash !== 'string') {
-            result.errors.push('Hash must be a non-empty string');
-            return result;
-        }
-        
-        const cleanHash = hash.startsWith('#') ? hash.substring(1) : hash;
-        const parts = cleanHash.split('&&');
-        
-        if (parts.length > 2) {
-            result.errors.push('Hash contains too many && separators');
-            return result;
-        }
-        
-        const sfiaPart = parts[0] || '';
-        const lorPart = parts[1] || '';
-        
-        result.sfiaPart = sfiaPart;
-        result.lorPart = lorPart;
-        
-        // Validate SFIA part
-        if (sfiaPart) {
-            const sfiaSkills = parseSfiaCodesFromHash(`#${sfiaPart}`);
-            if (sfiaSkills.length === 0 && sfiaPart.trim()) {
-                result.warnings.push('SFIA part contains no valid skill codes');
-            }
-        }
-        
-        // Validate LoR part
-        if (lorPart) {
-            const lorValues = parseLorValuesFromHash(`#&&${lorPart}`);
-            if (lorValues.length === 0 && lorPart.trim()) {
-                result.warnings.push('LoR part contains no valid codes');
-            }
-        }
-        
-        result.isValid = result.errors.length === 0;
-        return result;
-        
-    } catch (error) {
-        result.errors.push(`Validation error: ${error.message}`);
-        return result;
-    }
-}
-
-export default {
-    getStandardizedLorCode,
-    parseSfiaCodesFromHash,
-    parseLorValuesFromHash,
-    generateSfiaHash,
-    generateLorHash,
-    updateCombinedUrlHash,
-    validateHashFormat
-};
+console.log('ES6 URL Handling Module loaded');

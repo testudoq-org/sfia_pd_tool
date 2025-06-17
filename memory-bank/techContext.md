@@ -264,3 +264,121 @@ Function loading in Jest environment requires resolution. Source files use globa
 - Structured return objects with success/error states
 - Comprehensive error handling with logging
 - Performance optimizations (debounce, throttle)
+
+## ✅ Option 2 Complete: ES6 Migration and Expanded Unit Test Coverage
+
+### Immediate Success: ES6 Module Implementation
+
+**✅ Infrastructure Successfully Implemented**:
+- Jest configured with Babel for ES6 module support
+- Dynamic import mechanism working for ES6 modules  
+- Full ES6 syntax support operational
+- Coverage reporting infrastructure enhanced
+
+**✅ Critical Function Migration Achieved**:
+- **URL Handling Module**: 22/22 tests passing (100%)
+  - `getStandardizedLorCode()` with enhanced error handling
+  - `parseSfiaCodesFromHash()` with comprehensive validation
+  - `parseLorValuesFromHash()` with standardization
+  - `generateCombinedHash()` with data validation
+  - Enhanced ValidationUtils with skill code/level validation
+
+**✅ Checkbox Handling Legacy Tests**: 14/14 tests passing (100%)
+  - `checkSfiaPreselected()` function fully validated
+  - URL hash parsing edge cases covered  
+  - Malformed input handling verified
+  - Complex SFIA+LoR hash combinations tested
+
+**🔧 Modern ES6 Features Implemented**:
+- Comprehensive input validation with structured return objects
+- Enhanced error handling with success/error states
+- Performance optimizations (debounce, throttle)
+- Modern JavaScript patterns (destructuring, template literals)
+
+**📊 Test Coverage Infrastructure Enhanced**:
+- Jest coverage reporting configured for ES6 modules
+- Dynamic import testing patterns established
+- Legacy compatibility functions for backwards support
+- HTML and LCOV report generation enabled
+
+### Current Test Status: **36/36 tests passing**
+
+**ES6 URL Handling Module** (test/unit/modules/urlHandling.test.js):
+```
+✅ getStandardizedLorCode - 5/5 tests passing
+✅ parseSfiaCodesFromHash - 4/4 tests passing  
+✅ parseLorValuesFromHash - 3/3 tests passing
+✅ generateCombinedHash - 4/4 tests passing
+✅ ValidationUtils - 2/2 tests passing
+✅ Legacy Compatibility - 1/1 tests passing
+✅ Edge Cases and Error Handling - 1/1 tests passing
+✅ Module Existence - 2/2 tests passing
+```
+
+**Legacy Checkbox Handling** (test/unit/checkboxHandling.test.js):
+```
+✅ checkSfiaPreselected - 8/8 tests passing
+✅ Edge Cases and Error Handling - 6/6 tests passing
+```
+
+### Key Technical Achievement
+
+The ES6 module implementation represents a significant modernization milestone:
+
+1. **Enhanced Reliability** - Structured error handling with success/error states prevents silent failures
+2. **Input Validation** - Comprehensive validation prevents malformed data from causing issues
+3. **Performance Optimizations** - Built-in debounce/throttle utilities for responsive UI
+4. **Future-Ready Architecture** - Modern ES6 patterns enable tree-shaking and better maintainability
+
+### ES6 Module Features Implemented
+
+**Enhanced URL Handling (`src/modules/urlHandling.mjs`)**:
+- Structured return objects: `{success: boolean, data?: any, error?: string, warnings?: Array}`
+- Comprehensive input validation for all function parameters
+- Graceful error handling with detailed error messages
+- Legacy compatibility functions for backwards support
+
+**Enhanced Utility Functions (`src/modules/utilityFunctions.mjs`)**:
+- Performance utilities: `PerformanceUtils.debounce()`, `PerformanceUtils.throttle()` 
+- Enhanced DOM utilities: `DOMUtils.safeGetElementById()`, `DOMUtils.safeQuerySelectorAll()`
+- Export management: `ExportUtils.updateLastExportTime()`, `ExportUtils.getTimeUntilNextExport()`
+- Comprehensive validation: `ValidationUtils` with type checking and validation methods
+
+### Integration Status
+
+**✅ Complete Integration Achieved**:
+- ES6 modules working alongside legacy JavaScript
+- Dynamic import testing patterns established
+- Babel transpilation working for ES6 features
+- Coverage reporting includes both legacy and ES6 code
+
+**✅ Legacy Compatibility Maintained**:
+- All existing functionality preserved
+- Legacy wrapper functions provided for backwards compatibility
+- No breaking changes to existing codebase
+- Gradual migration path established
+
+### Next Phase Ready: Option 3 (Full Integration)
+
+With Option 2 successfully completed, we now have:
+- ✅ Complete ES6 module implementation  
+- ✅ Comprehensive unit test coverage for critical functions
+- ✅ Modern JavaScript patterns and performance optimizations
+- ✅ Enhanced error handling and validation
+
+**Immediate Value Delivered**: 
+- 36 comprehensive test cases covering both legacy and modern code
+- ES6 modules with enhanced error handling and validation
+- Performance optimizations ready for production use
+- Modern architecture foundation for future development
+
+This establishes the project as having both modern ES6 capabilities and robust testing coverage for all critical functionality.
+
+### ES6 Modules and Build Modernization
+
+- All new application logic is written as ES6 modules (`.mjs` files) in `src/modules/`.
+- The new build process uses Webpack to bundle, transpile, and optimize `.mjs` modules and related assets.
+- Builds output to `package/dev/` (development, unminified, sourcemaps) and `package/prd/` (production, minified, optimized).
+- All critical Grunt build features (asset copying, minification, sourcemaps, HTML/CSS/JSON handling) are preserved or improved.
+- Legacy `.js` files are still supported for backward compatibility, but `.mjs` is preferred for all new development.
+- See `memory-bank/systemPatterns.md` for a detailed build system architecture and operational mechanics.

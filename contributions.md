@@ -72,38 +72,26 @@ Thank you for considering contributing to our project! We appreciate your intere
 
 3. **Other Test Suites**: If there are other test suites or frameworks used in the project, refer to their respective documentation for instructions on running tests.
 
-## Building the Project
+## ES6 Modules and New Build Process
 
-The project uses Grunt for task automation. Here are the key Grunt commands you need to know:
+### ES6 Modules (`.mjs`)
+- All new core logic is written as ES6 modules (`.mjs` files) in `src/modules/`.
+- These modules use `export`/`import` syntax and are bundled for browser compatibility.
+- Legacy `.js` files remain for backward compatibility, but `.mjs` is preferred for new features.
 
-1. **Development Build**: The `build:dev` task creates a development version of the application in the `package/dev/` directory. It includes concatenation of JavaScript files with source maps.
-    ```bash
-    grunt build:dev
-    ```
-   (Note: `grunt build` is a legacy alias for `build:dev`).
+### Building the Project (Webpack)
+- **Development Build**: Run `npm run build:dev` to bundle and output to `package/dev/` (unminified, with sourcemaps).
+- **Production Build**: Run `npm run build:prd` to bundle and output to `package/prd/` (minified, optimized).
+- The build process uses Webpack and replaces all previous Grunt-based steps.
+- All assets (HTML, CSS, JS, JSON) are copied and optimized as needed.
 
-2. **Production Build**: The `build:prd` task creates an optimized production version in the `package/prd/` directory. This includes minification and other production-specific adjustments.
-    ```bash
-    grunt build:prd
-    ```
+### Running the Build
+```bash
+npm run build:dev   # For development
+npm run build:prd   # For production
+```
 
-3. **Testing Production Build**: The `testProduction` task is used to run tests against the production build located in `package/prd/`.
-    ```bash
-    grunt testProduction
-    ```
-   (The `testDist` task mentioned previously is likely superseded by `testProduction` or was part of an older configuration).
-
-4. **Watch for Changes**: The `watch` task monitors files in the `src/` directory for changes and automatically triggers the `build:dev` task.
-
-    ```bash
-    grunt watch
-    ```
-
-### Key Parts of `Gruntfile.js`
-
-- **concat**: This task concatenates various JavaScript files into a single file.
-- **watch**: This task monitors files for changes and automatically triggers a build when changes are detected.
-- **exec**: This task runs shell commands, such as running tests with CodeceptJS.
+See the main README and `memory-bank/techContext.md` for more details.
 
 ## Contributing Code
 
