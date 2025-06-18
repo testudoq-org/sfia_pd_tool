@@ -1,259 +1,228 @@
-// Clean ES6 URL Handling Module for SFIA PD Generator
-// Contains enhanced URL processing functionality
+// src/modules/urlHandling.mjs
+
+// Import required variables and functions
+import { g_sfiahash, g_lorhash, setG_sfiahash, setG_lorhash } from './constants.mjs';
+// Note: initializeContent and tableRendering imports moved to dynamic imports to break circular dependency
+
+// This file includes functions for generating and updating URL hashes based on LoR data and SFIA checkboxes.
 
 /**
- * Level of Responsibility abbreviations mapping
+ * LoR category to abbreviated code mapping
  */
-const LOR_ABBREVIATIONS = {
-    'Autonomy': 'AUTN',
+export const LOR_ABBREVIATIONS = {
+    'Autonomy': 'AUTO',
     'Influence': 'INFL',
-    'Complexity': 'CPLX',
-    'Business Skills': 'BSKL',
+    'Complexity': 'COMP',
+    'Business': 'BUSI',
     'Knowledge': 'KNOW'
 };
 
 /**
- * Validation utilities for SFIA codes and levels
+ * Convert full LoR category name to standardized abbreviation
+ * @param {string} category - Full LoR category name
+ * @returns {string} Standardized 4-letter abbreviation
  */
-export const ValidationUtils = {
-    /**
-     * Validates if a skill code is properly formatted
-     * @param {string} code - The skill code to validate
-     * @returns {boolean} True if valid, false otherwise
-     */
-    isValidSkillCode(code) {
-        if (typeof code !== 'string') return false;
-        return /^[A-Z]{2,6}$/.test(code);
-    },
+export const getStandardizedLorCode = (category) => {
+    // First check if it's already a standard code
+    if (Object.values(LOR_ABBREVIATIONS).includes(category)) {
+        return category;
+    }
+    // Then check if we have a mapping for it
+    const abbreviated = LOR_ABBREVIATIONS[category];
+    if (abbreviated) {
+        return abbreviated;
+    }
+    // If no mapping exists, create a standardized 4-letter code
+    return category.substring(0, 4).toUpperCase();
+};
 
-    /**
-     * Validates if a skill level is within SFIA range (1-7)
-     * @param {number} level - The skill level to validate
-     * @returns {boolean} True if valid, false otherwise
-     */
-    isValidLevel(level) {
-        const num = parseInt(level);
-        return !isNaN(num) && num >= 1 && num <= 7;
+/**
+ * Update the URL hash based on filtered SFIA data.
+ * @param {Object} filteredData - Filtered SFIA data.
+ * @param {boolean} updateHash - Flag to indicate whether to update the URL hash.
+ */
+export const updateSfiaUrlHash = (filteredData, updateHash) => {
+    if (updateHash) {
+        const urlHash = Object.values(filteredData).flatMap(category =>
+            Object.values(category).flatMap(subCategory =>
+                Object.values(subCategory).map(skill => {
+                    const skillLevels = Object.keys(skill["levels"]).map(level =>
+                        `${skill["code"]}-${level}`
+                    );
+                    return skillLevels.join("+");
+                })
+            )
+        );
+        setG_sfiahash(urlHash.join("+"));
+        updateCombinedUrlHash();
     }
 };
 
 /**
- * Converts full LoR category names to standardized abbreviations
- * @param {string} category - LoR category
- * @returns {Object} Result object with success status and data
+ * Updates the URL with the combined SFIA and LoR hashes.
+ * If both SFIA and LoR hashes are present, combines them with "&&" as a separator.
+ * If only the SFIA hash is present, sets the URL hash to the SFIA hash.
+ * If only the LoR hash is present, sets the URL hash to the LoR hash.
  */
-export function getStandardizedLorCode(category) {
-    // Input validation
-    if (typeof category !== 'string') {
-        return {
-            success: false,
-            error: 'getStandardizedLorCode: Invalid input type, expected string',
-            data: ''
-        };
+export const updateCombinedUrlHash = () => {
+    if (g_sfiahash && g_lorhash) {
+        window.location.hash = `${g_sfiahash}&&${g_lorhash}`;
+    } else if (g_sfiahash) {
+        /**
+         * If only the SFIA hash is present, set the URL hash to the SFIA hash.
+         */
+        window.location.hash = g_sfiahash;
+    } else if (g_lorhash) {
+        /**
+         * If only the LoR hash is present, set the URL hash to the LoR hash.
+         * Note that we add "&&" before the LoR hash, as the URL can't start with "&&"
+         */
+        window.location.hash = `&&${g_lorhash}`;
+    } else {
+        window.location.hash = "";
     }
-    
-    // First check if it's already a standard code
-    if (Object.values(LOR_ABBREVIATIONS).includes(category)) {
-        return {
-            success: true,
-            data: category
-        };
-    }
-    
-    // Then check if we have a mapping for it
-    const abbreviated = LOR_ABBREVIATIONS[category];
-    if (abbreviated) {
-        return {
-            success: true,
-            data: abbreviated
-        };
-    }
-    
-    // If no mapping exists, create a standardized 4-letter code
-    return {
-        success: true,
-        data: category.substring(0, 4).toUpperCase(),
-        warnings: [`No standard mapping found for "${category}", using truncated version`]
-    };
-}
+};
 
 /**
- * Parse SFIA codes from URL hash
- * @param {string} hash - URL hash string (optional, defaults to current location)
- * @returns {Object} Result object with success status and parsed data
+ * Updates the SFIA hash based on currently selected checkboxes
  */
-export function parseSfiaCodesFromHash(hash = null) {
-    try {
-        const targetHash = hash || (typeof window !== 'undefined' ? window.location.hash : '');
-        
-        if (!targetHash) {
-            return {
-                success: true,
-                data: []
-            };
-        }
-        
-        // Remove # symbol and get SFIA part (before &&)
-        const cleanHash = targetHash.substring(1);
-        const sfiaPart = cleanHash.split('&&')[0];
-        
-        if (!sfiaPart) {
-            return {
-                success: true,
-                data: []
-            };
-        }
-        
-        const hashLevels = sfiaPart.split("+").filter(level => level.trim());
-        const parsedSkills = [];
-        const warnings = [];
-        
-        for (const level of hashLevels) {
-            const parts = level.split("-");
-            if (parts.length === 2) {
-                const code = parts[0].trim();
-                const skillLevel = parseInt(parts[1]);
-                
-                if (code && ValidationUtils.isValidLevel(skillLevel)) {
-                    parsedSkills.push({ code, level: skillLevel });
-                } else {
-                    warnings.push(`Invalid SFIA entry: ${level}`);
-                }
-            } else {
-                warnings.push(`Malformed SFIA entry: ${level}`);
-            }
-        }
-        
-        return {
-            success: true,
-            data: parsedSkills,
-            warnings: warnings.length > 0 ? warnings : undefined
-        };
-    } catch (error) {
-        return {
-            success: false,
-            error: `Error parsing SFIA codes from hash: ${error.message}`,
-            data: []
-        };
-    }
-}
+export const updateSfiaHashFromCheckboxes = () => {
+    const sfiaCheckboxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked');
+    const selectedSfiaCheckboxes = Array.from(sfiaCheckboxes)
+        .map(checkbox => checkbox.value)
+        .filter(Boolean);
+    
+    setG_sfiahash(selectedSfiaCheckboxes.join('+'));
+};
 
 /**
- * Parse LoR values from URL hash
- * @param {string} hash - URL hash string (optional, defaults to current location)
- * @returns {Object} Result object with success status and parsed data
+ * Updates the URL with the selected Levels of Responsibility (LoR) checkboxes.
+ * This function retrieves all LoR checkboxes on the page, filters them to only include
+ * the checked ones, retrieves their value attribute, and joins them with '+' as a separator.
+ *
+ * @param {string} hash - The combined LoR hash string (optional).
  */
-export function parseLorValuesFromHash(hash = null) {
-    try {
-        const targetHash = hash || (typeof window !== 'undefined' ? window.location.hash : '');
-        
-        if (!targetHash) {
-            return {
-                success: true,
-                data: []
-            };
-        }
-        
-        // Remove # symbol and get LoR part (after &&)
-        const cleanHash = targetHash.substring(1);
-        const hashParts = cleanHash.split('&&');
-        
-        if (hashParts.length < 2) {
-            return {
-                success: true,
-                data: []
-            };
-        }
-        
-        const lorPart = hashParts[1];
-        if (!lorPart) {
-            return {
-                success: true,
-                data: []
-            };
-        }
-        
-        const lorLevels = lorPart.split("+").filter(level => level.trim());
-        const parsedLor = [];
-        
-        for (const level of lorLevels) {
-            const parts = level.split("-");
-            if (parts.length === 2) {
-                const category = parts[0].trim();
-                const levelNum = parseInt(parts[1]);
-                
-                if (category && !isNaN(levelNum)) {
-                    // Standardize the category
-                    const standardResult = getStandardizedLorCode(category);
-                    if (standardResult.success) {
-                        parsedLor.push({ 
-                            category: standardResult.data, 
-                            level: levelNum 
-                        });
-                    }
-                }
-            }
-        }
-        
-        return {
-            success: true,
-            data: parsedLor
-        };
-    } catch (error) {
-        return {
-            success: false,
-            error: `Error parsing LoR values from hash: ${error.message}`,
-            data: []
-        };
+export const updateURLWithLorCheckboxes = (hash) => {
+    // If hash is provided, update g_lorhash directly
+    if (hash) {
+        setG_lorhash(hash);
+        updateCombinedUrlHash();
+        return;
     }
-}
+
+    // Otherwise, gather checked checkboxes
+    const lorCheckboxes = document.querySelectorAll('input[type=checkbox][id^="lor-"]');
+    const selectedLorCheckboxes = Array.from(lorCheckboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => {
+            // Extract the value and standardize it
+            const [category, level] = checkbox.value.split('-');
+            return `${getStandardizedLorCode(category)}-${level}`;
+        });
+
+    setG_lorhash(selectedLorCheckboxes.join('+'));
+    updateCombinedUrlHash();
+};
 
 /**
- * Generate a combined hash string from SFIA and LoR data
- * @param {Array} sfiaData - Array of SFIA skill objects {code, level}
- * @param {Array} lorData - Array of LoR objects {category, level}
- * @returns {Object} Result object with success status and generated hash
+ * Select checkboxes based on the URL hash and trigger the renderLorOutput function.
+ * Uses the new parseLorValuesFromHash function to correctly parse LoR values.
+ *
+ * @param {Object} lorJson - The LoR JSON data.
  */
-export function generateCombinedHash(sfiaData = [], lorData = []) {
-    try {
-        // Validate inputs
-        if (!Array.isArray(sfiaData) || !Array.isArray(lorData)) {
-            return {
-                success: false,
-                error: 'generateCombinedHash: Both parameters must be arrays',
-                data: ''
-            };
+export const selectLorCheckboxesAndInitialize = async (lorJson) => {
+    // Parse LoR values from the hash
+    const lorValues = parseLorValuesFromHash();
+    
+    // If no LoR values found, initialize empty content
+    if (lorValues.length === 0) {
+        const { initializeLorContent } = await import('./initializeContent.mjs');
+        initializeLorContent(lorJson);
+        return;
+    }
+
+    // Select checkboxes based on parsed values
+    lorValues.forEach(({ lorCategory, lorLevel }) => {
+        const checkbox = document.querySelector(`input[type=checkbox][value="${lorCategory}-${lorLevel}"]`);
+        if (checkbox) {
+            checkbox.checked = true;
         }
-        
-        let hashParts = [];
-        
-        // Build SFIA part
-        if (sfiaData.length > 0) {
-            const sfiaStrings = sfiaData.map(skill => `${skill.code}-${skill.level}`);
-            hashParts.push(sfiaStrings.join('+'));
-        }
-        
-        // Build LoR part
-        if (lorData.length > 0) {
-            const lorStrings = lorData.map(lor => `${lor.category}-${lor.level}`);
-            if (hashParts.length > 0) {
-                hashParts.push('&&' + lorStrings.join('+'));
-            } else {
-                hashParts.push('&&' + lorStrings.join('+'));
+    });
+
+    // Trigger render with the selected values
+    const { renderLorOutput } = await import('./tableRendering.mjs');
+    renderLorOutput(lorJson);
+};
+
+/**
+ * Parse LoR values from the URL hash.
+ * @returns {Array} Array of parsed LoR values.
+ */
+export const parseLorValuesFromHash = () => {
+    const hash = window.location.hash.substring(1);
+    const parts = hash.split("&&");
+    // LoR hash is second part if it exists, otherwise check if the only part contains a LoR code
+    const lorPart = parts[1] || (Object.values(LOR_ABBREVIATIONS).some(code => parts[0].includes(code)) ? parts[0] : "");
+    if (!lorPart) return [];
+    
+    return lorPart.split("+").filter(Boolean).map(item => {
+        const [category, level] = item.split("-");
+        // Standardize the category code
+        return {
+            lorCategory: getStandardizedLorCode(category),
+            lorLevel: parseInt(level)
+        };
+    });
+};
+
+/**
+ * Generate URL hash based on combined LoR and SFIA data.
+ * @param {Object} lorJson - The LoR JSON data.
+ * @param {Object} sfiaJson - The SFIA JSON data.
+ * @returns {string} - Combined URL hash string using && separator.
+ */
+export const generateUrlHash = (lorJson, sfiaJson) => {
+    const lorHash = generateLorHash(lorJson);
+    const sfiaHash = generateSfiaHash(sfiaJson);
+    return lorHash && sfiaHash ? `${sfiaHash}&&${lorHash}` : lorHash || sfiaHash;
+};
+
+/**
+ * Generate URL hash based on LoR data.
+ * 
+ * @param {Object} lorJson - The LoR JSON data.
+ * @returns {string} - LoR URL hash string.
+ */
+export const generateLorHash = (lorJson) => {
+    const urlHash = [];
+
+    for (const { lorCategory, lorLevel } of lorJson) {
+        // Ensure category is in standardized format
+        const standardizedCategory = getStandardizedLorCode(lorCategory);
+        urlHash.push(`${standardizedCategory}-${lorLevel}`);
+    }
+
+    return urlHash.join("+");
+};
+
+/**
+ * Generate URL hash based on SFIA data.
+ * 
+ * @param {Object} sfiaJson - The SFIA JSON data.
+ * @returns {string} - SFIA URL hash string.
+ */
+export const generateSfiaHash = (sfiaJson) => {
+    const urlHash = [];
+
+    for (const category in sfiaJson) {
+        for (const subCategory in sfiaJson[category]) {
+            for (const skill in sfiaJson[category][subCategory]) {
+                const skillCode = sfiaJson[category][subCategory][skill]["code"];
+                const skillLevels = Object.keys(sfiaJson[category][subCategory][skill]["levels"]).join('+');
+                urlHash.push(`${skillCode}-${skillLevels}`);
             }
         }
-        
-        return {
-            success: true,
-            data: hashParts.join('')
-        };
-    } catch (error) {
-        return {
-            success: false,
-            error: `Error generating combined hash: ${error.message}`,
-            data: ''
-        };
     }
-}
 
-console.log('ES6 URL Handling Module loaded');
+    return urlHash.join("+");
+};

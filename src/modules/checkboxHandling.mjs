@@ -1,4 +1,4 @@
-// src/checkboxHandling.js
+// src/modules/checkboxHandling.mjs
 
 // This file contains functions for checking if a specific SFIA skill level is present in the URL hash and generating table cells with checkboxes.
 
@@ -9,7 +9,7 @@
  * @param {number} level - The level of the skill.
  * @return {boolean} True if the level is present in the URL hash, false otherwise.
  */
-function checkSfiaPreselected(code, level) {
+export const checkSfiaPreselected = (code, level) => {
     // Check if the URL hash exists and is not empty
     if (window.location.hash) {
         // Get the SFIA part of the hash (before &&)
@@ -28,8 +28,8 @@ function checkSfiaPreselected(code, level) {
             const hashLevel = hashLevels[i].split("-");
             if (hashLevel.length !== 2) continue; // Skip malformed entries
             
-            const check_code = hashLevel[0];
-            const check_level = parseInt(hashLevel[1]);
+            const [check_code, check_level_str] = hashLevel;
+            const check_level = parseInt(check_level_str);
 
             // Check if the current level matches the provided code and level
             if (code === check_code && level === check_level) {
@@ -39,7 +39,7 @@ function checkSfiaPreselected(code, level) {
     }
 
     return false;
-}
+};
 
 /**
  * Generates a table cell element with a checkbox input. The checkbox 
@@ -57,7 +57,7 @@ function checkSfiaPreselected(code, level) {
  * @param {string} code - The code associated with the skill.
  * @return {HTMLElement} The table cell element with the checkbox.
  */
-function addSfiaSelectionBox(index, sfiaJson, rootKey, subKey, skillKey, code) {
+export const addSfiaSelectionBox = (index, sfiaJson, rootKey, subKey, skillKey, code) => {
     // Create a table cell element
     const col = document.createElement('td');
 
@@ -74,8 +74,10 @@ function addSfiaSelectionBox(index, sfiaJson, rootKey, subKey, skillKey, code) {
         // Check if the skill should be preselected and set the checked attribute accordingly
         const checked = checkSfiaPreselected(sfiaJson[rootKey][subKey][skillKey]["code"], index) ? "checked" : "";
 
-        // Generate the checkbox input with the appropriate data attributes
-        col.innerHTML = `<input type='checkbox' id="sfia-checkbox-${sfiaJson[rootKey][subKey][skillKey]["code"]}-${index}" value="${code}-${index}" title='${sfiaJson[rootKey][subKey][skillKey]["levels"][index]}' sfia-data='${jsonData}' ${checked}/>`;
+        // Generate the checkbox input with the appropriate data attributes using template literals
+        const skillCode = sfiaJson[rootKey][subKey][skillKey]["code"];
+        const skillLevelDescription = sfiaJson[rootKey][subKey][skillKey]["levels"][index];
+        col.innerHTML = `<input type='checkbox' id="sfia-checkbox-${skillCode}-${index}" value="${code}-${index}" title='${skillLevelDescription}' sfia-data='${jsonData}' ${checked}/>`;
         col.className += " select_col";
     } else {
         // Generate a disabled checkbox if the level is not present
@@ -88,7 +90,7 @@ function addSfiaSelectionBox(index, sfiaJson, rootKey, subKey, skillKey, code) {
 
     // Return the generated table cell element
     return col;
-}
+};
 
 /**
  * Selects checkboxes based on the URL hash and triggers the renderLorOutput function or
@@ -97,7 +99,7 @@ function addSfiaSelectionBox(index, sfiaJson, rootKey, subKey, skillKey, code) {
  * 
  * @param {Object} lorJson - The LoR JSON data.
  */
-function selectLorCheckboxesAndInitialize(lorJson) {
+export const selectLorCheckboxesAndInitialize = (lorJson) => {
     // Parse URL hash and pre-select checkboxes
     // Remove the '#' character from the beginning of the hash
     const urlHash = window.location.hash.replace('#', '');
@@ -107,12 +109,12 @@ function selectLorCheckboxesAndInitialize(lorJson) {
 
     // If there are selected checkboxes
     if (selectedCheckboxes.length > 0) {
-        // Iterate over each selected checkbox
+        // Iterate over each selected checkbox using arrow function
         selectedCheckboxes.forEach(selectedCheckbox => {
-            // Split the selected checkbox into responsibility and level
+            // Split the selected checkbox into responsibility and level using destructuring
             const [responsibility, level] = selectedCheckbox.split('-');
 
-            // Find the corresponding checkbox and pre-select it
+            // Find the corresponding checkbox and pre-select it using template literal
             const checkbox = document.querySelector(`input[type=checkbox][id^="lor-${responsibility}-${level}"]`);
 
             // If the checkbox exists, pre-select it
@@ -128,7 +130,7 @@ function selectLorCheckboxesAndInitialize(lorJson) {
         // If there are no selected checkboxes, initialize LoR content
         initializeLorContent(lorJson);
     }
-}
+};
 
 /**
  * Selects checkboxes based on the URL hash and triggers
@@ -138,7 +140,7 @@ function selectLorCheckboxesAndInitialize(lorJson) {
  *
  * @param {Object} sfiaJson - The SFIA JSON data.
  */
-function SelectSfiaCheckboxesAndInitialize(sfiaJson) {
+export const SelectSfiaCheckboxesAndInitialize = (sfiaJson) => {
     // Parse URL hash and get SFIA part
     const hash = window.location.hash.replace('#', '');
     const sfiaPart = hash.split('&&')[0];
@@ -153,15 +155,15 @@ function SelectSfiaCheckboxesAndInitialize(sfiaJson) {
 
     // If there are selected checkboxes, pre-select them
     if (selectedCheckboxes.length > 0) {
-        // Iterate over each selected checkbox
+        // Iterate over each selected checkbox using arrow function
         selectedCheckboxes.forEach(selectedCheckbox => {
-            // Split the selected checkbox into code and level
+            // Split the selected checkbox into code and level using destructuring
             const parts = selectedCheckbox.split('-');
             if (parts.length !== 2) return; // Skip malformed entries
             
             const [code, level] = parts;
 
-            // Find the corresponding checkbox and pre-select it
+            // Find the corresponding checkbox and pre-select it using template literal
             const checkbox = document.querySelector(`input[type=checkbox][id="sfia-checkbox-${code}-${level}"]`);
             if (checkbox) {
                 checkbox.checked = true;
@@ -174,4 +176,4 @@ function SelectSfiaCheckboxesAndInitialize(sfiaJson) {
         // If no valid checkboxes found, initialize empty content
         initializeSFIAContent(sfiaJson);
     }
-}
+};

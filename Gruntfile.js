@@ -14,41 +14,16 @@ module.exports = function (grunt) {
             dev: {
                 files: [
                     { expand: true, cwd: 'src', src: ['**/*.html', '**/*.css', '**/*.json', '**/*.ico'], dest: 'package/dev/', filter: 'isFile' },
-                    { expand: true, cwd: 'src', src: ['**/sfiapdgen_func.js', '!**/*.min.*'], dest: 'package/dev/', filter: 'isFile' }
+                    { expand: true, cwd: 'dist', src: ['js/sfiapdgen_func.js'], dest: 'package/dev/', filter: 'isFile' }
                 ]
             },
             prd: {
                 files: [
                     { expand: true, cwd: 'src', src: ['**/*.html', '**/*.css', '**/*.json', '**/*.ico'], dest: 'package/prd/', filter: 'isFile' },
-                    { expand: true, cwd: 'src', src: ['**/sfiapdgen_func.js', '!**/*.min.*'], dest: 'package/prd/', filter: 'isFile' },
+                    { expand: true, cwd: 'dist', src: ['js/sfiapdgen_func.min.js'], dest: 'package/prd/', filter: 'isFile' },
                     { expand: true, cwd: 'src/vendor', src: ['*.css', '*.js'], dest: 'package/prd/vendor/', filter: 'isFile' },
                     { expand: true, cwd: 'src/vendor/ace', src: ['*.js'], dest: 'package/prd/vendor/ace/', filter: 'isFile' }
                 ]
-            }
-        },
-
-        // Uglify task configuration
-        uglify: {
-            options: {
-                compress: {
-                    drop_console: true,
-                    drop_debugger: true,
-                    passes: 1,
-                    unsafe: false
-                },
-                mangle: {
-                    keep_fnames: true
-                },
-                output: {
-                    comments: false,
-                    max_line_len: 500
-                },
-                sourceMap: false
-            },
-            prd: {
-                files: {
-                    'package/prd/sfiapdgen_func.min.js': ['package/prd/sfiapdgen_func.js']
-                }
             }
         },
 
@@ -59,10 +34,35 @@ module.exports = function (grunt) {
                     'package/dev/sfiapdgen.html': 'package/dev/sfiapdgen.html'
                 },
                 options: {
-                    replacements: [{
-                        pattern: 'sfiapdgen_func.js',
-                        replacement: 'sfiapdgen_func.js'
-                    }]
+                    replacements: [
+                        {
+                            pattern: 'sfiapdgen_func.js',
+                            replacement: 'sfiapdgen_func.js'
+                        },
+                        {
+                            // Remove obsolete es6_modules.js script tag
+                            pattern: /\s*<script src="es6_modules\.js" defer><\/script>/,
+                            replacement: ''
+                        }
+                    ]
+                }
+            },
+            dev_local: {
+                files: {
+                    'package/dev/sfiapdgen.html': 'package/dev/sfiapdgen.html'
+                },
+                options: {
+                    replacements: [
+                        {
+                            pattern: 'sfiapdgen_func.js',
+                            replacement: 'sfiapdgen_func.js'
+                        },
+                        {
+                            // Remove obsolete es6_modules.js script tag
+                            pattern: /\s*<script src="es6_modules\.js" defer><\/script>/,
+                            replacement: ''
+                        }
+                    ]
                 }
             },
             prd: {
@@ -98,6 +98,11 @@ module.exports = function (grunt) {
                             replacement: 'sfiapdgen_func.min.js'
                         },
                         {
+                            // Remove obsolete es6_modules.js script tag
+                            pattern: /\s*<script src="es6_modules\.js" defer><\/script>/,
+                            replacement: ''
+                        },
+                        {
                             pattern: '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>',
                             replacement: '<script src="vendor/crypto-js.min.js"></script>'
                         },
@@ -118,60 +123,21 @@ module.exports = function (grunt) {
             }
         },
 
-        // Concat task configuration
-        concat: {
-            options: {
-                separator: ';',
-                sourceMap: true
-            },            dev: {
-                options: {
-                    sourceMap: true,
-                    sourceMapStyle: 'inline'
-                },
-                src: [
-                    'src/constants.js',
-                    'src/dataFetching.js',
-                    'src/init.js',
-                    'src/theme.js',
-                    'src/browserUpdate.js',
-                    'src/exportFunctions.js',
-                    'src/checkboxHandling.js',
-                    'src/initializeContent.js',
-                    'src/tableRendering.js',
-                    'src/dataHandling.js',
-                    'src/utilityFunctions.js',
-                    'src/jsonHandling.js',
-                    'src/urlHandling.js',
-                    'src/eventListeners.js',
-                    'src/windowEvents.js'
-                    ],
-                dest: 'package/dev/sfiapdgen_func.js'
-            },            prd: {
-                src: [
-                    'src/constants.js',
-                    'src/dataFetching.js',
-                    'src/init.js',
-                    'src/theme.js',
-                    'src/browserUpdate.js',
-                    'src/exportFunctions.js',
-                    'src/checkboxHandling.js',
-                    'src/initializeContent.js',
-                    'src/tableRendering.js',
-                    'src/dataHandling.js',
-                    'src/utilityFunctions.js',
-                    'src/jsonHandling.js',
-                    'src/urlHandling.js',
-                    'src/eventListeners.js',
-                    'src/windowEvents.js'
-                    ],
-                dest: 'package/prd/sfiapdgen_func.js'
-            }
-        },
-
         // Watch task configuration
         watch: {
             options: {
                 debounceDelay: 3000
+            },
+            scripts: {
+                files: [
+                    'src/modules/**/*.mjs', // Watch all .mjs files in src/modules
+                    'rollup.config.mjs'     // Watch the Rollup config file
+                ],
+                tasks: ['exec:rollup_dev', 'string-replace:dev_local'], // Run Rollup dev build and then string replace
+                options: {
+                    spawn: false,
+                    livereload: true // Assuming livereload is set up and desired
+                }
             },
             dev: {
                 files: ['src/**/*'],
@@ -192,6 +158,12 @@ module.exports = function (grunt) {
             },
             codeceptjsProduction: {
                 cmd: 'npx codeceptjs run --config=codecept.prod.conf.js'
+            },
+            rollup_dev: {
+                cmd: 'npx rollup -c rollup.config.mjs --environment BUILD:development'
+            },
+            rollup_prd: {
+                cmd: 'npx rollup -c rollup.config.mjs --environment BUILD:production'
             }
         }
     });
@@ -201,24 +173,21 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-string-replace');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-exec');
 
-    // Development build - concatenates files with sourcemaps
+    // Development build - copies files and applies replacements
     grunt.registerTask('build:dev', [
         'clean:dev',
+        'exec:rollup_dev',
         'copy:dev',
-        'concat:dev',
         'string-replace:dev'
     ]);
 
-    // Production build - full process including minification
+    // Production build - copies files and applies replacements
     grunt.registerTask('build:prd', [
         'clean:prd',
+        'exec:rollup_prd',
         'copy:prd',
-        'concat:prd',
-        'uglify:prd',
         'string-replace:prd'
     ]);
 

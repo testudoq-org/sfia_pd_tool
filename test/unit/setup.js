@@ -84,6 +84,70 @@ global.loadES6Module = async function(modulePath) {
   }
 };
 
+// Updated loadSourceFile to handle both .js and .mjs files
+global.loadMJSModule = async function(relativePath) {
+  const filePath = path.resolve(__dirname, relativePath);
+  try {
+    // Create mock modules for dependencies
+    const mockModules = {
+      './constants.mjs': {
+        g_sfiahash: global.g_sfiahash || '',
+        g_lorhash: global.g_lorhash || ''
+      },
+      './initializeContent.mjs': {
+        initializeLorContent: jest.fn(),
+        initializeSFIAContent: jest.fn()
+      },
+      './tableRendering.mjs': {
+        renderLorOutput: jest.fn(),
+        renderSfiaOutput: jest.fn()
+      }
+    };
+    
+    // Read the module file
+    const moduleContent = fs.readFileSync(filePath, 'utf8');
+    
+    // Replace import statements with mock implementations and make functions available globally
+    let processedContent = moduleContent
+      .replace(/import\s+\{[^}]+\}\s+from\s+['"][^'"]+['"];?/g, '')
+      .replace(/export\s+const\s+(\w+)\s*=/g, 'global.$1 = ')
+      .replace(/export\s+function\s+(\w+)/g, 'global.$1 = function $1')
+      .replace(/export\s+\{[^}]+\};?/g, '')
+      .replace(/lastExportTime/g, 'global.lastExportTime');
+    
+    // Execute the processed content in a context with mocked dependencies
+    const vm = require('vm');
+    const context = {
+      ...global,
+      window: global.window,
+      document: global.document,
+      console: global.console,
+      g_sfiahash: global.g_sfiahash,
+      g_lorhash: global.g_lorhash,
+      lastExportTime: global.lastExportTime,
+      initializeLorContent: jest.fn(),
+      initializeSFIAContent: jest.fn(),
+      renderLorOutput: jest.fn(),
+      renderSfiaOutput: jest.fn()
+    };
+    
+    vm.createContext(context);
+    vm.runInContext(processedContent, context);
+    
+    // Copy all new properties back to global scope
+    Object.keys(context).forEach(key => {
+      if (!global.hasOwnProperty(key) || typeof context[key] === 'function') {
+        global[key] = context[key];
+      }
+    });
+    
+    return context;
+  } catch (error) {
+    console.warn(`Failed to load MJS module ${relativePath}:`, error);
+    return null;
+  }
+};
+
 // Reset mocks before each test
 beforeEach(() => {
   jest.clearAllMocks();

@@ -1,11 +1,11 @@
-// BOF: src/dataHandling.js
+// BOF: src/modules/dataHandling.mjs
 
 /**
  * Render LoR data to lor-output element with improved styling.
  * 
  * @param {Array} newLorJson - Array of objects containing LoR data. Each object should have properties: lorCategory, lorLevel, and lorDescription.
  */
-function renderLorData(newLorJson) {
+export const renderLorData = (newLorJson) => {
     console.log("Entering renderLorData function");
     
     // Get the target element where the LoR data will be rendered
@@ -36,7 +36,7 @@ function renderLorData(newLorJson) {
     }
     
     console.log("Exiting renderLorData function");
-}
+};
 
 /**
  * Extract checked Levels of Responsibility (LoR) data from the page.
@@ -44,7 +44,7 @@ function renderLorData(newLorJson) {
  * @returns {Array} - Array containing checked LoR data objects.
  * @throws {Error} - If any LoR checkbox is missing a required property.
  */
-function extractCheckedLorData() {
+export const extractCheckedLorData = () => {
     console.log("Entering extractCheckedLorData function");
 
     // Initialize an empty array to store the checked LoR data
@@ -84,14 +84,34 @@ function extractCheckedLorData() {
 
     // Return the array containing checked LoR data
     return newLorJson;
-}
+};
 
 /**
  * Clear the content of the lor-output element.
  */
-function clearLorOutput() {
+export const clearLorOutput = () => {
     const lorOutput = document.getElementById('lor-output');
     lorOutput.innerHTML = '';
+};
+
+// Global state for SFIA data loading
+export let isSfiaDataLoaded = false;
+export let sfiaDataLoadedPromise = Promise.resolve();
+
+/**
+ * Set SFIA data loaded state
+ * @param {boolean} loaded - Whether SFIA data is loaded
+ */
+export function setSfiaDataLoaded(loaded) {
+    isSfiaDataLoaded = loaded;
 }
 
-// EOF: src/dataHandling.js
+/**
+ * Set SFIA data loaded promise
+ * @param {Promise} promise - Promise that resolves when SFIA data is loaded
+ */
+export function setSfiaDataLoadedPromise(promise) {
+    sfiaDataLoadedPromise = promise;
+}
+
+// EOF: src/modules/dataHandling.mjs

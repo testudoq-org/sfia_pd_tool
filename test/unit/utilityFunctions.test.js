@@ -5,23 +5,38 @@
  */
 
 describe('Utility Functions', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     // Reset global state
     global.lastExportTime = 0;
     jest.clearAllMocks();
     
-    // Load the utility functions source file
-    global.loadSourceFile('../../src/utilityFunctions.js');
+    // Load the utility functions MJS module
+    await global.loadMJSModule('../../src/modules/utilityFunctions.mjs');
   });
 
-  describe('isExportSkippedDueToTimeout', () => {    test('should return true when export was recent', () => {
-      const currentTime = Date.now();
-      global.lastExportTime = currentTime - 1000; // 1 second ago
+  describe('isExportSkippedDueToTimeout', () => {
+    test('should return true when export was recent', () => {
+      // Set up timing scenario where export was recent
+      const currentTime = 1000000000; // Fixed timestamp
       const timeoutDuration = 5000; // 5 seconds
+      
+      // Ensure lastExportTime is available in the function context
+      global.lastExportTime = currentTime - 1000; // 1 second ago
+      
+      // Mock Date to return consistent time
+      const originalDate = global.Date;
+      global.Date = class extends originalDate {
+        getTime() {
+          return currentTime;
+        }
+      };
       
       const result = isExportSkippedDueToTimeout(timeoutDuration);
       
       expect(result).toBe(true);
+      
+      // Restore original
+      global.Date = originalDate;
     });
 
     test('should return false when export was long ago', () => {
@@ -83,7 +98,9 @@ describe('Utility Functions', () => {
           </tr>
         </tbody>
       `;
-    });test('should filter rows based on search input', () => {
+    });
+
+    test('should filter rows based on search input', () => {
       const input = document.getElementById('myInput');
       input.value = 'BPTS';
       
@@ -140,7 +157,9 @@ describe('Utility Functions', () => {
       
       // Check that error was logged
       expect(console.error).toHaveBeenCalledWith("Input element not found.");
-    });    test('should handle missing table body gracefully', () => {
+    });
+
+    test('should handle missing table body gracefully', () => {
       // Setup DOM with table body first
       document.body.innerHTML = `
         <input id="myInput" value="test">
@@ -161,8 +180,10 @@ describe('Utility Functions', () => {
       }).not.toThrow();
       
       // Check that error was logged
-      expect(console.error).toHaveBeenCalledWith("Table body element 'sfia-content' not found.");
-    });    test('should handle rows without skill_key class', () => {
+      expect(console.error).toHaveBeenCalledWith("Table body element not found.");
+    });
+
+    test('should handle rows without skill_key class', () => {
       document.body.innerHTML = `
         <input id="myInput" value="test">
         <tbody id="sfia-content">

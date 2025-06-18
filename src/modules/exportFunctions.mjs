@@ -1,54 +1,59 @@
-// src/exportFunctions.js
+// src/modules/exportFunctions.mjs
 
-function getCheckedBoxes() {
+import { isExportSkippedDueToTimeout } from './utilityFunctions.mjs';
+
+let lastExportTime = 0; // Initialize lastExportTime to 0
+
+const getCheckedBoxes = () => {
     return document.querySelectorAll('input[type="checkbox"][id^="sfia-checkbox-"]:checked');
-}
+};
 
-function processCheckedBoxes(checkedBoxes, sfiaJson) {
+const processCheckedBoxes = (checkedBoxes, sfiaJson) => {
     const data = [];
     checkedBoxes.forEach(box => {
         const jsonData = JSON.parse(box.getAttribute('sfia-data'));
-        const categoryData = sfiaJson[jsonData.category];
-        const subCategoryData = categoryData[jsonData.subCategory];
-        const skillData = subCategoryData[jsonData.skill];
+        const { category, subCategory, skill, level } = jsonData;
+        const categoryData = sfiaJson[category];
+        const subCategoryData = categoryData?.[subCategory];
+        const skillData = subCategoryData?.[skill];
 
         if (categoryData && subCategoryData && skillData) {
             const skillCode = skillData["code"];
             const skillDescription = skillData["description"];
-            const skillLevel = skillData["levels"][jsonData.level];
+            const skillLevel = skillData["levels"][level];
 
             if (skillCode && skillDescription && skillLevel) {
                 data.push([
-                    `${jsonData.skill} ${skillCode}-${jsonData.level}`,
+                    `${skill} ${skillCode}-${level}`,
                     skillDescription,
                     skillLevel
                 ]);
             } else {
-                console.error(`Incomplete or missing data for ${jsonData.category}/${jsonData.subCategory}/${jsonData.skill}`);
+                console.error(`Incomplete or missing data for ${category}/${subCategory}/${skill}`);
             }
         } else {
-            console.error(`Skill data not found for ${jsonData.category}/${jsonData.subCategory}/${jsonData.skill}`);
+            console.error(`Skill data not found for ${category}/${subCategory}/${skill}`);
         }
     });
 
     return data;
-}
+};
 
-function generateCSVContent(data) {
+const generateCSVContent = (data) => {
     let csvContent = "";
     data.forEach(infoArray => {
-        let dataString = '"' + infoArray.join('","') + '"';
-        csvContent += dataString + "\n";
+        const dataString = `"${infoArray.join('","')}"`;
+        csvContent += `${dataString}\n`;
     });
     return csvContent;
-}
+};
 
 /**
  * Export the CSV content to a downloadable CSV file.
  * @param {Event} event - The event triggering the function.
  * @param {Object} sfiaJson - The sfiaJson object containing all the data.
  */
-function exportCSV(event, sfiaJson) {
+const exportCSV = (event, sfiaJson) => {
     // Log the function trigger and the event object
     console.log('Export CSV button triggered');
     console.log('Event:', event);
@@ -78,14 +83,14 @@ function exportCSV(event, sfiaJson) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-}
+};
 
 /**
  * Export the HTML content to a downloadable HTML file.
  * @param {Event} event - The event triggering the function.
  * @param {Object} sfiaJson - The sfiaJson object containing all the data.
  */
-function exportHTML(event, sfiaJson) {
+const exportHTML = (event, sfiaJson) => {
     // Log the function trigger and the event object
     console.log('Export HTML button triggered');
     console.log('Event:', event);
@@ -113,7 +118,7 @@ function exportHTML(event, sfiaJson) {
     const dd = String(currentDate.getDate()).padStart(2, '0');
     const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
     const yyyy = currentDate.getFullYear();
-    const dateStr = dd + mm + yyyy;
+    const dateStr = `${dd}${mm}${yyyy}`;
 
     // Generate the filename based on URL values and date
     const filenameBase = `PositionSummary_${urlHash}`;
@@ -123,29 +128,29 @@ function exportHTML(event, sfiaJson) {
     let truncatedFilename;
     if (filenameBase.length + filenameEnd.length > 255) {
         const availableSpace = 255 - filenameEnd.length;
-        truncatedFilename = filenameBase.slice(0, availableSpace) + filenameEnd;
+        truncatedFilename = `${filenameBase.slice(0, availableSpace)}${filenameEnd}`;
     } else {
-        truncatedFilename = filenameBase + filenameEnd;
+        truncatedFilename = `${filenameBase}${filenameEnd}`;
     }
 
     // Create a download link for the HTML file
     const encodedUri = encodeURI(htmlContent);
     const a = document.createElement('a');
-    a.href = 'data:attachment/plain;charset=utf-8,' + encodedUri;
+    a.href = `data:attachment/plain;charset=utf-8,${encodedUri}`;
     a.download = truncatedFilename;
 
     // Append the link to the body, trigger the click event, and remove the link
     document.body.appendChild(a);
     a.click();
     a.remove();
-}
+};
 
 /**
  * Save the content of a specified element to a file with versioning and date-time stamping.
  * @param {string} elementId - The ID of the element whose content is to be saved.
  * @param {string} baseFilename - The base name of the file to save the content to.
  */
-function saveContentToFile(elementId, baseFilename) {
+const saveContentToFile = (elementId, baseFilename) => {
     const content = document.getElementById(elementId).innerHTML;
     const version = document.getElementById("jsonVersionSelect").value;
     const now = new Date();
@@ -160,18 +165,30 @@ function saveContentToFile(elementId, baseFilename) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-}
+};
 
 /**
  * Save the SFIA content to a file.
  */
-function saveSfiaContent() {
+const saveSfiaContent = () => {
     saveContentToFile('sfia-output', 'SFIA_Content');
-}
+};
 
 /**
  * Save the LOR content to a file.
  */
-function saveLorContent() {
+const saveLorContent = () => {
     saveContentToFile('lor-output', 'LOR_Content');
-}
+};
+
+export {
+    getCheckedBoxes,
+    processCheckedBoxes,
+    generateCSVContent,
+    exportCSV,
+    exportHTML,
+    saveContentToFile,
+    saveSfiaContent,
+    saveLorContent,
+    lastExportTime
+};

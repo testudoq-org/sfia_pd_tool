@@ -5,13 +5,13 @@
  */
 
 describe('Checkbox Handling Functions', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     // Reset global state
     window.location.hash = '';
     jest.clearAllMocks();
     
-    // Load the checkbox handling source file
-    global.loadSourceFile('../../src/checkboxHandling.js');
+    // Load the checkbox handling MJS module
+    await global.loadMJSModule('../../src/modules/checkboxHandling.mjs');
   });
 
   describe('checkSfiaPreselected', () => {

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	<title>SFIA POSITION DESCRIPTION Generator</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<link rel="icon" type="image/x-icon" href="favicon.ico" />	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script type="module" src="src/modules/app.mjs"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+		crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+	<!-- Add Ace editor dependencies -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/ace.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/mode-markdown.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/theme-monokai.js"></script>
+	<!-- Add both stylesheets with initial light theme active -->
+	<link rel="stylesheet" href="styles-light.css" id="theme-style">
+	<link rel="stylesheet" href="styles-dark.css" disabled>
+</head>
+
+<body>
+	<header>
+		<nav class="navbar navbar-expand-lg bg-light">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="#">SFIA PD Generator</a>
+				<!-- Updated Hamburger Menu Structure -->
+				<div class="settings-menu">
+					<button id="toggle-menu" class="hamburger-btn" aria-label="Toggle menu" aria-expanded="false"
+						aria-controls="menu-content">
+						<svg viewBox="0 0 24 24" width="24" height="24">
+							<path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+						</svg>
+					</button>
+					<!-- Add hidden class by default -->
+					<div id="menu-content" class="settings-panel hidden" aria-hidden="true">
+						<div class="api-selector">
+							<label class="api-option">
+								<input type="radio" name="api-selector" value="cohere" checked>
+								<span>Use Cohere</span>
+							</label>
+							<label class="api-option">
+								<input type="radio" name="api-selector" value="huggingface">
+								<span>Use Hugging Face</span>
+							</label>
+						</div>
+						<div class="api-inputs">
+							<div class="input-group">
+								<label for="cohere-api">Cohere API Key</label>
+								<input type="password" id="cohere-api" placeholder="Enter Cohere API Key">
+								<button class="toggle-password" data-target="cohere-api">Show</button>
+							</div>
+							<div class="input-group">
+								<label for="huggingface-api">Hugging Face API Key</label>
+								<input type="password" id="huggingface-api" placeholder="Enter Hugging Face API Key">
+								<button class="toggle-password" data-target="huggingface-api">Show</button>
+							</div>
+							<button id="save-keys-btn" class="save-btn">Save API Keys</button>
+						</div>
+						<!-- Add Theme Toggle -->
+						<div class="theme-toggle">
+							<label for="theme-switch">Dark Mode</label>
+							<div class="switch">
+								<input type="checkbox" id="theme-switch" onchange="toggleTheme()">
+								<span class="slider round"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</nav>
+	</header>
+	<main id="pageContent" class="container">
+		<div id="notification-container" class="notification-container"></div>
+		
+		<!-- Instructions Card -->
+		<div class="row g-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header" role="heading" aria-level="3">
+						<h3 class="card-title">Instructions</h3>
+						<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#instructions"
+							aria-expanded="true" aria-controls="instructions">
+							Toggle Instructions
+						</button>
+					</div>
+					<div class="card-body collapse show" id="instructions">
+						<p>Welcome to the PD generator tool, built upon the <a href="https://www.sfia-online.org">SFIA Skills
+								Framework</a>. This tool is designed to help you create comprehensive position
+							descriptions (PD) based on the skills and competencies defined in the SFIA framework.</p>
+						<p>To initiate PD generation, follow these steps:</p>
+						<ol>
+							<li><strong>Select Skill Set Levels:</strong>
+								<p>Choose the desired skill set levels from the SFIA Information Table. Each skill level
+									corresponds to a specific competency level, ranging from Level 1 (basic) to Level 7
+									(expert). For example, if you are looking for a candidate who can perform complex
+									tasks independently, you might select Level 4 or higher.</p>
+							</li>
+							<li><strong>Hover for Descriptions:</strong>
+								<p>For more information about any skill, hover over the skill name. This will display a
+									tooltip with a brief description of the skill. Additionally, hover over the
+									checkboxes next to each skill level to see detailed descriptions of what each level
+									entails, including the expected responsibilities and capabilities at that level.</p>
+							</li>
+							<li><strong>Review Your Selections:</strong>
+								<p>Your selected choices will be formatted and displayed at the bottom of the page. Take
+									a moment to review them to ensure they accurately reflect the skills and levels you
+									require for the position. You can make adjustments by going back to the SFIA
+									Information Table and modifying your selections.</p>
+							</li>
+							<li><strong>Export Options:</strong>
+								<p>You can export your selections as a CSV or HTML document. Click the respective button
+									to download the file automatically. Ensure you are using an up-to-date version of
+									Chrome or Firefox for the best experience, as some browsers may have limitations.
+									The exported document will include all selected skills and their corresponding
+									levels, formatted for easy sharing or printing.</p>
+							</li>
+							<li><strong>Bookmark for Future Reference:</strong>
+								<p>To save your summary for future reference, bookmark this page. The URL bookmark
+									retains the necessary information and will update your selections upon your return.
+									This feature is particularly useful if you need to revisit your selections or share
+									them with colleagues.</p>
+							</li>
+						</ol>
+						<p><strong>Additional Tips:</strong></p>
+						<ul>
+							<li>Make sure to check all relevant skill levels for a comprehensive position description.
+								Consider the specific needs of your organization and the role you are hiring for.</li>
+							<li>If you encounter any issues, try refreshing the page or clearing your browser's cache.
+								This can resolve common display or functionality problems.</li>
+							<li>For optimal performance, consider using a desktop or laptop device, especially when
+								working with larger datasets. Mobile devices may have limited functionality.</li>
+						</ul>
+						<p>If you have any questions or need further assistance, please refer to the help section or
+							contact support. We are here to help you create the best position descriptions possible!</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Search Form -->
+		<div class="row g-3 mt-3">
+			<div class="col-12">
+				<form class="form-inline flex-column">
+					<div class="form-group mb-2">
+						<label for="myInput" class="mr-2" data-bs-toggle="tooltip"
+							title="Type a skill to search for it.">Search for Skills:</label>
+						<input type="text" class="form-control" id="myInput" onkeyup="searchForText()"
+							placeholder="Enter skill..." style="width: 100%;">
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!-- Export Options and Version Select -->
+		<div class="row g-3 mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+						<div class="btn-group" role="group" aria-label="Export Options">
+							<a href="#" class="btn btn-primary" id="exportHTML" onclick="exportHTML(event);">Export to HTML</a>
+							<a href="#" class="btn btn-primary" id="exportCSV" onclick="exportCSV(event, sfiaJson)">Export to CSV</a>
+						</div>
+						<div class="d-flex align-items-center gap-2">
+							<label for="jsonVersionSelect">Select SFIA Version:</label>
+							<select id="jsonVersionSelect" class="form-select" onchange="changeJsonVersion()">
+								<option value="json_source_v9">version 9</option>
+								<option value="json_source_v8" selected>version 8</option>
+								<option value="json_source_v7">version 7</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- SFIA Table -->
+		<div class="row g-3 mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="table-responsive">
+						<table class="sfia-table table-hover w-100">
+							<caption>SFIA Information Table</caption>
+							<thead>
+								<tr>
+									<th>Category</th>
+									<th>Sub Category</th>
+									<th>Skill Set</th>
+									<th>1</th>
+									<th>2</th>
+									<th>3</th>
+									<th>4</th>
+									<th>5</th>
+									<th>6</th>
+									<th>7</th>
+								</tr>
+							</thead>
+							<tbody id="sfia-content" class="align-middle"></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Levels of Responsibility -->
+		<div class="row g-3 mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="levels-of-responsibility">
+						<h2>Levels of Responsibility</h2>
+						<div class="table-responsive">
+							<table class="sfia-lors-table">
+								<caption>SFIA Levels of Responsibility</caption>
+								<thead>
+									<tr>
+										<th rowspan="2">Responsibility</th>
+										<th colspan="7">Level</th>
+									</tr>
+									<tr>
+										<th>1 -</th>
+										<th>2 -</th>
+										<th>3 -</th>
+										<th>4 -</th>
+										<th>5 -</th>
+										<th>6 -</th>
+										<th>7 -</th>
+									</tr>
+								</thead>
+								<tbody id="sfia-lors-content"></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Formatted Output -->
+		<div class="row g-3 mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header">
+						<h3 class="card-title">Formatted Output</h3>
+					</div>
+					<div class="card-body" style="min-height:600px;">
+						<label for="sfia-editor">SFIA Content Editor</label>
+						<div id="sfia-output" placeholder="Enter SFIA content here"></div>
+						<label for="lor-editor">LOR Content Editor</label>
+						<div id="lor-output" placeholder="Enter LOR content here"></div>
+					</div>
+					<div class="card-footer">
+						<button onclick="saveSfiaContent()" class="btn btn-primary">Save SFIA Content</button>
+						<button onclick="saveLorContent()" class="btn btn-primary">Save LOR Content</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- SFIA Skills Notes Editor -->
+		<div class="row g-3 mt-3 mb-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header">
+						<h3 class="card-title">SFIA Skills Notes Editor</h3>
+					</div>
+					<div class="card-body">
+						<div id="ace-editor" style="height: 400px;"></div>
+					</div>
+					<div class="card-footer">
+						<button onclick="updateEditorContent()" class="btn btn-primary">Update Content</button>
+						<button onclick="copyToClipboard()" class="btn btn-secondary">Copy to Clipboard</button>
+						<button onclick="startConversation()" class="btn btn-info">Start AI Conversation</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<footer class="footer text-center">
+		<div class="container">
+			<p class="text-muted">Copyright 2024</p>
+		</div>
+	</footer>
+	<!-- Add Theme Toggle Script -->
+	<script>
+		function toggleTheme() {
+			const lightTheme = document.querySelector('link[href="styles-light.css"]');
+			const darkTheme = document.querySelector('link[href="styles-dark.css"]');
+			const isLight = !document.getElementById('theme-switch').checked;
+			
+			lightTheme.disabled = !isLight;
+			darkTheme.disabled = isLight;
+			
+			// Save preference
+			localStorage.setItem('theme', isLight ? 'light' : 'dark');
+		}
+
+		// Load saved theme preference
+		document.addEventListener('DOMContentLoaded', () => {
+			const savedTheme = localStorage.getItem('theme') || 'light';
+			document.getElementById('theme-switch').checked = savedTheme === 'dark';
+			toggleTheme();
+		});
+	</script>
+</body>
+
+</html>

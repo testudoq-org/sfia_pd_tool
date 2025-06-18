@@ -1,328 +1,241 @@
-// Clean ES6 Utility Functions Module for SFIA PD Generator
-// Contains enhanced utility functions with performance optimizations
+// BOF: src/modules/utilityFunctions.mjs
+
+// This file includes utility functions, such as checking if the last export was within a specified timeout duration and searching for text in the SFIA table.
 
 /**
- * Performance utilities for optimizing user interactions
+ * Checks if the last export was within the specified timeout duration.
+ *
+ * @param {number} timeoutDuration - The timeout duration in milliseconds.
+ * @return {boolean} True if the last export was within the timeout duration, false otherwise.
  */
-export const PerformanceUtils = {
-    /**
-     * Debounce function to limit how often a function can be called
-     * @param {Function} func - Function to debounce
-     * @param {number} delay - Delay in milliseconds
-     * @returns {Function} Debounced function
-     */
-    debounce(func, delay) {
-        let timeoutId;
-        return function (...args) {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => func.apply(this, args), delay);
-        };
-    },
-
-    /**
-     * Throttle function to limit function execution rate
-     * @param {Function} func - Function to throttle
-     * @param {number} limit - Time limit in milliseconds
-     * @returns {Function} Throttled function
-     */
-    throttle(func, limit) {
-        let inThrottle;
-        return function (...args) {
-            if (!inThrottle) {
-                func.apply(this, args);
-                inThrottle = true;
-                setTimeout(() => inThrottle = false, limit);
-            }
-        };
-    }
-};
+export function isExportSkippedDueToTimeout(timeoutDuration) {
+    const currentTime = new Date().getTime();
+    const timeSinceLastExport = currentTime - lastExportTime;
+    return timeSinceLastExport < timeoutDuration;
+}
 
 /**
- * DOM utilities for safe element access
+ * Function to search for text in the SFIA table and show/hide rows based on the filter.
  */
-export const DOMUtils = {
-    /**
-     * Safely get element by ID with error handling
-     * @param {string} id - Element ID
-     * @returns {Object} Result object with success status and element
-     */
-    safeGetElementById(id) {
-        try {
-            const element = document.getElementById(id);
-            return {
-                success: !!element,
-                data: element,
-                error: element ? null : `Element with ID '${id}' not found`
-            };
-        } catch (error) {
-            return {
-                success: false,
-                data: null,
-                error: `Error accessing element '${id}': ${error.message}`
-            };
-        }
-    },
-
-    /**
-     * Safely query select all with error handling
-     * @param {string} selector - CSS selector
-     * @returns {Object} Result object with success status and elements
-     */
-    safeQuerySelectorAll(selector) {
-        try {
-            const elements = document.querySelectorAll(selector);
-            return {
-                success: true,
-                data: Array.from(elements),
-                count: elements.length
-            };
-        } catch (error) {
-            return {
-                success: false,
-                data: [],
-                error: `Error with selector '${selector}': ${error.message}`
-            };
-        }
-    }
-};
-
-/**
- * Export management utilities
- */
-export const ExportUtils = {
-    /**
-     * Update the last export time
-     * @param {number} timestamp - Optional timestamp (defaults to current time)
-     * @returns {Object} Result object with success status
-     */
-    updateLastExportTime(timestamp = null) {
-        try {
-            const time = timestamp || new Date().getTime();
-            if (typeof window !== 'undefined' && window.global) {
-                window.global.lastExportTime = time;
-            }
-            return {
-                success: true,
-                data: time
-            };
-        } catch (error) {
-            return {
-                success: false,
-                error: `Error updating export time: ${error.message}`
-            };
-        }
-    },
-
-    /**
-     * Get time until next export is allowed
-     * @param {number} timeoutDuration - Timeout duration in milliseconds
-     * @param {number} lastExportTime - Last export timestamp
-     * @returns {Object} Result object with remaining time
-     */
-    getTimeUntilNextExport(timeoutDuration, lastExportTime = 0) {
-        try {
-            const currentTime = new Date().getTime();
-            const timeSinceLastExport = currentTime - lastExportTime;
-            const remainingTime = Math.max(0, timeoutDuration - timeSinceLastExport);
-            
-            return {
-                success: true,
-                data: {
-                    remainingTime,
-                    canExport: remainingTime === 0,
-                    timeSinceLastExport
-                }
-            };
-        } catch (error) {
-            return {
-                success: false,
-                error: `Error calculating export time: ${error.message}`,
-                data: { remainingTime: 0, canExport: true, timeSinceLastExport: 0 }
-            };
-        }
-    }
-};
-
-/**
- * Enhanced validation utilities
- */
-export const ValidationUtils = {
-    /**
-     * Validate input type
-     * @param {any} value - Value to validate
-     * @param {string} expectedType - Expected type
-     * @returns {boolean} True if valid, false otherwise
-     */
-    validateType(value, expectedType) {
-        return typeof value === expectedType;
-    },
-
-    /**
-     * Validate array input
-     * @param {any} value - Value to validate
-     * @returns {boolean} True if valid array, false otherwise
-     */
-    isValidArray(value) {
-        return Array.isArray(value);
-    },
-
-    /**
-     * Validate non-empty string
-     * @param {any} value - Value to validate
-     * @returns {boolean} True if non-empty string, false otherwise
-     */
-    isNonEmptyString(value) {
-        return typeof value === 'string' && value.trim().length > 0;
-    }
-};
-
-/**
- * Check if export should be skipped due to timeout
- * @param {number} timeoutDuration - Timeout duration in milliseconds
- * @param {number} lastExportTime - Last export timestamp (optional)
- * @returns {Object} Result object with success status and skip decision
- */
-export function isExportSkippedDueToTimeout(timeoutDuration, lastExportTime = null) {
+export function searchForText() {
     try {
-        // Input validation
-        if (!ValidationUtils.validateType(timeoutDuration, 'number') || timeoutDuration < 0) {
-            return {
-                success: false,
-                error: 'Invalid timeout duration: must be a non-negative number',
-                data: false
-            };
+        // Get user input and filter value
+        const input = document.getElementById('myInput'); // Get the input element
+        if (!input) { // Check if the input element was found
+            console.error("Input element not found.");
+            return;
+        }
+        const filterValue = input.value.toUpperCase(); // Convert the input value to uppercase
+
+        // Get table body and rows
+        const tableBody = document.getElementById("sfia-content"); // Get the table body element
+        if (!tableBody) { // Check if the table body element was found
+            console.error("Table body element not found.");
+            return;
+        }
+        const tableRows = tableBody.getElementsByTagName('tr'); // Get all the table rows
+        if (!tableRows || tableRows.length === 0) { // Check if table rows were found
+            console.error("No table rows found.");
+            return;
         }
 
-        // Get last export time from global or parameter
-        const effectiveLastExportTime = lastExportTime || 
-            (typeof window !== 'undefined' && window.global ? window.global.lastExportTime : 0) || 0;
-
-        const exportTimeResult = ExportUtils.getTimeUntilNextExport(timeoutDuration, effectiveLastExportTime);
-        
-        if (!exportTimeResult.success) {
-            return exportTimeResult;
+        // Loop through rows and show/hide based on filter
+        for (let i = 0; i < tableRows.length; i++) {
+            const skillKey = tableRows[i].getElementsByClassName("skill_key")[0]; // Get the skill key element
+            if (!skillKey) { // Check if the skill key element was found
+                console.error(`Skill key element not found for row ${i}.`);
+                continue; // Skip this row
+            }
+            const skillText = skillKey.textContent; // Get the text content of the skill key
+            if (skillText.toUpperCase().includes(filterValue)) { // Check if the filter value is included in the skill text
+                tableRows[i].style.display = ""; // Show the row
+            } else {
+                tableRows[i].style.display = "none"; // Hide the row
+            }
         }
-
-        return {
-            success: true,
-            data: !exportTimeResult.data.canExport,
-            details: exportTimeResult.data
-        };
     } catch (error) {
-        return {
-            success: false,
-            error: `Error checking export timeout: ${error.message}`,
-            data: false
-        };
+        console.error("An error occurred:", error.message);
     }
 }
 
 /**
- * Enhanced search function for text filtering in SFIA table
- * @param {string} inputId - ID of the search input element
- * @param {string} tableBodyId - ID of the table body element
- * @returns {Object} Result object with success status and search details
+ * Updates the Ace editor content with formatted SFIA and LOR content
  */
-export function searchForText(inputId = 'myInput', tableBodyId = 'sfia-content') {
-    try {
-        // Validate inputs
-        if (!ValidationUtils.isNonEmptyString(inputId) || !ValidationUtils.isNonEmptyString(tableBodyId)) {
-            return {
-                success: false,
-                error: 'Invalid input: inputId and tableBodyId must be non-empty strings'
-            };
+export function updateEditorContent() {
+    const sfiaContent = document.getElementById('sfia-output').innerHTML;
+    const lorContent = document.getElementById('lor-output').innerHTML;
+    
+    // Convert HTML content to text and format as questions
+    const formattedContent = formatContentAsQuestions(sfiaContent, lorContent);
+    
+    // Set the formatted content in the Ace editor
+    editor.setValue(formattedContent);
+    editor.clearSelection();
+}
+
+/**
+ * Formats the SFIA and LOR content as questions with bullet points
+ * @param {string} sfiaContent - HTML content from SFIA editor
+ * @param {string} lorContent - HTML content from LOR editor
+ * @returns {string} Formatted content with questions and bullet points
+ */
+export function formatContentAsQuestions(sfiaContent, lorContent) {
+    console.log("Starting formatContentAsQuestions function");
+
+    // Extract headers and organize them hierarchically
+    const headerRegex = /<h([1-6])>([^<]+)<\/h\1>/g;
+    const headers = {
+        h1: [],
+        h2: [],
+        h3: [],
+        h4: [],
+        h5: [],
+        h6: []
+    };
+
+    // Process SFIA headers
+    let sfiaMatch;
+    while ((sfiaMatch = headerRegex.exec(sfiaContent)) !== null) {
+        const level = sfiaMatch[1];
+        const text = sfiaMatch[2].trim();
+        headers[`h${level}`].push(text);
+    }
+
+    // Process LOR headers
+    let lorMatch;
+    while ((lorMatch = headerRegex.exec(lorContent)) !== null) {
+        const level = lorMatch[1];
+        const text = lorMatch[2].trim();
+        headers[`h${level}`].push(text);
+    }
+
+    // Create the headers section
+    let formattedHeaders = "# SFIA Skills and Responsibilities Summary\n\n";
+    
+    // Add each level of headers with appropriate markdown heading level
+    Object.entries(headers).forEach(([level, items]) => {
+        if (items.length > 0) {
+            const markdownLevel = '#'.repeat(parseInt(level[1]));
+            items.forEach(item => {
+                formattedHeaders += `${markdownLevel} ${item}\n\n`;
+            });
         }
+    });
 
-        // Get elements safely
-        const inputResult = DOMUtils.safeGetElementById(inputId);
-        const tableResult = DOMUtils.safeGetElementById(tableBodyId);
-
-        if (!inputResult.success) {
-            return {
-                success: false,
-                error: `Search input not found: ${inputResult.error}`
-            };
-        }
-
-        if (!tableResult.success) {
-            return {
-                success: false,
-                error: `Table body not found: ${tableResult.error}`
-            };
-        }
-
-        const input = inputResult.data;
-        const tableBody = tableResult.data;
-        
-        // Get filter value
-        const filter = input.value ? input.value.toUpperCase() : '';
-        
-        // Get all rows
-        const rowsResult = DOMUtils.safeQuerySelectorAll(`#${tableBodyId} tr`);
-        if (!rowsResult.success) {
-            return {
-                success: false,
-                error: `Error finding table rows: ${rowsResult.error}`
-            };
-        }
-
-        const rows = rowsResult.data;
-        let visibleCount = 0;
-        let hiddenCount = 0;
-
-        // Filter rows
-        rows.forEach(row => {
-            const text = row.textContent || row.innerText || '';
-            const shouldShow = text.toUpperCase().includes(filter);
-            
-            row.style.display = shouldShow ? '' : 'none';
-            
-            if (shouldShow) {
-                visibleCount++;
-            } else {
-                hiddenCount++;
-            }
+    // Helper function to remove header tags and their content
+    const withoutHeaders = str => str.replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/g, '');
+    // Remove any remaining HTML tags
+    const stripHtml = str => str.replace(/<[^>]*>/g, '');
+    
+    // Combine content, strip out headers and HTML tags
+    const cleanedContent = stripHtml(withoutHeaders([sfiaContent, lorContent].join('\n')));
+    
+    // Split the cleaned content into sentences (using newlines) and filter empty lines
+    const sentences = cleanedContent.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    
+    // Convert each sentence into a question
+    const questions = sentences
+        .filter(sentence => sentence.length > 10) // Filter out very short sentences
+        .map(sentence => {
+            sentence = sentence.replace(/[.?]+$/, '');
+            const variations = [
+                `* How would you demonstrate your ability to ${sentence.toLowerCase()}?`,
+                `* Can you give an example of how you would ${sentence.toLowerCase()}?`,
+                `* How do you think you would ${sentence.toLowerCase()}?`,
+                `* Can you describe how you would ${sentence.toLowerCase()}?`,
+                `* How would you approach ${sentence.toLowerCase()}?`,
+            ];
+            return variations[Math.floor(Math.random() * variations.length)];
         });
 
-        return {
-            success: true,
-            data: {
-                filter,
-                totalRows: rows.length,
-                visibleRows: visibleCount,
-                hiddenRows: hiddenCount,
-                isFiltered: filter.length > 0
-            }
-        };
-    } catch (error) {
-        return {
-            success: false,
-            error: `Error performing search: ${error.message}`
-        };
+    const formattedContent = `${formattedHeaders}\n# Questions to Consider\n\n${questions.join('\n\n')}`;
+    console.log("Formatted content created");
+    return formattedContent;
+}
+
+/**
+ * Copies the Ace editor content to clipboard
+ */
+export function copyToClipboard() {
+    const content = editor.getValue();
+    navigator.clipboard.writeText(content).then(() => {
+        alert('Content copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy content: ', err);
+        alert('Failed to copy content to clipboard');
+    });
+}
+
+/**
+ * Save the content of the specified type (SFIA or LOR) to the corresponding editor.
+ * @param {string} type - The type of content to save ('sfia' or 'lor').
+ */
+export function saveContent(type) {
+    if (type === 'sfia') {
+        const sfiaContent = $('#sfia-output').html();
+        $('#sfia-editor').val(sfiaContent);
+    } else if (type === 'lor') {
+        const lorContent = $('#lor-output').html();
+        $('#lor-editor').val(lorContent);
     }
 }
 
 /**
- * Legacy compatibility functions
+ * Set a cookie with the given name, value, and expiration days
+ * @param {string} name - Cookie name
+ * @param {string} value - Cookie value
+ * @param {number} days - Days until expiration
+ * @param {string} salt - Salt for encryption (optional)
  */
-
-/**
- * Legacy export timeout function for backwards compatibility
- * @param {number} timeoutDuration - Timeout duration
- * @returns {boolean} True if should skip, false otherwise
- */
-export function isExportSkippedDueToTimeoutLegacy(timeoutDuration) {
-    const result = isExportSkippedDueToTimeout(timeoutDuration);
-    return result.success ? result.data : false;
+export function setCookie(name, value, days, salt = '') {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+    
+    if (salt) {
+        document.cookie = `${name}_salt=${salt}; expires=${expires.toUTCString()}; path=/`;
+    }
+    
+    document.cookie = `${name}=${value}; expires=${expires.toUTCString()}; path=/`;
 }
 
 /**
- * Legacy search function for backwards compatibility
- * @returns {boolean} True if search was successful, false otherwise
+ * Get a cookie value by name
+ * @param {string} name - Cookie name
+ * @returns {string|null} Cookie value or null if not found
  */
-export function searchForTextLegacy() {
-    const result = searchForText();
-    return result.success;
+export function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
 }
 
-console.log('ES6 Utility Functions Module loaded');
+/**
+ * Get the stored version from cookie
+ * @returns {string|null} Stored version or null if not found
+ */
+export function getStoredVersionFromCookie() {
+    return getCookie('selectedVersion') || getCookie('storedVersion');
+}
+
+/**
+ * Set the stored version in cookie
+ * @param {string} version - Version to store
+ */
+export function setStoredVersion(version) {
+    setCookie('selectedVersion', version, 30); // Store for 30 days
+}
+
+/**
+ * Set the stored version to cookie (alias for compatibility)
+ * @param {string} version - Version to store
+ */
+export function setStoredVersionToCookie(version) {
+    setStoredVersion(version);
+}
+
+// EOF: src/modules/utilityFunctions.mjs

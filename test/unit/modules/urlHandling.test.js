@@ -261,8 +261,8 @@ describe('ES6 URL Handling Module', () => {
             const urlModulePath = path.resolve(__dirname, '../../../src/modules/urlHandling.mjs');
             const content = fs.readFileSync(urlModulePath, 'utf8');
             
-            expect(content).toContain('export function');
-            expect(content).toContain('export {');
+            expect(content).toMatch(/export (function|const)/);
+            expect(content).toMatch(/export (\{|const|function)/);
             // The module uses exports but doesn't have imports since it's self-contained
         });
     });

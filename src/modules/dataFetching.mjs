@@ -1,4 +1,4 @@
-// BOF: src/dataFetching.js
+// BOF: src/modules/dataFetching.mjs
 
 let isSfiaDataLoaded = false; // State variable to track if SFIA data is loaded
 let sfiaDataLoadedPromise = new Promise((resolve) => {
@@ -14,7 +14,7 @@ let sfiaDataLoadedPromise = new Promise((resolve) => {
  * @return {Promise} A Promise that resolves to the parsed JSON response.
  * @throws {Error} If the HTTP response is not ok.
  */
-async function fetchData(url) {
+const fetchData = async (url) => {
     try {
         // Fetch the data from the given URL
         const response = await fetch(url);
@@ -31,14 +31,14 @@ async function fetchData(url) {
         // Log any errors that occur during the fetch or parsing process
         console.error('Error fetching data:', error);
     }
-}
+};
 
 /**
  * Retrieves the value of a cookie by its name.
  * @param {string} name - The name of the cookie.
  * @returns {string|undefined} The value of the cookie, or undefined if not found.
  */
-function getCookie(name) {
+const getCookie = (name) => {
     // Prepend a semicolon and the document's cookie value.
     const value = `; ${document.cookie}`;
 
@@ -51,40 +51,40 @@ function getCookie(name) {
         // Extract the value of the cookie by removing the trailing semicolon and any following characters.
         return parts.pop().split(';').shift();
     }
-}
+};
 
 // Function to set the selected version in the cookie
-function setStoredVersionToCookie(version) {
+const setStoredVersionToCookie = (version) => {
     document.cookie = `selectedVersion=${version}`;
-}
+};
 
 /**
  * Sets the stored version based on the provided value.
  * @param {string} storedVersion - The version to be stored.
  */
-function setStoredVersion(storedVersion) {
+const setStoredVersion = (storedVersion) => {
     const storedVersionFromCookie = getStoredVersionFromCookie();
     const dropdownValue = setDropdownValue(storedVersionFromCookie);
     const jsonData = fetchSelectedVersionData(dropdownValue);
     setupEventListenersForData(jsonData);
-}
+};
 
 /**
  * Retrieves the stored version from the cookie, if any.
  * @returns {string} The stored version from the cookie or null if not found.
  */
-function getStoredVersionFromCookie() {
-    let storedVersionFromCookie = getCookie("selectedVersion");
+const getStoredVersionFromCookie = () => {
+    const storedVersionFromCookie = getCookie("selectedVersion");
     return storedVersionFromCookie || null;
-}
+};
 
 /**
  * Sets the selected version in the dropdown element.
  * @param {string} storedVersion - The version to be set in the dropdown.
  * @returns {string} The selected version.
  */
-function setDropdownValue(storedVersion) {
-    let dropdown = document.getElementById("jsonVersionSelect");
+const setDropdownValue = (storedVersion) => {
+    const dropdown = document.getElementById("jsonVersionSelect");
 
     // Check if dropdown value is empty, null, or undefined
     if (!dropdown.value || dropdown.value === null || dropdown.value === undefined) {
@@ -92,17 +92,17 @@ function setDropdownValue(storedVersion) {
     }
 
     return dropdown.value;
-}
+};
 
 /**
  * Fetches the selected version JSON data based on the dropdown value.
  * @param {string} dropdownValue - The value selected in the dropdown.
  * @returns {Object} The JSON data for the selected version.
  */
-async function fetchSelectedVersionData(dropdownValue) {
+const fetchSelectedVersionData = async (dropdownValue) => {
     // Set default value if dropdownValue is empty or null
     dropdownValue = dropdownValue || "json_source_v8";
-    const jsonUrl = dropdownValue + ".json";
+    const jsonUrl = `${dropdownValue}.json`;
 
     // Set a timeout for data loading (10 seconds)
     const timeout = new Promise((_, reject) =>
@@ -128,24 +128,26 @@ async function fetchSelectedVersionData(dropdownValue) {
         // Resolve the promise with the loaded data
         window.resolveSfiaDataLoaded(jsonData);
         
-        // Update global state
-        sfiaJson = jsonData;
+        // Update global state using setter
+        const { setSfiaJson } = await import('./constants.mjs');
+        setSfiaJson(jsonData);
         
         return jsonData;
     } catch (error) {
         console.error('Error in fetchSelectedVersionData:', error);
         isSfiaDataLoaded = false;
-        sfiaJson = null;
+        const { setSfiaJson } = await import('./constants.mjs');
+        setSfiaJson(null);
         throw error;
     }
-}
+};
 
 /**
  * Sets up event listeners based on the provided JSON data.
  * @param {Object} jsonData - The JSON data for the selected version.
  * @throws {Error} If jsonData is invalid or undefined
  */
-function setupEventListenersForData(jsonData) {
+const setupEventListenersForData = async (jsonData) => {
     if (!jsonData || !Object.keys(jsonData).length) {
         isSfiaDataLoaded = false;
         throw new Error('Cannot setup listeners: Invalid or empty SFIA data');
@@ -153,7 +155,26 @@ function setupEventListenersForData(jsonData) {
     
     console.log('Setting up event listeners with SFIA data:', jsonData);
     // We don't need to assign to sfiaJson here as it's handled in fetchSelectedVersionData
-    setupEventListeners(jsonData);
-}
+    try {
+        const { setupEventListeners } = await import('./eventListeners.mjs');
+        setupEventListeners(jsonData);
+    } catch (error) {
+        console.warn('Event listeners module not available:', error);
+    }
+};
 
-// EOF: src/dataFetching.js
+// Export all functions and constants
+export {
+    isSfiaDataLoaded,
+    sfiaDataLoadedPromise,
+    fetchData,
+    getCookie,
+    setStoredVersionToCookie,
+    setStoredVersion,
+    getStoredVersionFromCookie,
+    setDropdownValue,
+    fetchSelectedVersionData,
+    setupEventListenersForData
+};
+
+// EOF: src/modules/dataFetching.mjs

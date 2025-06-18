@@ -1,6 +1,41 @@
-// BOF: src/windowEvents.js
+// BOF: src/modules/windowEvents.mjs
 
 // This file contains functions to handle window events, such as 'hashchange' and 'onload'.
+
+// Import constants
+import { SELECTED_VERSION } from './constants.mjs';
+
+// Import utility functions
+import {
+    getCookie,
+    setCookie,
+    getStoredVersionFromCookie,
+    setStoredVersion,
+    updateEditorContent,
+    formatContentAsQuestions
+} from './utilityFunctions.mjs';
+
+// Import URL handling functions
+import { updateCombinedUrlHash, parseLorValuesFromHash } from './urlHandling.mjs';
+
+// Import data fetching and initialization functions
+import { fetchData } from './dataFetching.mjs';
+import {
+    initializeContent,
+    initializeSFIAContent,
+    initializeLorContent,
+    initializeCheckboxesAndContent
+} from './initializeContent.mjs';
+
+// Import JSON handling functions
+import { changeJsonVersion } from './jsonHandling.mjs';
+
+// Import table rendering functions
+import { renderSfiaOutput, renderLorOutput } from './tableRendering.mjs';
+
+// Import data handling functions for global variables
+import { isSfiaDataLoaded, sfiaDataLoadedPromise } from './dataFetching.mjs';
+
 
 /**
  * Listens for hash change events and performs the following tasks:
@@ -10,9 +45,9 @@
  *
  * @event hashchange
  */
-async function handleHashChange() {
+export const handleHashChange = async () => {
     try {
-        let storedVersion = getCookie(SELECTED_VERSION);
+        const storedVersion = getCookie(SELECTED_VERSION);
 
         if (storedVersion == null) {
             console.info('hashchange entry: storedVersion is undefined.');
@@ -20,7 +55,7 @@ async function handleHashChange() {
             return;
         }
 
-        let sfiaJson = await fetchData(storedVersion + ".json");
+        const sfiaJson = await fetchData(`${storedVersion}.json`);
 
         if (sfiaJson) {
             console.log('SFIA content has already been initialized.');
@@ -33,10 +68,9 @@ async function handleHashChange() {
         console.error('An error occurred:', error.message);
         // handle error (retry, show error message, etc.)
     }
-}
+};
 
 window.addEventListener('hashchange', handleHashChange);
-
 
 /**
  * Window onload function that is triggered when the page finishes loading.
@@ -46,7 +80,7 @@ window.addEventListener('hashchange', handleHashChange);
  *  - If there are selected checkboxes, it pre-selects them
  *  - Otherwise, it initializes SFIA content
  */
-window.onload = async function () {
+export const windowOnLoadHandler = async () => {
     console.log('Window onload function triggered');
 
     try {
@@ -54,27 +88,25 @@ window.onload = async function () {
         updateCombinedUrlHash();
 
         // Get the stored version from the cookie
-        let storedVersion = getStoredVersionFromCookie();
+        const storedVersion = getStoredVersionFromCookie();
 
         // If the stored version exists, use it. Otherwise, use the default version.
-        let selectedVersion = storedVersion ? storedVersion : "json_source_v8";
+        const selectedVersion = storedVersion ? storedVersion : "json_source_v8";
 
         // Set the selected version in the dropdown
         document.getElementById("jsonVersionSelect").value = selectedVersion;
 
-        // Set the data on table
+        // Load data and initialize content in proper sequence
         await changeJsonVersion();
 
-        // Initialize SFIA content
-        await initializeSFIAContent(sfiaJson);
-        // Initialize LOR content
-        await initializeLorContent(lorJson);
+        // Initialize content after data loading
+        await initializeContent();
 
-        let currentURL = window.location.href;
-        console.info('Current URL is:', currentURL);
+        const currentURL = window.location.href;
+        console.info(`Current URL is: ${currentURL}`);
 
         if (currentURL.includes('#')) {
-            console.log('Hash exists in URL:', currentURL);
+            console.log(`Hash exists in URL: ${currentURL}`);
             // Get LoR values from hash
             const lorValues = parseLorValuesFromHash();
             
@@ -87,7 +119,8 @@ window.onload = async function () {
                         checkbox.checked = true;
                     }
                 });
-                renderLorOutput(lorJson, false);
+                const { lorJson: currentLorJson } = await import('./constants.mjs');
+                renderLorOutput(currentLorJson, false);
             }
             
             // Handle SFIA hash separately
@@ -95,8 +128,9 @@ window.onload = async function () {
             console.log('Checking if SFIA data is loaded:', isSfiaDataLoaded);
             if (urlHashParts[0] && urlHashParts[0] !== "" && isSfiaDataLoaded) {
                 console.log('SFIA hash found and data is loaded:', urlHashParts[0], isSfiaDataLoaded);
-                sfiaDataLoadedPromise.then(() => {
-                    renderSfiaOutput(sfiaJson, false);
+                sfiaDataLoadedPromise.then(async () => {
+                    const { sfiaJson: currentSfiaJson } = await import('./constants.mjs');
+                    renderSfiaOutput(currentSfiaJson, false);
                 });
             }
         } else {
@@ -111,7 +145,9 @@ window.onload = async function () {
     }
 };
 
-function startConversation() {
+window.onload = windowOnLoadHandler;
+
+export const startConversation = () => {
     const selectedApi = localStorage.getItem('selectedApi');
     const cohereApiKey = localStorage.getItem('cohereApiKey');
     const huggingfaceApiKey = localStorage.getItem('huggingfaceApiKey');
@@ -131,13 +167,13 @@ function startConversation() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                prompt: "Reword the following questions for clarity and provide additional thought-provoking questions with examples where relevant. Only output the questions and examples—no introductions, explanations, or concluding remarks.\n\n" + formattedContent,
+                prompt: `Reword the following questions for clarity and provide additional thought-provoking questions with examples where relevant. Only output the questions and examples—no introductions, explanations, or concluding remarks.\n\n${formattedContent}`,
                 max_tokens: 1000
             })
         })
         .then(response => response.json())
         .then(data => {
-            editor.setValue(editor.getValue() + "\n\nSFIA Ideas:\n" + data.text);
+            editor.setValue(`${editor.getValue()}\n\nSFIA Ideas:\n${data.text}`);
             startButton.disabled = false;
             startButton.innerHTML = 'Start AI Conversation';
         })
@@ -169,12 +205,12 @@ function startConversation() {
     } else {
         alert('API key not found or API not selected');
     }
-}
+};
 
 // Initialize Ace editor
 let editor;
 
-document.addEventListener('DOMContentLoaded', function () {
+const initializeAceEditor = () => {
     // Initialize Ace editor
     editor = ace.edit("ace-editor");
     editor.setTheme("ace/theme/monokai");
@@ -187,14 +223,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Set initial content
     updateEditorContent();
+};
 
+const setupMenuHandlers = () => {
     const toggleMenu = document.getElementById('toggle-menu');
     const menuContent = document.getElementById('menu-content');
     const saveKeysBtn = document.getElementById('save-keys-btn');
 
     // Toggle menu visibility
-    toggleMenu.addEventListener('click', function () {
-        menuContent.classList.toggle('hidden');
+    toggleMenu?.addEventListener('click', () => {
+        menuContent?.classList.toggle('hidden');
     });
 
     // Toggle password visibility
@@ -213,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Save API keys
-    saveKeysBtn.addEventListener('click', function () {
+    saveKeysBtn?.addEventListener('click', () => {
         const cohereKey = document.getElementById('cohere-api').value;
         const huggingfaceKey = document.getElementById('huggingface-api').value;
         const selectedApi = document.querySelector('input[name="api-selector"]:checked').value;
@@ -225,9 +263,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (huggingfaceKey) localStorage.setItem('huggingfaceApiKey', huggingfaceKey);
 
             showNotification('API settings saved successfully!', 'success', 3000);
-            menuContent.classList.add('hidden');
+            menuContent?.classList.add('hidden');
         } catch (error) {
-            showNotification('Failed to save API settings: ' + error.message, 'error', 5000);
+            showNotification(`Failed to save API settings: ${error.message}`, 'error', 5000);
         }
     });
 
@@ -235,8 +273,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (menuContent) {
         menuContent.classList.add('hidden');
     }
+};
 
-    // Initialize API menu functionality
+const setupApiMenuHandlers = () => {
     const toggleMenu2 = document.getElementById('toggle-menu');
     const menuContent2 = document.getElementById('menu-content');
     const saveKeysBtn2 = document.getElementById('save-keys-btn');
@@ -274,10 +313,17 @@ document.addEventListener('DOMContentLoaded', function () {
             menuContent2?.classList.add('hidden');
         }
     });
-});
+};
 
+export const setupDOMContentLoadedHandler = () => {
+    initializeAceEditor();
+    setupMenuHandlers();
+    setupApiMenuHandlers();
+};
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', setupDOMContentLoadedHandler);
+
+const setupApiKeyManagement = () => {
     const toggleMenuButton = document.getElementById('toggle-menu');
     const menuContent = document.getElementById('menu-content');
     const cohereApiInput = document.getElementById('cohere-api');
@@ -286,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Toggle menu visibility
     if (toggleMenuButton && menuContent) {
-        toggleMenuButton.addEventListener('click', function () {
+        toggleMenuButton.addEventListener('click', () => {
             menuContent.classList.toggle('hidden');
         });
     }
@@ -305,39 +351,22 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Encryption function
-    function encryptApiKey(apiKey) {
+    const encryptApiKey = (apiKey) => {
         const salt = CryptoJS.lib.WordArray.random(16).toString();
         const encrypted = CryptoJS.AES.encrypt(apiKey, salt).toString();
-        return { encrypted: encrypted, salt: salt };
-    }
+        return { encrypted, salt };
+    };
 
     // Decryption function
-    function decryptApiKey(encryptedApiKey, salt) {
+    const decryptApiKey = (encryptedApiKey, salt) => {
         const decrypted = CryptoJS.AES.decrypt(encryptedApiKey, salt).toString(CryptoJS.enc.Utf8);
         return decrypted;
-    }
+    };
 
-    // Cookie setting function
-    function setCookie(name, value, days, salt) {
-        let expires = "";
-        if (days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Strict";
-        document.cookie = name + "_salt=" + (salt || "") + expires + "; path=/; SameSite=Strict";
-    }
-
-    // Cookie getting function
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    }
+    // Note: getCookie and setCookie are now imported from utilityFunctions.mjs
 
     // Notification function
-    function showNotification(message, type = 'success') {
+    const showNotification = (message, type = 'success') => {
         const container = document.getElementById('notification-container');
 
         // Create notification element
@@ -370,17 +399,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 removeNotification(notification);
             }
         }, 5000);
-    }
+    };
 
     // Remove notification with animation
-    function removeNotification(notification) {
+    const removeNotification = (notification) => {
         notification.classList.add('fade-out');
         setTimeout(() => {
             if (notification.parentElement) {
                 notification.parentElement.removeChild(notification);
             }
         }, 300); // Match this with CSS transition duration
-    }
+    };
 
     // Save API keys to cookies with encryption and update UI
     if (saveKeysBtn) {
@@ -411,13 +440,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 showNotification('API keys encrypted and saved successfully!', 'success', 3000);
                 menuContent?.classList.add('hidden');
             } catch (error) {
-                showNotification('Error saving API keys: ' + error.message, 'error', 5000);
+                showNotification(`Error saving API keys: ${error.message}`, 'error', 5000);
             }
         });
     }
 
     // Decrypt and show API keys
-    function showApiKeys() {
+    const showApiKeys = () => {
         const encryptedCohere = getCookie('cohereApi');
         const saltCohere = getCookie('cohereApi_salt');
         if (encryptedCohere && saltCohere) {
@@ -429,13 +458,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (encryptedHuggingface && saltHuggingface) {
             huggingfaceApiInput.value = decryptApiKey(encryptedHuggingface, saltHuggingface);
         }
-    }
+    };
 
     // Show API keys on page load
     showApiKeys();
-});
+};
 
-// API Key Management code moved inside DOMContentLoaded
+document.addEventListener('DOMContentLoaded', setupApiKeyManagement);
 
 /**
  * Shows a notification message
@@ -443,7 +472,7 @@ document.addEventListener('DOMContentLoaded', function () {
  * @param {string} type - The type of notification (success, error, info)
  * @param {number} duration - How long to show the notification in milliseconds
  */
-function showNotification(message, type = 'success', duration = 5000) {
+export const showNotification = (message, type = 'success', duration = 5000) => {
     const container = document.getElementById('notification-container');
 
     // Create notification element
@@ -478,25 +507,23 @@ function showNotification(message, type = 'success', duration = 5000) {
             }
         }, duration);
     }
-}
+};
 
 /**
  * Removes a notification with animation
  * @param {HTMLElement} notification - The notification element to remove
  */
-function removeNotification(notification) {
+export const removeNotification = (notification) => {
     notification.classList.add('fade-out');
     setTimeout(() => {
         if (notification.parentElement) {
             notification.parentElement.removeChild(notification);
         }
     }, 300); // Match this with CSS transition duration
-}
-
-// Notification usage examples moved to appropriate event handlers in DOMContentLoaded
+};
 
 // Replace clipboard alert with notification
-function copyToClipboard() {
+export const copyToClipboard = () => {
     const content = editor.getValue();
     navigator.clipboard.writeText(content).then(() => {
         showNotification('Content copied to clipboard!', 'success');
@@ -504,10 +531,10 @@ function copyToClipboard() {
         console.error('Failed to copy content: ', err);
         showNotification('Failed to copy content to clipboard', 'error');
     });
-}
+};
 
 // Consolidate all menu-related initialization into a single function
-function initializeMenuHandlers() {
+export const initializeMenuHandlers = () => {
     const toggleMenu = document.getElementById('toggle-menu');
     const menuContent = document.getElementById('menu-content');
     const saveKeysBtn = document.getElementById('save-keys-btn');
@@ -518,7 +545,7 @@ function initializeMenuHandlers() {
     }
 
     // Toggle menu visibility with animation
-    function toggleMenuVisibility(e) {
+    const toggleMenuVisibility = (e) => {
         e.stopPropagation(); // Prevent event from bubbling
         const isHidden = menuContent.classList.contains('hidden');
 
@@ -531,7 +558,7 @@ function initializeMenuHandlers() {
 
         // Log state for debugging
         console.log('Menu toggled:', isHidden ? 'showing' : 'hiding');
-    }
+    };
 
     // Remove any existing event listeners
     toggleMenu.removeEventListener('click', toggleMenuVisibility);
@@ -554,20 +581,18 @@ function initializeMenuHandlers() {
     menuContent.setAttribute('aria-hidden', 'true');
 
     // Initialize menu position
-    function updateMenuPosition() {
+    const updateMenuPosition = () => {
         const toggleRect = toggleMenu.getBoundingClientRect();
         menuContent.style.top = `${toggleRect.bottom + window.scrollY}px`;
         menuContent.style.right = '20px'; // Adjust this value as needed
-    }
+    };
 
     // Update menu position on toggle and window resize
     toggleMenu.addEventListener('click', updateMenuPosition);
     window.addEventListener('resize', updateMenuPosition);
+};
 
-}
-
-
-function initializeMenuHandlers() {
+export const initializeEnhancedMenuHandlers = () => {
     const toggleMenu = document.getElementById('toggle-menu');
     const menuContent = document.getElementById('menu-content');
 
@@ -576,7 +601,7 @@ function initializeMenuHandlers() {
         return;
     }
 
-    function toggleMenuVisibility(e) {
+    const toggleMenuVisibility = (e) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -592,20 +617,16 @@ function initializeMenuHandlers() {
         } else {
             hideMenu();
         }
-    }
+    };
 
-    function hideMenu() {
+    const hideMenu = () => {
         menuContent.classList.add('hidden');
         toggleMenu.setAttribute('aria-expanded', 'false');
         menuContent.setAttribute('aria-hidden', 'true');
         console.log('Menu hiding');
-    }
+    };
 
-
-    function updateMenuPosition() {
-
-
-
+    const updateMenuPosition = () => {
         const toggleRect = toggleMenu.getBoundingClientRect();
         const windowWidth = window.innerWidth;
         const menuWidth = menuContent.offsetWidth;
@@ -618,16 +639,13 @@ function initializeMenuHandlers() {
 
         menuContent.style.top = `${toggleRect.bottom + 5}px`; // 5px gap
         menuContent.style.right = `${rightPosition}px`;
-    }
+    };
 
     // Clean up existing listeners
     toggleMenu.removeEventListener('click', toggleMenuVisibility);
 
     // Set up new listeners
     toggleMenu.addEventListener('click', toggleMenuVisibility);
-
-
-
 
     // Handle clicks outside the menu
     document.addEventListener('click', (e) => {
@@ -645,7 +663,6 @@ function initializeMenuHandlers() {
 
     // Ensure menu starts hidden
     hideMenu();
-    
-}
+};
 
-// EOF: src/windowEvents.js
+// EOF: src/modules/windowEvents.mjs

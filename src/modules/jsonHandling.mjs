@@ -1,13 +1,18 @@
-// BOF: src/jsonHandling.js
+// BOF: src/modules/jsonHandling.mjs
 
 // This file contains a function to change the JSON version based on the selected value from a dropdown.
+
+// Import required functions
+import { setStoredVersionToCookie } from './dataFetching.mjs';
+import { initializeSFIAContent } from './initializeContent.mjs';
+import { setupEventListeners } from './eventListeners.mjs';
 
 /**
  * Change the JSON version based on the selected value from the dropdown.
  * This function fetches the JSON data from the specified URL and initializes
  * the SFIA content and event listeners with the new JSON data.
  */
-function changeJsonVersion() {
+export const changeJsonVersion = () => {
 
     // Get the selected value from the dropdown
     let selectedVersion = document.getElementById("jsonVersionSelect").value;
@@ -21,26 +26,27 @@ function changeJsonVersion() {
     setStoredVersionToCookie(selectedVersion);
 
     // Get the current host
-    let currentHost = window.location.origin;
+    const currentHost = window.location.origin;
+    const { hostname, pathname } = window.location;
 
     // Construct the URL for the JSON file based on the selected version and current host
     let jsonUrl;
 
-    if (window.location.hostname === '127.0.0.1') {
-        if (window.location.pathname.includes('/dist/')) {
-            jsonUrl = currentHost + "/dist/" + selectedVersion + ".json";
-        } else if (window.location.pathname.includes('/src/')) {
-            jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
-        } else if (window.location.pathname.includes('package/dev/') || window.location.pathname === '/sfiapdgen.html') {
+    if (hostname === '127.0.0.1') {
+        if (pathname.includes('/dist/')) {
+            jsonUrl = `${currentHost}/dist/${selectedVersion}.json`;
+        } else if (pathname.includes('/src/')) {
+            jsonUrl = `${currentHost}/src/${selectedVersion}.json`;
+        } else if (pathname.includes('package/dev/') || pathname === '/sfiapdgen.html') {
             // Serving from package/dev directory - use relative path
-            jsonUrl = selectedVersion + ".json";
+            jsonUrl = `${selectedVersion}.json`;
         } else {
             // Default to '/src/' for localhost if no other pattern matches
-            jsonUrl = currentHost + "/src/" + selectedVersion + ".json";
+            jsonUrl = `${currentHost}/src/${selectedVersion}.json`;
         }
     } else {
         // Production environment
-        jsonUrl = currentHost + "/sfia/" + selectedVersion + ".json";
+        jsonUrl = `${currentHost}/sfia/${selectedVersion}.json`;
     }
 
     // Use Fetch API for making the request
@@ -78,6 +84,6 @@ function changeJsonVersion() {
             // Log any errors that occurred during the request
             console.error('There was a problem with the fetch request:', error);
         });
-}
+};
 
-// EOF: src/jsonHandling.js
+// EOF: src/modules/jsonHandling.mjs
