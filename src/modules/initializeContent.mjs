@@ -177,7 +177,7 @@ export const initializeLorContent = async () => {
                 lorJsonUrl = `${currentHost}/dist/${lorFileName}`;
             } else if (pathname.includes('/src/')) {
                 // When serving from src/, the JSON file is in the parent directory
-                lorJsonUrl = `${currentHost}/${lorFileName}`;
+                lorJsonUrl = `${currentHost}/src/${lorFileName}`;
             } else if (pathname.includes('package/dev/') || pathname === '/sfiapdgen.html') {
                 // Serving from package/dev directory - use relative path
                 lorJsonUrl = `${lorFileName}`;

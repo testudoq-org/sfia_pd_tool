@@ -36,7 +36,7 @@ export const changeJsonVersion = () => {
         if (pathname.includes('/dist/')) {
             jsonUrl = `${currentHost}/dist/${selectedVersion}.json`;
         } else if (pathname.includes('/src/')) {
-            jsonUrl = `${currentHost}/${selectedVersion}.json`;
+            jsonUrl = `${currentHost}/src/${selectedVersion}.json`;
         } else if (pathname.includes('package/dev/') || pathname === '/sfiapdgen.html') {
             // Serving from package/dev directory - use relative path
             jsonUrl = `${selectedVersion}.json`;
