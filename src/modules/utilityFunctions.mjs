@@ -2,6 +2,8 @@
 
 // This file includes utility functions, such as checking if the last export was within a specified timeout duration and searching for text in the SFIA table.
 
+import { lastExportTime } from './constants.mjs';
+
 /**
  * Checks if the last export was within the specified timeout duration.
  *
@@ -41,13 +43,15 @@ export function searchForText() {
 
         // Loop through rows and show/hide based on filter
         for (let i = 0; i < tableRows.length; i++) {
-            const skillKey = tableRows[i].getElementsByClassName("skill_key")[0]; // Get the skill key element
+            const skillKey = tableRows[i].querySelector(".skill_key"); // Use querySelector for better resilience
             if (!skillKey) { // Check if the skill key element was found
                 console.error(`Skill key element not found for row ${i}.`);
                 continue; // Skip this row
             }
-            const skillText = skillKey.textContent; // Get the text content of the skill key
-            if (skillText.toUpperCase().includes(filterValue)) { // Check if the filter value is included in the skill text
+            const skillText = skillKey.textContent || skillKey.innerText || ''; // Get the text content with fallback
+            
+            // Handle empty filter value - show all rows
+            if (filterValue === '' || skillText.toUpperCase().includes(filterValue)) {
                 tableRows[i].style.display = ""; // Show the row
             } else {
                 tableRows[i].style.display = "none"; // Hide the row
@@ -62,15 +66,28 @@ export function searchForText() {
  * Updates the Ace editor content with formatted SFIA and LOR content
  */
 export function updateEditorContent() {
-    const sfiaContent = document.getElementById('sfia-output').innerHTML;
-    const lorContent = document.getElementById('lor-output').innerHTML;
+    const sfiaOutputElement = document.getElementById('sfia-output');
+    const lorOutputElement = document.getElementById('lor-output');
+    
+    const sfiaContent = sfiaOutputElement ? sfiaOutputElement.innerHTML : '';
+    const lorContent = lorOutputElement ? lorOutputElement.innerHTML : '';
     
     // Convert HTML content to text and format as questions
     const formattedContent = formatContentAsQuestions(sfiaContent, lorContent);
     
-    // Set the formatted content in the Ace editor
-    editor.setValue(formattedContent);
-    editor.clearSelection();
+    // Check if editor is available before trying to use it
+    if (typeof editor !== 'undefined' && editor) {
+        editor.setValue(formattedContent);
+        editor.clearSelection();
+    } else {
+        // Try to access global editor via window
+        if (typeof window !== 'undefined' && window.editor) {
+            window.editor.setValue(formattedContent);
+            window.editor.clearSelection();
+        } else {
+            console.error('[ERROR] Ace editor not available for updateEditorContent()');
+        }
+    }
 }
 
 /**

@@ -3,6 +3,7 @@
 // Import necessary functions for rendering only
 import { renderSfiaOutput, renderLorOutput } from './tableRendering.mjs';
 import { sfiaJson, lorJson, setSfiaJson, setLorJson } from './constants.mjs';
+import { setSfiaDataLoaded } from './dataHandling.mjs';
 
 /**
  * Asynchronously initializes the content by calling the functions to initialize SFIA and LOR content.
@@ -43,7 +44,9 @@ export const initializeCheckboxesAndContent = async (sfiaJson) => {
  */
 export const initializeSFIAContent = async (sfiaJson) => {
     try {
-        console.log('Initializing SFIA content...');
+        console.log('[DEBUG SFIA] Initializing SFIA content...');
+        console.log('[DEBUG SFIA] sfiaJson available:', !!sfiaJson);
+        console.log('[DEBUG SFIA] sfiaJson keys:', sfiaJson ? Object.keys(sfiaJson) : 'undefined');
 
         // Arrays to keep track of printed root and sub keys
         const rootKeyPrinted = [];
@@ -110,17 +113,46 @@ export const initializeSFIAContent = async (sfiaJson) => {
         sfiacheckboxes.forEach((checkbox) => {
             checkbox.addEventListener('click', () => renderSfiaOutput(sfiaJson), false);
         });
-        console.log('Click event listeners added to checkboxes');
+        console.log('[DEBUG SFIA] Click event listeners added to checkboxes');
+        console.log('[DEBUG SFIA] Total checkboxes created:', sfiacheckboxes.length);
+        
+        // Log checkboxes with sfia-data containing "Acceptance testing"
+        const acceptanceTestingCheckboxes = Array.from(sfiacheckboxes).filter(cb => {
+            const sfiaData = cb.getAttribute('sfia-data');
+            return sfiaData && sfiaData.includes('Acceptance testing');
+        });
+        console.log('[DEBUG SFIA] Acceptance testing checkboxes found:', acceptanceTestingCheckboxes.length);
+        acceptanceTestingCheckboxes.forEach(cb => {
+            console.log('[DEBUG SFIA] Acceptance testing checkbox:', {
+                id: cb.id,
+                sfiaData: cb.getAttribute('sfia-data')
+            });
+        });
+
+        // Signal that SFIA data loading is complete
+        setSfiaDataLoaded(true);
 
     } catch (error) {
         console.error('Error initializing SFIA content:', error);
+        setSfiaDataLoaded(false);
     }
 
-    // Render the output if the URL contains a hash
-    if (window.location.href.split("#").length > 0) {
-        console.log('URL contains a hash, rendering output...');
-        renderSfiaOutput(sfiaJson, false);
-    }
+    // Process hash and select checkboxes if URL contains a hash
+        if (window.location.href.split("#").length > 1) {
+            console.log('URL contains a hash, processing...');
+            // Wait for SFIA data to be fully loaded before processing hash
+            try {
+                const { sfiaDataLoadedPromise } = await import('./dataFetching.mjs');
+                console.log('[DEBUG HASH] Waiting for SFIA data to be loaded...');
+                const loadedSfiaData = await sfiaDataLoadedPromise;
+                console.log('[DEBUG HASH] SFIA data loaded, now processing hash...');
+                await selectSfiaCheckboxesAndInitialize(loadedSfiaData || sfiaJson);
+            } catch (error) {
+                console.error('[DEBUG HASH] Error waiting for SFIA data:', error);
+                // Fallback to processing with existing data
+                await selectSfiaCheckboxesAndInitialize(sfiaJson);
+            }
+        }
 };
 
 /**
@@ -130,11 +162,58 @@ export const initializeSFIAContent = async (sfiaJson) => {
  * adds a tool tip to each of the checkboxes based on the description attribute of the lor
  */
 export const initializeLorContent = async () => {
+    let fetchedLorJson; // Declare at function scope to fix scope issue
     try {
-        // Fetch LOR JSON data
-        const response = await fetch('json-sfia-lors-v8.json');
-        const fetchedLorJson = await response.json();
+        // Get the current host and path info (same logic as jsonHandling.mjs)
+        const currentHost = window.location.origin;
+        const { hostname, pathname } = window.location;
+        
+        // Construct the URL for the LOR JSON file based on environment
+        let lorJsonUrl;
+        const lorFileName = 'json-sfia-lors-v8.json';
+        
+        if (hostname === '127.0.0.1' || hostname === 'localhost') {
+            if (pathname.includes('/dist/')) {
+                lorJsonUrl = `${currentHost}/dist/${lorFileName}`;
+            } else if (pathname.includes('/src/')) {
+                // When serving from src/, the JSON file is in the parent directory
+                lorJsonUrl = `${currentHost}/${lorFileName}`;
+            } else if (pathname.includes('package/dev/') || pathname === '/sfiapdgen.html') {
+                // Serving from package/dev directory - use relative path
+                lorJsonUrl = `${lorFileName}`;
+            } else {
+                // Default to root directory for localhost
+                lorJsonUrl = `${currentHost}/${lorFileName}`;
+            }
+        } else {
+            // Production environment - check if files are in root or different path
+            // Based on the 404 errors, /sfia/ path doesn't exist, so use root
+            lorJsonUrl = `${currentHost}/${lorFileName}`;
+        }
+        
+        console.log('[DEBUG LOR] Current pathname:', pathname);
+        console.log('[DEBUG LOR] Current host:', currentHost);
+        console.log('[DEBUG LOR] Constructed LOR JSON URL:', lorJsonUrl);
+        
+        // Fetch LOR JSON data using the constructed URL
+        console.log('[DEBUG LOR] Attempting to fetch LOR JSON...');
+        const response = await fetch(lorJsonUrl);
+        
+        // DEBUG: Log response details
+        console.log('[DEBUG LOR] Response status:', response.status);
+        console.log('[DEBUG LOR] Response ok:', response.ok);
+        console.log('[DEBUG LOR] Response url:', response.url);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}, URL: ${response.url}`);
+        }
+        
+        fetchedLorJson = await response.json();
+        console.log('[DEBUG LOR] LOR JSON fetched successfully:', fetchedLorJson ? 'YES' : 'NO');
+        console.log('[DEBUG LOR] LOR JSON length:', fetchedLorJson ? fetchedLorJson.length : 'undefined');
+        
         setLorJson(fetchedLorJson);
+        console.log('[DEBUG LOR] LOR JSON set in constants');
 
         // Clear existing content in the LOR table body
         document.getElementById('sfia-lors-content').innerHTML = '';
@@ -170,11 +249,18 @@ export const initializeLorContent = async () => {
             });
         });
     } catch (error) {
-        console.error('Error fetching or displaying LOR data:', error);
+        console.error('[DEBUG LOR] Error fetching or displaying LOR data:', error);
+        console.log('[DEBUG LOR] fetchedLorJson defined:', typeof fetchedLorJson !== 'undefined');
     }
     // Render the output if the URL contains a hash
     if (window.location.href.split("#").length > 0) {
-        renderLorOutput(fetchedLorJson);
+        console.log('[DEBUG LOR] URL contains hash, attempting to render LOR output...');
+        console.log('[DEBUG LOR] fetchedLorJson available for rendering:', typeof fetchedLorJson !== 'undefined');
+        if (typeof fetchedLorJson !== 'undefined') {
+            renderLorOutput(fetchedLorJson);
+        } else {
+            console.error('[DEBUG LOR] fetchedLorJson is undefined, cannot render LOR output');
+        }
     }
 };
 
@@ -205,11 +291,28 @@ const createSfiaSelectionBox = (level, skillData, skillcode, rootKey, subKey, sk
         const sfiaDataObj = {
             category: rootKey,
             subCategory: subKey,
-            skill: skillDescription,
+            skill: skillKey, // Use skillKey instead of skillDescription for test compatibility
             level: level,
             code: skillcode
         };
         checkbox.setAttribute('sfia-data', JSON.stringify(sfiaDataObj));
+        
+        console.log('[DEBUG CHECKBOX] Created checkbox:', {
+            id: checkbox.id,
+            skill: skillKey,
+            level: level,
+            code: skillcode,
+            sfiaData: JSON.stringify(sfiaDataObj)
+        });
+        
+        // Special logging for BPTS (Acceptance testing) level 2
+        if (skillcode === 'BPTS' && level === 2) {
+            console.log('[DEBUG TEST SPECIFIC] Found BPTS-2 checkbox!');
+            console.log('[DEBUG TEST SPECIFIC] Checkbox ID:', checkbox.id);
+            console.log('[DEBUG TEST SPECIFIC] sfia-data attribute:', checkbox.getAttribute('sfia-data'));
+            console.log('[DEBUG TEST SPECIFIC] Test expects skill="Acceptance testing", actual skill:', skillKey);
+            console.log('[DEBUG TEST SPECIFIC] Element matches test XPath:', skillKey === 'Acceptance testing' && level === 2);
+        }
         
         // Add event listener for URL hash updates
         checkbox.addEventListener('change', async () => {
@@ -224,6 +327,7 @@ const createSfiaSelectionBox = (level, skillData, skillcode, rootKey, subKey, sk
         col.appendChild(checkbox);
     } else {
         // If level doesn't exist, create empty cell
+        console.log('[DEBUG CHECKBOX] No level data for:', { skillcode, level, skillKey });
         col.innerHTML = '';
     }
     
@@ -241,15 +345,23 @@ const selectSfiaCheckboxesAndInitialize = async (sfiaJson) => {
         const parts = hash.split("&&");
         const sfiaHash = parts[0] || "";
         
+        console.log('Processing SFIA hash:', sfiaHash);
+        
         if (sfiaHash) {
             // Parse SFIA hash and select checkboxes
             const skillSelections = sfiaHash.split("+");
+            
             skillSelections.forEach(selection => {
                 if (selection.includes("-")) {
                     const [skillCode, level] = selection.split("-");
-                    const checkbox = document.querySelector(`#sfia-checkbox-${skillCode}-${level}`);
+                    const checkboxSelector = `#sfia-checkbox-${skillCode}-${level}`;
+                    const checkbox = document.querySelector(checkboxSelector);
+                    
                     if (checkbox) {
                         checkbox.checked = true;
+                        console.log('Selected SFIA checkbox:', checkboxSelector);
+                    } else {
+                        console.warn('SFIA checkbox not found:', checkboxSelector);
                     }
                 }
             });

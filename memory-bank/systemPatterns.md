@@ -51,31 +51,40 @@ npm run build:prd   # Production: Grunt + Webpack + minification
 1. **Core Components**
 ```mermaid
 graph TD
-    A[Entry Point: sfiapdgen.html] --> B[Core JS Bundle]
+    A[Entry Point: sfiapdgen.html] --> B[ES6 Module Bundle]
     B --> C[Data Management]
     B --> D[UI Components]
     B --> E[Event Handling]
+    B --> F[Legacy JS Support]
 ```
 
-2. **Source File Organization**:
-- **Initialization**: 
-  - `init.js`: Application bootstrap
-  - `constants.js`: System constants
+2. **ES6 Module Organization** (`src/modules/`):
+- **Application Entry**:
+  - [`app.mjs`](src/modules/app.mjs:1): Main application orchestration
+  - [`init.mjs`](src/modules/init.mjs:1): Application initialization
+  - [`constants.mjs`](src/modules/constants.mjs:1): System constants and global state
 - **Data Layer**:
-  - `dataFetching.js`: Data retrieval
-  - `dataHandling.js`: Data processing
-  - `jsonHandling.js`: JSON operations
+  - [`dataFetching.mjs`](src/modules/dataFetching.mjs:1): AJAX and data retrieval
+  - [`dataHandling.mjs`](src/modules/dataHandling.mjs:1): Data processing and transformation
+  - [`jsonHandling.mjs`](src/modules/jsonHandling.mjs:1): JSON operations and version management
 - **UI Components**:
-  - `checkboxHandling.js`: SFIA skill selection
-  - `tableRendering.js`: Table generation
-  - `exportFunctions.js`: Export capabilities
+  - [`checkboxHandling.mjs`](src/modules/checkboxHandling.mjs:1): SFIA skill selection logic
+  - [`tableRendering.mjs`](src/modules/tableRendering.mjs:1): Dynamic table generation
+  - [`initializeContent.mjs`](src/modules/initializeContent.mjs:1): Content initialization and SFIA table creation
+  - [`exportFunctions.mjs`](src/modules/exportFunctions.mjs:1): CSV/HTML export capabilities
 - **Core Utilities**:
-  - `utilityFunctions.js`: Helper functions
-  - `theme.js`: Theme management
+  - [`utilityFunctions.mjs`](src/modules/utilityFunctions.mjs:1): Enhanced helper functions with performance optimizations
+  - [`urlHandling.mjs`](src/modules/urlHandling.mjs:1): Modern URL processing with validation
+  - [`theme.mjs`](src/modules/theme.mjs:1): Theme management and persistence
 - **Event Management**:
-  - `eventListeners.js`: DOM events
-  - `windowEvents.js`: Window-level events
-  - `browserUpdate.js`: Browser compatibility
+  - [`eventListeners.mjs`](src/modules/eventListeners.mjs:1): Centralized DOM event handling
+  - [`windowEvents.mjs`](src/modules/windowEvents.mjs:1): Window-level event management
+  - [`browserUpdate.mjs`](src/modules/browserUpdate.mjs:1): Browser compatibility checking
+
+3. **Legacy JavaScript Support**:
+   - Original `.js` files maintained for backward compatibility
+   - Gradual migration path to ES6 modules established
+   - Hybrid build system supports both module types
 
 ### External Dependencies
 1. **Core Libraries**:

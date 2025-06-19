@@ -103,7 +103,13 @@ export let sfiaDataLoadedPromise = Promise.resolve();
  * @param {boolean} loaded - Whether SFIA data is loaded
  */
 export function setSfiaDataLoaded(loaded) {
+    console.log('[DEBUG DATA LOADING] Setting SFIA data loaded state:', loaded);
     isSfiaDataLoaded = loaded;
+    if (loaded) {
+        console.log('[DEBUG DATA LOADING] SFIA data loading complete - tests can now run safely');
+        // Add a marker to the DOM that tests can wait for
+        document.body.setAttribute('data-sfia-loaded', 'true');
+    }
 }
 
 /**
@@ -111,6 +117,7 @@ export function setSfiaDataLoaded(loaded) {
  * @param {Promise} promise - Promise that resolves when SFIA data is loaded
  */
 export function setSfiaDataLoadedPromise(promise) {
+    console.log('[DEBUG DATA LOADING] Setting SFIA data loaded promise');
     sfiaDataLoadedPromise = promise;
 }
 

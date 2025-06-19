@@ -127,10 +127,23 @@ export const updateURLWithLorCheckboxes = (hash) => {
 /**
  * Select checkboxes based on the URL hash and trigger the renderLorOutput function.
  * Uses the new parseLorValuesFromHash function to correctly parse LoR values.
+ * Now waits for SFIA data to be loaded before processing.
  *
  * @param {Object} lorJson - The LoR JSON data.
  */
 export const selectLorCheckboxesAndInitialize = async (lorJson) => {
+    console.log('Initializing LoR checkboxes from URL hash');
+    
+    // Wait for SFIA data to be loaded before processing
+    try {
+        const { sfiaDataLoadedPromise } = await import('./dataFetching.mjs');
+        console.log('Waiting for SFIA data to be loaded...');
+        await sfiaDataLoadedPromise;
+        console.log('SFIA data loaded, proceeding with LoR initialization...');
+    } catch (error) {
+        console.warn('Error waiting for SFIA data, proceeding anyway:', error);
+    }
+    
     // Parse LoR values from the hash
     const lorValues = parseLorValuesFromHash();
     
@@ -146,6 +159,9 @@ export const selectLorCheckboxesAndInitialize = async (lorJson) => {
         const checkbox = document.querySelector(`input[type=checkbox][value="${lorCategory}-${lorLevel}"]`);
         if (checkbox) {
             checkbox.checked = true;
+            console.log('Selected LoR checkbox:', checkbox.id);
+        } else {
+            console.warn('LoR checkbox not found for:', `${lorCategory}-${lorLevel}`);
         }
     });
 

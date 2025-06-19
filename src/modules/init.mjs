@@ -10,11 +10,18 @@
 export const initializeInstructionsCollapse = () => {
     const instructionsElement = document.getElementById('instructions');
     if (instructionsElement) {
-        // Use Bootstrap's collapse functionality to hide instructions
-        const collapse = new bootstrap.Collapse(instructionsElement, {
-            show: false
-        });
+        // Ensure the element starts in a collapsed state
         instructionsElement.classList.add('collapsed');
+        instructionsElement.classList.remove('show');
+        
+        // Initialize Bootstrap collapse with proper options
+        const collapse = new bootstrap.Collapse(instructionsElement, {
+            toggle: false,  // Don't auto-toggle on initialization
+            show: false     // Start hidden
+        });
+        
+        // Ensure it's properly hidden
+        collapse.hide();
     }
 };
 

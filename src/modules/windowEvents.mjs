@@ -211,6 +211,13 @@ export const startConversation = () => {
 let editor;
 
 const initializeAceEditor = () => {
+    const editorElement = document.getElementById("ace-editor");
+    
+    if (!editorElement) {
+        console.error('[ERROR] ace-editor element not found during initialization!');
+        return;
+    }
+    
     // Initialize Ace editor
     editor = ace.edit("ace-editor");
     editor.setTheme("ace/theme/monokai");
@@ -221,6 +228,9 @@ const initializeAceEditor = () => {
         showPrintMargin: false
     });
 
+    // Make editor globally accessible - CRITICAL FIX for updateEditorContent()
+    window.editor = editor;
+
     // Set initial content
     updateEditorContent();
 };
@@ -230,10 +240,36 @@ const setupMenuHandlers = () => {
     const menuContent = document.getElementById('menu-content');
     const saveKeysBtn = document.getElementById('save-keys-btn');
 
-    // Toggle menu visibility
-    toggleMenu?.addEventListener('click', () => {
-        menuContent?.classList.toggle('hidden');
-    });
+    if (!toggleMenu || !menuContent) {
+        console.error('Menu elements not found during setup');
+        return;
+    }
+
+    // Toggle menu visibility with proper event handling
+    const toggleMenuVisibility = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('[DEBUG MENU] Toggle menu clicked');
+        const isHidden = menuContent.classList.contains('hidden');
+        console.log('[DEBUG MENU] Current state:', isHidden ? 'hidden' : 'visible');
+        
+        if (isHidden) {
+            menuContent.classList.remove('hidden');
+            toggleMenu.setAttribute('aria-expanded', 'true');
+            menuContent.setAttribute('aria-hidden', 'false');
+            console.log('[DEBUG MENU] Menu showing');
+        } else {
+            menuContent.classList.add('hidden');
+            toggleMenu.setAttribute('aria-expanded', 'false');
+            menuContent.setAttribute('aria-hidden', 'true');
+            console.log('[DEBUG MENU] Menu hiding');
+        }
+    };
+
+    // Remove any existing listeners to prevent duplicates
+    toggleMenu.removeEventListener('click', toggleMenuVisibility);
+    toggleMenu.addEventListener('click', toggleMenuVisibility);
 
     // Toggle password visibility
     document.querySelectorAll('.toggle-password').forEach(button => {
@@ -251,10 +287,14 @@ const setupMenuHandlers = () => {
     });
 
     // Save API keys
-    saveKeysBtn?.addEventListener('click', () => {
+    saveKeysBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('[DEBUG API] Save button clicked - setupMenuHandlers');
         const cohereKey = document.getElementById('cohere-api').value;
         const huggingfaceKey = document.getElementById('huggingface-api').value;
         const selectedApi = document.querySelector('input[name="api-selector"]:checked').value;
+
+        console.log('[DEBUG API] Values captured:', { cohereKey: cohereKey ? 'SET' : 'EMPTY', huggingfaceKey: huggingfaceKey ? 'SET' : 'EMPTY', selectedApi });
 
         // Save to localStorage (you might want to use more secure storage in production)
         try {
@@ -262,209 +302,60 @@ const setupMenuHandlers = () => {
             if (cohereKey) localStorage.setItem('cohereApiKey', cohereKey);
             if (huggingfaceKey) localStorage.setItem('huggingfaceApiKey', huggingfaceKey);
 
-            showNotification('API settings saved successfully!', 'success', 3000);
+            console.log('[DEBUG API] About to show notification: "API settings saved successfully"');
+            showNotification('API settings saved successfully', 'success', 3000);
             menuContent?.classList.add('hidden');
         } catch (error) {
+            console.log('[DEBUG API] Error saving:', error.message);
             showNotification(`Failed to save API settings: ${error.message}`, 'error', 5000);
+        }
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!menuContent?.contains(e.target) && !toggleMenu?.contains(e.target)) {
+            menuContent?.classList.add('hidden');
+            toggleMenu.setAttribute('aria-expanded', 'false');
+            menuContent.setAttribute('aria-hidden', 'true');
         }
     });
 
     // Initialize menu in hidden state
     if (menuContent) {
         menuContent.classList.add('hidden');
+        toggleMenu.setAttribute('aria-expanded', 'false');
+        menuContent.setAttribute('aria-hidden', 'true');
     }
 };
 
-const setupApiMenuHandlers = () => {
-    const toggleMenu2 = document.getElementById('toggle-menu');
-    const menuContent2 = document.getElementById('menu-content');
-    const saveKeysBtn2 = document.getElementById('save-keys-btn');
-
-    // Toggle menu visibility
-    toggleMenu2?.addEventListener('click', () => {
-        menuContent2?.classList.toggle('hidden');
-    });
-
-    // Handle password visibility toggle
-    document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', function () {
-            const targetId = this.dataset.target;
-            const input = document.getElementById(targetId);
-            const type = input.type === 'password' ? 'text' : 'password';
-            input.type = type;
-            this.textContent = type === 'password' ? 'Show' : 'Hide';
-        });
-    });
-
-    // Handle API key saving
-    saveKeysBtn2?.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (saveApiKeys()) {
-            showNotification('API keys saved successfully!', 'success');
-            menuContent2?.classList.add('hidden');
-        } else {
-            showNotification('Failed to save API keys', 'error');
-        }
-    });
-
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!menuContent2?.contains(e.target) && !toggleMenu2?.contains(e.target)) {
-            menuContent2?.classList.add('hidden');
-        }
-    });
-};
+// Removed duplicate setupApiMenuHandlers function - conflicts with setupMenuHandlers
 
 export const setupDOMContentLoadedHandler = () => {
-    initializeAceEditor();
-    setupMenuHandlers();
-    setupApiMenuHandlers();
+    console.log('[DEBUG INIT] DOM Content Loaded - setting up handlers');
+    
+    // Add a slight delay to ensure all elements are rendered
+    setTimeout(() => {
+        console.log('[DEBUG INIT] Setting up menu handlers after timeout');
+        setupMenuHandlers();
+        
+        // Verify elements exist
+        const toggleMenu = document.getElementById('toggle-menu');
+        const menuContent = document.getElementById('menu-content');
+        console.log('[DEBUG INIT] Toggle menu element:', toggleMenu ? 'EXISTS' : 'NOT FOUND');
+        console.log('[DEBUG INIT] Menu content element:', menuContent ? 'EXISTS' : 'NOT FOUND');
+        
+        if (toggleMenu && menuContent) {
+            console.log('[DEBUG INIT] Menu content initial classes:', menuContent.className);
+        }
+        
+        initializeAceEditor();
+    }, 100);
 };
 
 document.addEventListener('DOMContentLoaded', setupDOMContentLoadedHandler);
 
-const setupApiKeyManagement = () => {
-    const toggleMenuButton = document.getElementById('toggle-menu');
-    const menuContent = document.getElementById('menu-content');
-    const cohereApiInput = document.getElementById('cohere-api');
-    const huggingfaceApiInput = document.getElementById('huggingface-api');
-    const saveKeysBtn = document.getElementById('save-keys-btn');
-
-    // Toggle menu visibility
-    if (toggleMenuButton && menuContent) {
-        toggleMenuButton.addEventListener('click', () => {
-            menuContent.classList.toggle('hidden');
-        });
-    }
-
-    // Toggle password visibility
-    document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', function () {
-            const targetId = this.dataset.target;
-            const targetInput = document.getElementById(targetId);
-            if (targetInput.type === 'password') {
-                targetInput.type = 'text';
-            } else {
-                targetInput.type = 'password';
-            }
-        });
-    });
-
-    // Encryption function
-    const encryptApiKey = (apiKey) => {
-        const salt = CryptoJS.lib.WordArray.random(16).toString();
-        const encrypted = CryptoJS.AES.encrypt(apiKey, salt).toString();
-        return { encrypted, salt };
-    };
-
-    // Decryption function
-    const decryptApiKey = (encryptedApiKey, salt) => {
-        const decrypted = CryptoJS.AES.decrypt(encryptedApiKey, salt).toString(CryptoJS.enc.Utf8);
-        return decrypted;
-    };
-
-    // Note: getCookie and setCookie are now imported from utilityFunctions.mjs
-
-    // Notification function
-    const showNotification = (message, type = 'success') => {
-        const container = document.getElementById('notification-container');
-
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-
-        // Create message text
-        const messageText = document.createElement('span');
-        messageText.textContent = message;
-
-        // Create close button
-        const closeButton = document.createElement('button');
-        closeButton.className = 'notification-close';
-        closeButton.innerHTML = '&times;';
-        closeButton.setAttribute('aria-label', 'Close notification');
-
-        // Assemble notification
-        notification.appendChild(messageText);
-        notification.appendChild(closeButton);
-        container.appendChild(notification);
-
-        // Handle close button click
-        closeButton.addEventListener('click', () => {
-            removeNotification(notification);
-        });
-
-        // Auto-remove after duration
-        setTimeout(() => {
-            if (notification.parentElement) {
-                removeNotification(notification);
-            }
-        }, 5000);
-    };
-
-    // Remove notification with animation
-    const removeNotification = (notification) => {
-        notification.classList.add('fade-out');
-        setTimeout(() => {
-            if (notification.parentElement) {
-                notification.parentElement.removeChild(notification);
-            }
-        }, 300); // Match this with CSS transition duration
-    };
-
-    // Save API keys to cookies with encryption and update UI
-    if (saveKeysBtn) {
-        saveKeysBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            try {
-                const cohereKey = cohereApiInput.value.trim();
-                const huggingfaceKey = huggingfaceApiInput.value.trim();
-                const selectedApi = document.querySelector('input[name="api-selector"]:checked')?.value;
-
-                // Save API selection if available
-                if (selectedApi) {
-                    localStorage.setItem('selectedApi', selectedApi);
-                }
-
-                // Save API keys if provided
-                if (cohereKey) {
-                    const { encrypted: encryptedCohere, salt: saltCohere } = encryptApiKey(cohereKey);
-                    setCookie('cohereApi', encryptedCohere, 7, saltCohere);
-                }
-
-                if (huggingfaceKey) {
-                    const { encrypted: encryptedHuggingface, salt: saltHuggingface } = encryptApiKey(huggingfaceKey);
-                    setCookie('huggingfaceApi', encryptedHuggingface, 7, saltHuggingface);
-                }
-
-                // Success notification and UI update
-                showNotification('API keys encrypted and saved successfully!', 'success', 3000);
-                menuContent?.classList.add('hidden');
-            } catch (error) {
-                showNotification(`Error saving API keys: ${error.message}`, 'error', 5000);
-            }
-        });
-    }
-
-    // Decrypt and show API keys
-    const showApiKeys = () => {
-        const encryptedCohere = getCookie('cohereApi');
-        const saltCohere = getCookie('cohereApi_salt');
-        if (encryptedCohere && saltCohere) {
-            cohereApiInput.value = decryptApiKey(encryptedCohere, saltCohere);
-        }
-
-        const encryptedHuggingface = getCookie('huggingfaceApi');
-        const saltHuggingface = getCookie('huggingfaceApi_salt');
-        if (encryptedHuggingface && saltHuggingface) {
-            huggingfaceApiInput.value = decryptApiKey(encryptedHuggingface, saltHuggingface);
-        }
-    };
-
-    // Show API keys on page load
-    showApiKeys();
-};
-
-document.addEventListener('DOMContentLoaded', setupApiKeyManagement);
+// Removed duplicate setupApiKeyManagement function and its DOMContentLoaded listener
+// All API key management is now handled by setupMenuHandlers
 
 /**
  * Shows a notification message
@@ -473,11 +364,14 @@ document.addEventListener('DOMContentLoaded', setupApiKeyManagement);
  * @param {number} duration - How long to show the notification in milliseconds
  */
 export const showNotification = (message, type = 'success', duration = 5000) => {
+    console.log('[DEBUG NOTIFICATION] Creating notification:', { message, type, duration });
     const container = document.getElementById('notification-container');
+    console.log('[DEBUG NOTIFICATION] Container found:', container ? 'YES' : 'NO');
 
     // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
+    console.log('[DEBUG NOTIFICATION] Notification classes:', notification.className);
 
     // Create message text
     const messageText = document.createElement('span');
@@ -493,6 +387,7 @@ export const showNotification = (message, type = 'success', duration = 5000) => 
     notification.appendChild(messageText);
     notification.appendChild(closeButton);
     container.appendChild(notification);
+    console.log('[DEBUG NOTIFICATION] Notification added to DOM');
 
     // Handle close button click
     closeButton.addEventListener('click', () => {
@@ -544,6 +439,9 @@ export const initializeMenuHandlers = () => {
         return;
     }
 
+    // Load saved API keys and restore them to the form
+    loadSavedApiKeys();
+
     // Toggle menu visibility with animation
     const toggleMenuVisibility = (e) => {
         e.stopPropagation(); // Prevent event from bubbling
@@ -590,6 +488,42 @@ export const initializeMenuHandlers = () => {
     // Update menu position on toggle and window resize
     toggleMenu.addEventListener('click', updateMenuPosition);
     window.addEventListener('resize', updateMenuPosition);
+};
+
+/**
+ * Load saved API keys from localStorage and restore them to the form inputs
+ */
+const loadSavedApiKeys = () => {
+    try {
+        // Load saved API keys
+        const savedCohereKey = localStorage.getItem('cohereApiKey');
+        const savedHuggingfaceKey = localStorage.getItem('huggingfaceApiKey');
+        const savedSelectedApi = localStorage.getItem('selectedApi');
+
+        // Restore Cohere API key
+        const cohereInput = document.getElementById('cohere-api');
+        if (cohereInput && savedCohereKey) {
+            cohereInput.value = savedCohereKey;
+        }
+
+        // Restore Hugging Face API key
+        const huggingfaceInput = document.getElementById('huggingface-api');
+        if (huggingfaceInput && savedHuggingfaceKey) {
+            huggingfaceInput.value = savedHuggingfaceKey;
+        }
+
+        // Restore selected API option
+        if (savedSelectedApi) {
+            const apiRadio = document.querySelector(`input[name="api-selector"][value="${savedSelectedApi}"]`);
+            if (apiRadio) {
+                apiRadio.checked = true;
+            }
+        }
+
+        console.log('Saved API keys restored successfully');
+    } catch (error) {
+        console.error('Error loading saved API keys:', error);
+    }
 };
 
 export const initializeEnhancedMenuHandlers = () => {

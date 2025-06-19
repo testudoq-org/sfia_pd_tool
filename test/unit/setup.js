@@ -92,7 +92,8 @@ global.loadMJSModule = async function(relativePath) {
     const mockModules = {
       './constants.mjs': {
         g_sfiahash: global.g_sfiahash || '',
-        g_lorhash: global.g_lorhash || ''
+        g_lorhash: global.g_lorhash || '',
+        lastExportTime: global.lastExportTime || 0
       },
       './initializeContent.mjs': {
         initializeLorContent: jest.fn(),
@@ -109,11 +110,11 @@ global.loadMJSModule = async function(relativePath) {
     
     // Replace import statements with mock implementations and make functions available globally
     let processedContent = moduleContent
+      .replace(/import\s+\{\s*lastExportTime\s*\}\s+from\s+['"]\.\/constants\.mjs['"];?/g, 'const lastExportTime = global.lastExportTime;')
       .replace(/import\s+\{[^}]+\}\s+from\s+['"][^'"]+['"];?/g, '')
-      .replace(/export\s+const\s+(\w+)\s*=/g, 'global.$1 = ')
       .replace(/export\s+function\s+(\w+)/g, 'global.$1 = function $1')
-      .replace(/export\s+\{[^}]+\};?/g, '')
-      .replace(/lastExportTime/g, 'global.lastExportTime');
+      .replace(/export\s+const\s+(\w+)\s*=/g, 'global.$1 = ')
+      .replace(/export\s+\{[^}]+\};?/g, '');
     
     // Execute the processed content in a context with mocked dependencies
     const vm = require('vm');

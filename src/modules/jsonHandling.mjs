@@ -36,7 +36,7 @@ export const changeJsonVersion = () => {
         if (pathname.includes('/dist/')) {
             jsonUrl = `${currentHost}/dist/${selectedVersion}.json`;
         } else if (pathname.includes('/src/')) {
-            jsonUrl = `${currentHost}/src/${selectedVersion}.json`;
+            jsonUrl = `${currentHost}/${selectedVersion}.json`;
         } else if (pathname.includes('package/dev/') || pathname === '/sfiapdgen.html') {
             // Serving from package/dev directory - use relative path
             jsonUrl = `${selectedVersion}.json`;
@@ -45,22 +45,30 @@ export const changeJsonVersion = () => {
             jsonUrl = `${currentHost}/src/${selectedVersion}.json`;
         }
     } else {
-        // Production environment
-        jsonUrl = `${currentHost}/sfia/${selectedVersion}.json`;
+        // Production environment - use root directory to match server setup
+        jsonUrl = `${currentHost}/${selectedVersion}.json`;
     }
 
+    console.log('Fetching JSON from URL:', jsonUrl);
+    
     // Use Fetch API for making the request
     fetch(jsonUrl)
         .then(response => {
             // Check if the response is successful
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                throw new Error(`HTTP error! Status: ${response.status}, URL: ${jsonUrl}`);
             }
             return response.json(); // Parse the response as JSON
         })
         .then(data => {
             // Handle the downloaded JSON data here
-            console.log("Downloaded JSON data:", data);
+            console.log('JSON data loaded successfully');
+
+            // Trigger the promise resolution if the resolveSfiaDataLoaded function exists
+            if (window.resolveSfiaDataLoaded && typeof window.resolveSfiaDataLoaded === 'function') {
+                console.log('Resolving SFIA data loaded promise...');
+                window.resolveSfiaDataLoaded(data);
+            }
 
             const selectElement = document.getElementById("jsonVersionSelect");
             if (selectElement) {

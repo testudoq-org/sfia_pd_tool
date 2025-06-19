@@ -102,7 +102,7 @@ const setDropdownValue = (storedVersion) => {
 const fetchSelectedVersionData = async (dropdownValue) => {
     // Set default value if dropdownValue is empty or null
     dropdownValue = dropdownValue || "json_source_v8";
-    const jsonUrl = `${dropdownValue}.json`;
+    const jsonUrl = `../${dropdownValue}.json`;
 
     // Set a timeout for data loading (10 seconds)
     const timeout = new Promise((_, reject) =>

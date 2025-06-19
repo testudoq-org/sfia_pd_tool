@@ -46,12 +46,19 @@ export const filterSfiaData = (sfiaJson, checkedBoxes) => {
 export const renderSfiaHtmlOutput = (filteredData) => {
     const html = document.getElementById('sfia-output');
     html.innerHTML = '';
+    
+    console.log('[DEBUG] renderSfiaHtmlOutput - filteredData:', filteredData);
+    console.log('[DEBUG] renderSfiaHtmlOutput - sfia-output element:', html);
+    
     for (const category in filteredData) {
+        console.log('[DEBUG] Processing category:', category);
         const categoryEle = document.createElement('h1');
         categoryEle.textContent = category;
         html.appendChild(categoryEle);
         renderSfiaSubCategoryAndSkills(html, filteredData[category]);
     }
+    
+    console.log('[DEBUG] Final sfia-output innerHTML:', html.innerHTML);
 };
 
 /**
@@ -76,7 +83,13 @@ export const renderSfiaSubCategoryAndSkills = (html, subCategories) => {
 export const renderSfiaSkills = (html, skills) => {
     for (const skill in skills) {
         const skillEle = document.createElement('h3');
-        skillEle.textContent = `${skill} - ${skills[skill]["code"]}`;
+        const skillText = `${skill} - ${skills[skill]["code"]}`;
+        skillEle.textContent = skillText;
+        
+        console.log('[DEBUG] renderSfiaSkills - skill:', skill);
+        console.log('[DEBUG] renderSfiaSkills - code:', skills[skill]["code"]);
+        console.log('[DEBUG] renderSfiaSkills - generated text:', skillText);
+        
         html.appendChild(skillEle);
         renderSfiaSkillDescription(html, skills[skill]["description"]);
         renderSfiaSkillLevels(html, skills[skill]["levels"]);
