@@ -1,7 +1,7 @@
 Feature('Export Functionality');
 
 Scenario('Should export CSV file', async ({ I }) => {
-    await I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
+    await I.amOnPage('/sfiapdgen.html');
     await I.see('SFIA PD Generator', '.navbar-brand');
 
     // Wait for SFIA data to be fully loaded before looking for checkboxes

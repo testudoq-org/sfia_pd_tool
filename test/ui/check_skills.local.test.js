@@ -2,7 +2,7 @@ Feature('Add Skill Functionality');
 
 Scenario('Verify adding skill to formatted output', async ({ I }) => {
   // Open the page
-  I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
+  I.amOnPage('/sfiapdgen.html');
   I.seeInTitle('SFIA POSITION DESCRIPTION Generator'); // Add this line for the title assertion
 
   // Search for the skill "BPTS Level 2"
@@ -13,7 +13,7 @@ Scenario('Verify adding skill to formatted output', async ({ I }) => {
   I.click("//input[@type='checkbox' and contains(@sfia-data, \'\"skill\":\"Acceptance testing\",\"level\":2\')]");
 
   // Assert that the current URL contains the expected hash value
-  let expectedUrl = 'http://127.0.0.1:5501/sfiapdgen.html#BPTS-2';
+  let expectedUrl = '/sfiapdgen.html#BPTS-2';
   I.seeInCurrentUrl(expectedUrl);
 
   // Verify that the checkbox is checked
@@ -26,7 +26,7 @@ Scenario('Verify adding skill to formatted output', async ({ I }) => {
   I.dontSeeCheckboxIsChecked("//input[@type='checkbox' and contains(@sfia-data, \'\"skill\":\"Acceptance testing\",\"level\":2\')]");
 
   // Assert that the current URL contains the expected hash value
-  expectedUrl = 'http://127.0.0.1:5501/sfiapdgen.html#';
+  expectedUrl = '/sfiapdgen.html#';
   // Add a delay of 1 seconds
   I.seeInCurrentUrl(expectedUrl);
 });

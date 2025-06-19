@@ -29,6 +29,7 @@ export default defineConfig(({ mode }) => ({
     assetsDir: 'assets',
   },
   server: {
+    port: process.env.VITE_PORT || 5502,
     open: '/src/sfiapdgen.html',
   },
   plugins: [

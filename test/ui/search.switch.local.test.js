@@ -8,7 +8,7 @@ const { I } = inject();
 Feature('Search');
 
 Scenario('Filter table content using search input', ({ I }) => {
-    I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
+    I.amOnPage('/sfiapdgen.html');
     I.see('SFIA PD Generator', '.navbar-brand');
   
   const searchTerm = 'SUST';

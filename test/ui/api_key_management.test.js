@@ -25,7 +25,7 @@ const SKILL_LEVEL = 2;
 
 Before(async ({ I }) => {
   // Open the page and verify it loads
-  I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
+  I.amOnPage('/sfiapdgen.html');
   I.seeInTitle('SFIA POSITION DESCRIPTION Generator');
 });
 

@@ -2,7 +2,7 @@ Feature('Select Json Version');
 
 Scenario('Check that the Select Json version operates correctly for version 8', async ({ I }) => {
     // Open the page
-    I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
+    I.amOnPage('/sfiapdgen.html');
     I.seeInTitle('SFIA POSITION DESCRIPTION Generator');
 
     // Check version 8 selection
@@ -20,7 +20,7 @@ Scenario('Check that the Select Json version operates correctly for version 8', 
 
 Scenario('Check that the Select Json version operates correctly for version 7', async ({ I }) => {
     // Open the page  
-    I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
+    I.amOnPage('/sfiapdgen.html');
     I.seeInTitle('SFIA POSITION DESCRIPTION Generator');
 
     // Check version 7 selection

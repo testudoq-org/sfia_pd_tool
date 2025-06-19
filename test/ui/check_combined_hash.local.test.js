@@ -2,7 +2,7 @@ Feature('Check Combined SFIA and LoR URL Hash Functionality');
 
 Scenario('Verify SFIA skills with LoR in URL hash', async ({ I }) => {
   // Open the page with combined SFIA and LoR hash
-  I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html#BPTS-4+BSMO-4&&AUTO-4+INFL-4');
+  I.amOnPage('/sfiapdgen.html#BPTS-4+BSMO-4&&AUTO-4+INFL-4');
   
   // Wait for the URL to change
   I.waitForURL();
@@ -30,7 +30,7 @@ Scenario('Verify SFIA skills with LoR in URL hash', async ({ I }) => {
 
 Scenario('Verify only SFIA skills in URL hash', async ({ I }) => {
   // Open the page with only SFIA hash
-  I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html#BPTS-4+BSMO-4');
+  I.amOnPage('/sfiapdgen.html#BPTS-4+BSMO-4');
   
   I.waitForURL();
 
@@ -46,7 +46,7 @@ Scenario('Verify only SFIA skills in URL hash', async ({ I }) => {
 
 Scenario('Verify only LoR in URL hash', async ({ I }) => {
   // Open the page with only LoR hash (note the leading &&)
-  I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html#&&AUTO-4+INFL-4');
+  I.amOnPage('/sfiapdgen.html#&&AUTO-4+INFL-4');
   
   I.waitForURL();
 

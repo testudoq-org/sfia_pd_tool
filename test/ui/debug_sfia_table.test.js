@@ -2,7 +2,7 @@ Feature('Debug SFIA Table Loading');
 
 Scenario('Check if SFIA table has content', async ({ I }) => {
   // Open the page
-  I.amOnPage('http://127.0.0.1:5501/sfiapdgen.html');
+  I.amOnPage('/sfiapdgen.html');
   I.seeInTitle('SFIA POSITION DESCRIPTION Generator');
   
   // Wait a bit for the content to load
