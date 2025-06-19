@@ -4,6 +4,7 @@ import { resolve } from 'path';
 import fs from 'fs';
 
 export default defineConfig(({ mode }) => ({
+  root: mode === 'local' ? 'src' : '.',
   base: './',
   build: {
     outDir: mode === 'production' ? 'package/prd' : 'package/dev',
@@ -30,7 +31,7 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     port: process.env.VITE_PORT || 5502,
-    open: '/src/sfiapdgen.html',
+    open: mode === 'local' ? '/sfiapdgen.html' : '/src/sfiapdgen.html',
   },
   plugins: [
     {

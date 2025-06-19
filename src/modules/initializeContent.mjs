@@ -162,41 +162,15 @@ export const initializeSFIAContent = async (sfiaJson) => {
  * adds a tool tip to each of the checkboxes based on the description attribute of the lor
  */
 export const initializeLorContent = async () => {
-    let fetchedLorJson; // Declare at function scope to fix scope issue
+    let fetchedLorJson;
     try {
-        // Get the current host and path info (same logic as jsonHandling.mjs)
-        const currentHost = window.location.origin;
-        const { hostname, pathname } = window.location;
-        
-        // Construct the URL for the LOR JSON file based on environment
-        let lorJsonUrl;
+        // Always use relative path for LOR JSON file
         const lorFileName = 'json-sfia-lors-v8.json';
-        
-        if (hostname === '127.0.0.1' || hostname === 'localhost') {
-            if (pathname.includes('/dist/')) {
-                lorJsonUrl = `${currentHost}/dist/${lorFileName}`;
-            } else if (pathname.includes('/src/')) {
-                // When serving from src/, the JSON file is in the parent directory
-                lorJsonUrl = `${currentHost}/src/${lorFileName}`;
-            } else if (pathname.includes('package/dev/') || pathname === '/sfiapdgen.html') {
-                // Serving from package/dev directory - use relative path
-                lorJsonUrl = `${lorFileName}`;
-            } else {
-                // Default to root directory for localhost
-                lorJsonUrl = `${currentHost}/${lorFileName}`;
-            }
-        } else {
-            // Production environment - check if files are in root or different path
-            // Based on the 404 errors, /sfia/ path doesn't exist, so use root
-            lorJsonUrl = `${currentHost}/${lorFileName}`;
-        }
-        
-        console.log('[DEBUG LOR] Current pathname:', pathname);
-        console.log('[DEBUG LOR] Current host:', currentHost);
+        const lorJsonUrl = lorFileName;
+
         console.log('[DEBUG LOR] Constructed LOR JSON URL:', lorJsonUrl);
-        
+
         // Fetch LOR JSON data using the constructed URL
-        console.log('[DEBUG LOR] Attempting to fetch LOR JSON...');
         const response = await fetch(lorJsonUrl);
         
         // DEBUG: Log response details

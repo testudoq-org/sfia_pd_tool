@@ -25,29 +25,8 @@ export const changeJsonVersion = () => {
     // Set the selected version in the cookie
     setStoredVersionToCookie(selectedVersion);
 
-    // Get the current host
-    const currentHost = window.location.origin;
-    const { hostname, pathname } = window.location;
-
-    // Construct the URL for the JSON file based on the selected version and current host
-    let jsonUrl;
-
-    if (hostname === '127.0.0.1') {
-        if (pathname.includes('/dist/')) {
-            jsonUrl = `${currentHost}/dist/${selectedVersion}.json`;
-        } else if (pathname.includes('/src/')) {
-            jsonUrl = `${currentHost}/src/${selectedVersion}.json`;
-        } else if (pathname.includes('package/dev/') || pathname === '/sfiapdgen.html') {
-            // Serving from package/dev directory - use relative path
-            jsonUrl = `${selectedVersion}.json`;
-        } else {
-            // Default to '/src/' for localhost if no other pattern matches
-            jsonUrl = `${currentHost}/src/${selectedVersion}.json`;
-        }
-    } else {
-        // Production environment - use root directory to match server setup
-        jsonUrl = `${currentHost}/${selectedVersion}.json`;
-    }
+    // Always use relative path for JSON file (works for local, dev, prod)
+    const jsonUrl = `${selectedVersion}.json`;
 
     console.log('Fetching JSON from URL:', jsonUrl);
     
