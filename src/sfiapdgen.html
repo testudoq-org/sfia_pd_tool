@@ -26,6 +26,10 @@
 <body>
 	<header>
 		<nav class="navbar navbar-expand-lg bg-light">
+				<!-- Theme Toggle Button (top-right) -->
+				<button id="theme-toggle-btn" class="btn btn-link ms-auto" aria-label="Switch to dark mode" title="Switch to dark mode" tabindex="0">
+					<span class="theme-toggle-icon" id="theme-toggle-icon">🌙</span>
+				</button>
 			<div class="container-fluid">
 				<a class="navbar-brand" href="#">SFIA PD Generator</a>
 				<!-- Updated Hamburger Menu Structure -->
@@ -62,13 +66,6 @@
 							<button id="save-keys-btn" class="save-btn">Save API Keys</button>
 						</div>
 						<!-- Add Theme Toggle -->
-						<div class="theme-toggle">
-							<label for="theme-switch">Dark Mode</label>
-							<div class="switch">
-								<input type="checkbox" id="theme-switch" onchange="toggleTheme()">
-								<span class="slider round"></span>
-							</div>
-						</div>
 					</div>
 				</div>
 			</div>
@@ -285,4 +282,50 @@
 	</footer>
 </body>
 
+<script>
+	// Theme toggle logic for icon and accessibility
+	const themeBtn = document.getElementById('theme-toggle-btn');
+	const themeIcon = document.getElementById('theme-toggle-icon');
+	const themeStyle = document.getElementById('theme-style');
+
+	function setThemeIcon(isDark) {
+		if (isDark) {
+			themeIcon.textContent = '🌞';
+			themeBtn.setAttribute('aria-label', 'Switch to light mode');
+			themeBtn.setAttribute('title', 'Switch to light mode');
+		} else {
+			themeIcon.textContent = '🌙';
+			themeBtn.setAttribute('aria-label', 'Switch to dark mode');
+			themeBtn.setAttribute('title', 'Switch to dark mode');
+		}
+	}
+
+	function isDarkTheme() {
+		return themeStyle.getAttribute('href').includes('dark');
+	}
+
+	function toggleTheme() {
+		const isDark = isDarkTheme();
+		if (isDark) {
+			themeStyle.setAttribute('href', 'styles-light.css');
+			setThemeIcon(false);
+		} else {
+			themeStyle.setAttribute('href', 'styles-dark.css');
+			setThemeIcon(true);
+		}
+	}
+
+	themeBtn.addEventListener('click', toggleTheme);
+	themeBtn.addEventListener('keydown', function(e) {
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault();
+			toggleTheme();
+		}
+	});
+
+	// Set initial icon on load
+	document.addEventListener('DOMContentLoaded', function() {
+		setThemeIcon(isDarkTheme());
+	});
+</script>
 </html>
