@@ -14,7 +14,7 @@
 - Copy static assets
 - Enable detailed logging
 - Skip minification
-- Output to `package/dev/` (Handled by `grunt build:dev`)
+- Output to `dist/dev/` (Handled by `npm run build:dev`)
 
 ### Production Build (`build:prd`)
 - Clean production directory
@@ -23,7 +23,7 @@
 - Add security headers
 - Strip debug/console statements
 - Generate build report
-- Output to `package/prd/` (Handled by `grunt build:prd`)
+- Output to `dist/prd/` (Handled by `npm run build:prd`)
 
 ## 3. Configuration Updates
 

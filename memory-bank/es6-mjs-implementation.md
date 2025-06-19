@@ -14,7 +14,7 @@ This document served as the implementation guide for the ES6/MJS migration which
 - **Enhanced Error Handling**: Structured return objects with success/error states operational
 - **Performance Optimizations**: Debounce, throttle, and optimization utilities active
 - **100% Test Coverage**: 36/36 unit tests + full E2E suite passing
-- **Production Build System**: Webpack + Grunt hybrid operational
+- **Production Build System**: Vite operational
 - **Zero Breaking Changes**: Full backward compatibility maintained
 
 ---
@@ -29,7 +29,7 @@ This document provides a comprehensive analysis and migration strategy for moder
 
 ### **Current Architecture**
 - **Module System**: Global scope with concatenated files
-- **Build Process**: Grunt-based concatenation and minification
+- **Build Process**: Vite-based bundling and minification
 - **File Structure**: 15 individual JavaScript files concatenated into single bundle
 - **Dependencies**: jQuery, Bootstrap, external CDN libraries
 - **Browser Support**: Modern browsers with legacy compatibility
@@ -54,7 +54,7 @@ src/
 └── windowEvents.js       # Window-level event management
 ```
 
-### **Current Build Process (Grunt)**
+### **Previous Build Process (Grunt)**
 ```javascript
 // Current concatenation order
 concat: {
@@ -368,110 +368,20 @@ if (document.readyState === 'loading') {
 
 ### **Phase 3: Build System Modernization**
 
-#### **3.1 Migration from Grunt to Modern Build Tools**
+#### **3.1 Migration to Modern Build Tools**
 
-**Option A: Webpack Configuration**
-```javascript
-// webpack.config.mjs
-import path from 'path';
-import { fileURLToPath } from 'url';
+The project has been migrated to Vite. The previous Webpack and Rollup configurations are no longer in use.
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export default {
-    entry: './src/app.mjs',
-    output: {
-        filename: 'sfiapdgen_func.js',
-        path: path.resolve(__dirname, 'package/dev'),
-        library: {
-            type: 'module'
-        }
-    },
-    experiments: {
-        outputModule: true
-    },
-    mode: 'development',
-    devtool: 'source-map',
-    module: {
-        rules: [
-            {
-                test: /\.mjs$/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['@babel/preset-env']
-                    }
-                }
-            }
-        ]
-    },
-    resolve: {
-        extensions: ['.mjs', '.js']
-    }
-};
-```
-
-**Option B: Rollup Configuration (Recommended)**
-```javascript
-// rollup.config.mjs
-import { nodeResolve } from '@rollup/plugin-node-resolve';
-import { terser } from 'rollup-plugin-terser';
-import babel from '@rollup/plugin-babel';
-
-export default [
-    // Development build
-    {
-        input: 'src/app.mjs',
-        output: {
-            file: 'package/dev/sfiapdgen_func.js',
-            format: 'iife',
-            name: 'SFIAApp',
-            sourcemap: true
-        },
-        plugins: [
-            nodeResolve(),
-            babel({
-                babelHelpers: 'bundled',
-                presets: ['@babel/preset-env']
-            })
-        ]
-    },
-    // Production build
-    {
-        input: 'src/app.mjs',
-        output: {
-            file: 'package/prd/sfiapdgen_func.min.js',
-            format: 'iife',
-            name: 'SFIAApp',
-            sourcemap: true
-        },
-        plugins: [
-            nodeResolve(),
-            babel({
-                babelHelpers: 'bundled',
-                presets: ['@babel/preset-env']
-            }),
-            terser({
-                compress: {
-                    drop_console: true,
-                    drop_debugger: true
-                }
-            })
-        ]
-    }
-];
-```
 
 #### **3.2 Package.json Updates**
 ```json
 {
     "type": "module",
     "scripts": {
-        "build:dev": "rollup -c --environment NODE_ENV:development",
-        "build:prd": "rollup -c --environment NODE_ENV:production",
-        "build": "npm run build:dev",
-        "watch": "rollup -c -w",
+        "dev": "vite",
+        "build:dev": "vite build --mode development",
+        "build:prd": "vite build --mode production",
+        "preview": "vite preview",
         "test:unit": "jest --experimental-vm-modules",
         "test:e2e": "codeceptjs run --steps",
         "test:all": "npm run test:unit && npm run test:e2e"
@@ -479,10 +389,7 @@ export default [
     "devDependencies": {
         "@babel/core": "^7.23.0",
         "@babel/preset-env": "^7.23.0",
-        "@rollup/plugin-babel": "^6.0.4",
-        "@rollup/plugin-node-resolve": "^15.2.3",
-        "rollup": "^4.0.0",
-        "rollup-plugin-terser": "^7.0.2"
+        "vite": "^6.3.5",
     }
 }
 ```
@@ -541,7 +448,7 @@ describe('URL Handling Module', () => {
 
 ### **Phase 1: Preparation (1-2 days)**
 1. **Setup Development Environment**
-   - Install modern build tools (Rollup/Webpack)
+   - Install Vite
    - Configure Babel for ES6 transpilation
    - Update package.json for module support
 
@@ -586,9 +493,9 @@ describe('URL Handling Module', () => {
    - Add validation and type checking
    - Enhance error messaging
 
-### **Phase 4: Build System Migration (1-2 days)**
-1. **Rollup Configuration**
-   - Setup development and production builds
+### **Phase 4: Build System Migration (Completed)**
+1. **Vite Configuration**
+   - Development and production builds are configured in `vite.config.js`.
    - Configure source maps for debugging
    - Implement tree-shaking for optimization
 
@@ -659,8 +566,7 @@ describe('URL Handling Module', () => {
 - **Strategy**: Progressive enhancement approach
 
 #### **3. Build Complexity**
-- **Risk**: New build system more complex than Grunt
-- **Mitigation**: Comprehensive documentation and training
+- **Benefit**: The new Vite-based build system is simpler and faster than the previous Grunt-based system.
 - **Strategy**: Gradual adoption with fallback options
 
 #### **4. Team Learning Curve**

@@ -156,7 +156,7 @@ if (window.location.hostname === '127.0.0.1') {
 ## Recommendations for Future Development
 
 ### 1. Build Process Integration
-- Apply source fixes before running `grunt build:dev`
+- Apply source fixes before running the development build
 - Verify path logic works across all serving scenarios
 - Test both development and production builds
 

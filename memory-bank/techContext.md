@@ -256,7 +256,7 @@ Function loading in Jest environment requires resolution. Source files use globa
 
 **🚧 Integration Challenges**:
 - Jest ES6 module configuration
-- Build pipeline integration with Grunt
+- Build pipeline integration with Vite
 - Backward compatibility with existing concatenated builds
 
 **Modern Function Enhancements**:
@@ -421,9 +421,9 @@ This establishes the project as having both modern ES6 capabilities and robust t
 ### ES6 Modules and Build Modernization
 
 - All new application logic is written as ES6 modules (`.mjs` files) in `src/modules/`.
-- The new build process uses Webpack to bundle, transpile, and optimize `.mjs` modules and related assets.
-- Builds output to `package/dev/` (development, unminified, sourcemaps) and `package/prd/` (production, minified, optimized).
-- All critical Grunt build features (asset copying, minification, sourcemaps, HTML/CSS/JSON handling) are preserved or improved.
+- The build process uses Vite to bundle, transpile, and optimize `.mjs` modules and related assets.
+- Builds output to `dist/dev/` (development, unminified, sourcemaps) and `dist/prd/` (production, minified, optimized).
+- All critical build features (asset copying, minification, sourcemaps, HTML/CSS/JSON handling) are handled by Vite.
 - Legacy `.js` files are still supported for backward compatibility, but `.mjs` is preferred for all new development.
 - See `memory-bank/systemPatterns.md` for a detailed build system architecture and operational mechanics.
        }
@@ -484,7 +484,7 @@ Function loading in Jest environment requires resolution. Source files use globa
 
 **🚧 Integration Challenges**:
 - Jest ES6 module configuration
-- Build pipeline integration with Grunt
+- Build pipeline integration with Vite
 - Backward compatibility with existing concatenated builds
 
 **Modern Function Enhancements**:
@@ -605,8 +605,8 @@ This establishes the project as having both modern ES6 capabilities and robust t
 ### ES6 Modules and Build Modernization
 
 - All new application logic is written as ES6 modules (`.mjs` files) in `src/modules/`.
-- The new build process uses Webpack to bundle, transpile, and optimize `.mjs` modules and related assets.
-- Builds output to `package/dev/` (development, unminified, sourcemaps) and `package/prd/` (production, minified, optimized).
-- All critical Grunt build features (asset copying, minification, sourcemaps, HTML/CSS/JSON handling) are preserved or improved.
+- The build process uses Vite to bundle, transpile, and optimize `.mjs` modules and related assets.
+- Builds output to `dist/dev/` (development, unminified, sourcemaps) and `dist/prd/` (production, minified, optimized).
+- All critical build features (asset copying, minification, sourcemaps, HTML/CSS/JSON handling) are handled by Vite.
 - Legacy `.js` files are still supported for backward compatibility, but `.mjs` is preferred for all new development.
 - See `memory-bank/systemPatterns.md` for a detailed build system architecture and operational mechanics.

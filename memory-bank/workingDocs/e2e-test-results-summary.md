@@ -1,7 +1,7 @@
-# E2E Test Results Summary - Post Grunt Rebuild
+# E2E Test Results Summary - Post Build
 
 **Date:** 2025-06-17  
-**Build:** Grunt build:dev with source code fixes applied  
+**Build:** Development build with source code fixes applied
 **Test Execution:** CodeceptJS with Playwright
 
 ## Test Results Overview
@@ -58,7 +58,7 @@
 
 ### 1. Root Issue Resolution
 - **Fixed JSON Path Logic:** Successfully updated `src/jsonHandling.js` to handle `package/dev/` serving scenario
-- **Build Process Integration:** Changes properly propagated through Grunt build to `package/dev/sfiapdgen_func.js`
+- **Build Process Integration:** Changes properly propagated through the build process to `package/dev/sfiapdgen_func.js`
 - **No More 404 Errors:** Eliminated all `/src/json_source_v8.json` errors
 
 ### 2. Data Loading Success
@@ -86,7 +86,7 @@
 
 ### Server Configuration ✅
 - **Base URL:** `http://127.0.0.1:5501/sfiapdgen.html`
-- **Serving Directory:** `package/dev/` (properly built with Grunt)
+- **Serving Directory:** `package/dev/` (properly built)
 - **JSON Files:** All versions available and loading successfully
 - **Resource Errors:** Zero 404 errors
 
@@ -107,7 +107,7 @@
 - Current stable baseline provides solid foundation
 
 ### 3. Maintain Build Process Integrity
-- Always run `npx grunt build:dev` after source code changes
+- Always run the development build after source code changes
 - Validate test results against both development and production builds
 
 ## Conclusion

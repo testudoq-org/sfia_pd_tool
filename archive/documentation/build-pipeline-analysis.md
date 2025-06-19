@@ -118,38 +118,13 @@ uglify: {
 5. string-replace:prd
 
 ## Testing Integration
-- Local testing: `grunt testLocal`
-- Distribution testing: `grunt testDist`
-- Production testing: `grunt testProduction`
-- Specific file testing: `grunt testSpecificFile`
+- Local testing: `npm run test:unit`
+- E2E testing: `npm run codeceptjs`
 
 ## Implementation Instructions
 
-### 1. Update Gruntfile.js
-Replace the string-replace:prd configuration with:
-```javascript
-prd: {
-    files: {
-        'package/prd/sfiapdgen.html': 'package/prd/sfiapdgen.html'
-    },
-    options: {
-        replacements: [
-            {
-                pattern: 'sfiapdgen_func.js',
-                replacement: 'sfiapdgen_func.min.js'
-            },
-            {
-                pattern: '<head>',
-                replacement: '<head>\n' +
-                    '    <meta http-equiv="Content-Security-Policy" content="default-src \'self\'; ' +
-                    'style-src \'self\' \'unsafe-inline\' https://cdn.jsdelivr.net; ' +
-                    'script-src \'self\' \'unsafe-inline\' https://cdn.jsdelivr.net; ' +
-                    'img-src \'self\' data:">\n'
-            }
-        ]
-    }
-}
-```
+### 1. Vite Configuration
+The build process is now managed by `vite.config.js`.
 
 ### 2. External Dependencies Management
 1. Create vendor directory:
@@ -193,18 +168,18 @@ Replace CDN references with local files in sfiapdgen.html:
 ### 4. Testing Steps
 1. Build development version:
    ```bash
-   grunt build:dev
+   npm run build:dev
    ```
 
 2. Build production version:
    ```bash
-   grunt build:prd
+   npm run build:prd
    ```
 
 3. Run test suite:
    ```bash
-   grunt testLocal
-   grunt testProduction
+   npm run test:unit
+   npm run codeceptjs
    ```
 
 4. Verify in browser:

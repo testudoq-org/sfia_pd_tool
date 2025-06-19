@@ -14,7 +14,7 @@
 - Generic build task lacks environment awareness
 
 3. Build Process Gaps:
-- Grunt tasks not properly integrated with VSCode tasks
+- Build tasks not properly integrated with VSCode tasks
 - Incorrect task ordering for debug sessions
 - Environment variables not properly set
 
@@ -36,7 +36,7 @@
       "preLaunchTask": "prepare-dev",
       "postDebugTask": "Stop Live Server",
       "sourceMapPathOverrides": {
-        "webpack:///src/*": "${webRoot}/src/*"
+        "vite:///src/*": "${webRoot}/src/*"
       }
     },
     {
@@ -49,7 +49,7 @@
       "preLaunchTask": "prepare-dev",
       "postDebugTask": "Stop Live Server",
       "sourceMapPathOverrides": {
-        "webpack:///src/*": "${webRoot}/src/*"
+        "vite:///src/*": "${webRoot}/src/*"
       }
     },
     {
@@ -62,7 +62,7 @@
       "preLaunchTask": "prepare-prod",
       "postDebugTask": "Stop Live Server",
       "sourceMapPathOverrides": {
-        "webpack:///src/*": "${webRoot}/src/*"
+        "vite:///src/*": "${webRoot}/src/*"
       }
     },
     {
@@ -75,7 +75,7 @@
       "preLaunchTask": "prepare-prod",
       "postDebugTask": "Stop Live Server",
       "sourceMapPathOverrides": {
-        "webpack:///src/*": "${webRoot}/src/*"
+        "vite:///src/*": "${webRoot}/src/*"
       }
     }
   ]
@@ -91,7 +91,7 @@
     {
       "label": "prepare-dev",
       "dependsOn": [
-        "grunt build:dev",
+        "npm: build:dev",
         "Start Live Server"
       ],
       "dependsOrder": "sequence"
@@ -99,21 +99,21 @@
     {
       "label": "prepare-prod",
       "dependsOn": [
-        "grunt build:prd",
+        "npm: build:prd",
         "Start Live Server"
       ],
       "dependsOrder": "sequence"
     },
     {
-      "label": "grunt build:dev",
-      "type": "shell",
-      "command": "grunt build:dev",
+      "label": "npm: build:dev",
+      "type": "npm",
+      "script": "build:dev",
       "group": "build"
     },
     {
-      "label": "grunt build:prd",
-      "type": "shell",
-      "command": "grunt build:prd",
+      "label": "npm: build:prd",
+      "type": "npm",
+      "script": "build:prd",
       "group": "build"
     },
     {
@@ -160,7 +160,7 @@
 
 4. Environment Awareness:
    - Distinct configurations for dev and prod environments
-   - Proper integration with Grunt build tasks
+   - Proper integration with Vite build tasks
 
 ## Validation Steps
 

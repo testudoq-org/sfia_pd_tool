@@ -25,7 +25,7 @@
     *   Read each identified Markdown file.
     *   Identify sections related to:
         *   Application functionality and architecture.
-        *   Build process (Grunt, Webpack, `package/dev`, `package/prod`).
+        *   Build process (Vite, `dist/dev`, `dist/prd`).
         *   E2E testing procedures (CodeceptJS, Playwright, test scripts, test structure).
         *   Unit testing procedures (noting its current absence but planned use of Jest in `test/unit`).
     *   Note discrepancies, outdated information, or missing details.
@@ -34,13 +34,13 @@
 
 1.  **Update E2E Testing Information**:
     *   Ensure documentation accurately reflects the setup in [`codecept.conf.js`](codecept.conf.js:1), scripts in [`package.json`](package.json:10), and practices outlined in [`TEST-README.md`](TEST-README.md:1) and [`pipeline-build-test.md`](pipeline-build-test.md:1).
-    *   Clarify commands for running tests (e.g., `npm run codeceptjs`, `grunt testLocal`).
+    *   Clarify commands for running tests (e.g., `npm run codeceptjs`).
 2.  **Update Unit Testing Information**:
     *   Add a section (or update existing ones) to state that unit tests are planned to be implemented using Jest and will reside in the `test/unit` directory.
 3.  **Update Build Process Information**:
-    *   Detail the Grunt tasks defined in [`Gruntfile.js`](Gruntfile.js:1) (e.g., `build:dev`, `build:prd`).
-    *   Explain the role of Webpack (minification, etc.) as configured in [`webpack.config.js`](webpack.config.js:1) and invoked by Grunt.
-    *   Describe the output structure (`package/dev` and `package/prod`).
+    *   Detail the Vite scripts defined in [`package.json`](package.json:9) (e.g., `dev`, `build:dev`, `build:prd`).
+    *   Explain the role of Vite as configured in [`vite.config.js`](vite.config.js:1).
+    *   Describe the output structure (`dist/dev` and `dist/prd`).
 4.  **Reflect Current Application State**:
     *   Ensure descriptions of application features and architecture align with the codebase (e.g., SFIA version selection, API key management, LoR handling, data rendering).
     *   Cross-reference with information from `src` files like [`src/sfiapdgen.html`](src/sfiapdgen.html:1), [`src/dataHandling.js`](src/dataHandling.js:1), etc.
@@ -67,8 +67,8 @@
         *   Specify that AI-generated content should align with the style and level of detail in existing project documentation.
         *   Mention key files like [`memory-bank/techContext.md`](memory-bank/techContext.md:1) for technical details and [`memory-bank/systemPatterns.md`](memory-bank/systemPatterns.md:1) for architectural patterns.
     *   **Build and Test Awareness**:
-        *   Remind Copilot about the Grunt build process (`grunt build:dev`, `grunt build:prd`).
-        *   Remind Copilot about E2E test execution (`npm run codeceptjs` or Grunt tasks like `grunt testLocal`).
+        *   Remind Copilot about the Vite build process (`npm run dev`, `npm run build:dev`, `npm run build:prd`).
+        *   Remind Copilot about E2E test execution (`npm run codeceptjs`).
     *   **Commit Message Conventions** (Optional, if you have them).
     *   **Pull Request Guidelines** (Optional, if you have them).
 
@@ -77,8 +77,7 @@
 ```mermaid
 graph TD
     A[Start: Analyze Docs Request] --> B{Gather Info};
-    B --> B1[Read package.json, webpack.config.js, codecept.conf.js];
-    B --> B2[Read Gruntfile.js];
+    B --> B1[Read package.json, vite.config.js, codecept.conf.js];
     B --> B3[Read src/sfiapdgen.html & key JS files];
     B --> B4[Read TEST-README.md, pipeline-build-test.md];
     B1 & B2 & B3 & B4 --> C[Understand App, Build & Test Processes];

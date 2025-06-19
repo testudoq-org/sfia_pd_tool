@@ -16,13 +16,7 @@ Thank you for considering contributing to our project! We appreciate your intere
     npm install
     ```
 
-3. **Install Grunt Plugins**: Install the necessary Grunt plugins by running the following commands:
-
-    ```bash
-    npm install -g grunt-cli
-    npm install grunt-contrib-watch --save-dev
-    npm install grunt-exec --save-dev
-    ```
+3. **Install Dependencies**: Install the necessary dependencies by running `npm install`.
 
 4. **Run Initial Setup**: Run any initial setup commands provided by the project. This may include database migrations, environment configurations, or other setup tasks.
 
@@ -79,11 +73,11 @@ Thank you for considering contributing to our project! We appreciate your intere
 - These modules use `export`/`import` syntax and are bundled for browser compatibility.
 - Legacy `.js` files remain for backward compatibility, but `.mjs` is preferred for new features.
 
-### Building the Project (Webpack)
-- **Development Build**: Run `npm run build:dev` to bundle and output to `package/dev/` (unminified, with sourcemaps).
-- **Production Build**: Run `npm run build:prd` to bundle and output to `package/prd/` (minified, optimized).
-- The build process uses Webpack and replaces all previous Grunt-based steps.
-- All assets (HTML, CSS, JS, JSON) are copied and optimized as needed.
+### Building the Project (Vite)
+- **Development Server**: Run `npm run dev` to start the Vite development server.
+- **Development Build**: Run `npm run build:dev` to create a development build in the `dist/dev/` directory.
+- **Production Build**: Run `npm run build:prd` to create a production build in the `dist/prd/` directory.
+- The build process is handled entirely by Vite.
 
 ### Running the Build
 ```bash

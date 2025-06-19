@@ -19,7 +19,7 @@ The source code of the SFIA POSITION DESCRIPTION Tool is made available under th
 
 ## ES6 Modules and Modern Build Process
 
-This project now uses modern JavaScript ES6 modules (`.mjs` files) for core application logic. These modules provide improved maintainability, tree-shaking, and future compatibility. The build process is handled by Webpack, which bundles, transpiles, and optimizes all `.mjs` and related assets for both development and production environments.
+This project uses Vite for a fast and modern development experience. All core application logic is written in modern JavaScript ES6 modules (`.mjs` files), which are efficiently handled by Vite's build process. Vite provides a streamlined workflow for development, bundling, and optimization.
 
 - **Source modules**: Located in `src/modules/*.mjs`
 - **Development build**: Output to `package/dev/` (unminified, with sourcemaps)

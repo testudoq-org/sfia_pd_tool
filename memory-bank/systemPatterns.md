@@ -3,7 +3,7 @@
 ## Core Architecture
 
 ### Build System
-- **Primary Build Tool**: Hybrid Grunt + Webpack
+- **Primary Build Tool**: Vite
 - **Source Format**: ES6 modules (`.mjs`) + Legacy JavaScript (`.js`)
 - **Development Output**: `package/dev/` (unminified, sourcemaps)
 - **Production Output**: `package/prd/` (minified, optimized)
@@ -12,15 +12,11 @@
 
 ### Operational Mechanics
 - **Entry Points**: 
-  - ES6 modules: `src/modules/*.mjs` bundled by Webpack
-  - Legacy files: Concatenated by Grunt, included in HTML
-- **Bundling Strategy**: 
-  - Webpack bundles ES6 modules with Babel transpilation
-  - Grunt concatenates legacy JavaScript files
-  - Both outputs combined in final HTML
-- **Transpilation**: Babel transpiles ES6+ code for browser compatibility
-- **Asset Handling**: HTML, CSS, JSON, and static assets copied by Grunt
-- **Sourcemaps**: Generated for development builds (both Grunt and Webpack)
+  - **Entry Point**: `sfiapdgen.html`
+  - **Bundling Strategy**: Vite handles all bundling, including ES6 modules and legacy scripts.
+  - **Transpilation**: Vite handles transpilation for browser compatibility.
+  - **Asset Handling**: All assets (HTML, CSS, JSON, etc.) are handled by Vite.
+  - **Sourcemaps**: Generated for development builds by Vite.
 - **Minification**: Enabled for production builds
 - **Output Structure**:
   - `package/dev/`: Unminified JS, full sourcemaps, all assets
@@ -28,23 +24,22 @@
 
 ### Build Commands
 ```bash
-npm run build:dev   # Development: Grunt concat + Webpack bundle
-npm run build:prd   # Production: Grunt + Webpack + minification
+npm run dev         # Start Vite dev server
+npm run build:dev   # Development build
+npm run build:prd   # Production build
 ```
 
-### Critical Features Preserved from Legacy System
-- Asset copying (HTML, CSS, JSON, images) - **Grunt**
-- JavaScript concatenation for legacy files - **Grunt** 
-- Minification and sourcemaps - **Grunt + Webpack**
-- Environment-specific builds (dev/prod) - **Both**
-- Content Security Policy for production - **Grunt**
-- All legacy functionality mapped to modern equivalents
+### Build System Features
+- **Asset Handling**: Vite manages all assets, including HTML, CSS, JSON, and images.
+- **JavaScript Bundling**: Vite handles bundling of all JavaScript, including legacy files.
+- **Minification and Sourcemaps**: Handled by Vite for production and development builds respectively.
+- **Environment-specific Builds**: Vite supports development and production build modes.
+- **Content Security Policy**: Managed through Vite configuration.
 
 ### Migration Strategy
 - **Phase 1** ✅: ES6 infrastructure established (url handling, utilities)
-- **Phase 2**: Gradually convert legacy `.js` files to `.mjs` modules  
-- **Phase 3**: Full Webpack migration when all files are ES6
-- **Backward Compatibility**: Legacy functions remain accessible during transition
+- **Modernization**: The system is now fully migrated to Vite.
+- **Backward Compatibility**: Legacy functions are still supported and handled by Vite.
 
 ### Application Structure
 
@@ -94,9 +89,8 @@ graph TD
    - Ace Editor 1.32.8
 
 2. **Development Tools**:
-   - Webpack for module bundling
+   - Vite for module bundling and build automation
    - CodeceptJS for testing
-   - Grunt for build automation
 
 ## Design Patterns
 
@@ -150,8 +144,7 @@ graph LR
 ## Known Technical Debt
 
 1. **Build System**
-   - Legacy Grunt configuration needs modernization
-   - Potential migration to newer build tools
+   - The build system has been modernized to use Vite.
 
 2. **Dependencies**
    - Some CDN dependencies could be localized
