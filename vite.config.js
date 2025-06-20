@@ -87,6 +87,14 @@ export default defineConfig(({ mode }) => ({
           htmlContent = htmlContent.replace(/\.\.\/assets\//g, './assets/');
           // Update relative paths from ../styles- to ./styles-
           htmlContent = htmlContent.replace(/\.\.\/styles-/g, './styles-');
+
+          // Inject theme-style link if missing
+          if (!/id=["']theme-style["']/.test(htmlContent)) {
+            htmlContent = htmlContent.replace(
+              /(<\/head>)/i,
+              `<link rel="stylesheet" id="theme-style" href="./styles-light.css">\n$1`
+            );
+          }
           
           // Write to target location
           fs.writeFileSync(targetHtmlPath, htmlContent);

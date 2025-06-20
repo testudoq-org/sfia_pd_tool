@@ -325,6 +325,7 @@
 
 	// Set initial icon on load
 	document.addEventListener('DOMContentLoaded', function() {
+		console.log('[DEBUG] theme-style link present:', !!document.getElementById('theme-style'));
 		setThemeIcon(isDarkTheme());
 	});
 </script>
