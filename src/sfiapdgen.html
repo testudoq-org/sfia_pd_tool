@@ -287,6 +287,9 @@
 	const themeBtn = document.getElementById('theme-toggle-btn');
 	const themeIcon = document.getElementById('theme-toggle-icon');
 	const themeStyle = document.getElementById('theme-style');
+	const darkStyle = Array.from(document.getElementsByTagName('link')).find(
+		link => link.getAttribute('href') && link.getAttribute('href').includes('dark')
+	);
 
 	function setThemeIcon(isDark) {
 		if (isDark) {
@@ -307,10 +310,12 @@
 	function toggleTheme() {
 		const isDark = isDarkTheme();
 		if (isDark) {
-			themeStyle.setAttribute('href', 'styles-light.css');
+			if (themeStyle) themeStyle.setAttribute('href', 'styles-light.css');
+			if (darkStyle) darkStyle.disabled = true;
 			setThemeIcon(false);
 		} else {
-			themeStyle.setAttribute('href', 'styles-dark.css');
+			if (themeStyle) themeStyle.setAttribute('href', 'styles-dark.css');
+			if (darkStyle) darkStyle.disabled = false;
 			setThemeIcon(true);
 		}
 	}
