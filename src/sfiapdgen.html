@@ -287,9 +287,7 @@
 	const themeBtn = document.getElementById('theme-toggle-btn');
 	const themeIcon = document.getElementById('theme-toggle-icon');
 	const themeStyle = document.getElementById('theme-style');
-	const darkStyle = Array.from(document.getElementsByTagName('link')).find(
-		link => link.getAttribute('href') && link.getAttribute('href').includes('dark')
-	);
+	const darkStyle = document.querySelector('link[rel="stylesheet"][href*="dark"]');
 
 	function setThemeIcon(isDark) {
 		if (isDark) {
@@ -331,6 +329,7 @@
 	// Set initial icon on load
 	document.addEventListener('DOMContentLoaded', function() {
 		console.log('[DEBUG] theme-style link present:', !!document.getElementById('theme-style'));
+		console.log('[DEBUG] dark-style link present:', !!document.querySelector('link[rel="stylesheet"][href*="dark"]'));
 		setThemeIcon(isDarkTheme());
 	});
 </script>
