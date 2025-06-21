@@ -1,2 +1,534 @@
-@import url("styles-light.css");
-@import url("styles-dark.css");
+/* === Modern CSS Theme: Unified Light-Dark Implementation === */
+
+/* Enable automatic theme switching */
+:root {
+  color-scheme: light dark;
+}
+/* Explicit theme classes for manual override */
+body.light-theme {
+  color-scheme: light;
+}
+body.dark-theme {
+  color-scheme: dark;
+}
+
+/* Base styles using light-dark() for all themeable properties */
+body {
+  color: light-dark(#222222, #f3f3f3);
+  background: light-dark(#ffffff, #181a1b);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* --- Comprehensive dark mode and accessibility for cards, forms, tables --- */
+.card, .card-body, .col-12, .row.g-3, .row.g-3.mt-3 {
+  background: light-dark(#fff, #23272f);
+  color: light-dark(#222, #f3f6fa);
+  border: 1px solid light-dark(#e0e0e0, #33383b);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px light-dark(rgba(0,0,0,0.06), rgba(0,0,0,0.5));
+}
+.card-header, .card-footer {
+  background: light-dark(#f7f7f7, #23272f);
+  color: inherit;
+  border-bottom: 1px solid light-dark(#e0e0e0, #33383b);
+}
+.card-footer {
+  border-top: 1px solid light-dark(#e0e0e0, #33383b);
+}
+
+.form-control, .form-select, input[type="text"], input[type="password"], input[type="email"], textarea, select {
+  background: light-dark(#f9f9f9, #2c313a);
+  color: light-dark(#222, #f3f6fa);
+  border: 1px solid light-dark(#ccc, #444);
+  border-radius: 4px;
+  padding: 8px;
+  transition: background 0.3s, color 0.3s, border 0.3s;
+}
+input:focus, select:focus, button:focus, textarea:focus {
+  outline: 2px solid light-dark(#0066cc, #4ea1f7);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px light-dark(rgba(0,102,204,0.15), rgba(78,161,247,0.15));
+}
+
+button, .btn, .btn-primary, .btn-secondary, .btn-info {
+  background: light-dark(#0066cc, #4ea1f7);
+  color: light-dark(#fff, #181a1b);
+  border: 1px solid light-dark(#e0e0e0, #33383b);
+  border-radius: 4px;
+  transition: background 0.3s, color 0.3s, border 0.3s;
+}
+button:hover, .btn:hover, .btn-primary:hover, .btn-secondary:hover, .btn-info:hover {
+  background: light-dark(#004999, #90caf9);
+}
+
+label {
+  color: light-dark(#222, #f3f6fa);
+  font-weight: 500;
+}
+
+::-webkit-input-placeholder, ::placeholder {
+  color: light-dark(#888, #bbb);
+  opacity: 1;
+}
+
+.sfia-lors-table, .table-responsive, table {
+  background: light-dark(#fff, #23272f);
+  color: light-dark(#222, #f3f6fa);
+  border-collapse: collapse;
+}
+.sfia-lors-table thead th, table thead th, th {
+  background: light-dark(#f2f2f2, #23272f);
+  color: light-dark(#222, #f3f6fa);
+  border: 1px solid light-dark(#ddd, #444);
+  font-weight: 600;
+  transition: background 0.3s, color 0.3s;
+}
+.sfia-lors-table tbody td, table tbody td {
+  border: 1px solid light-dark(#ddd, #444);
+}
+
+/* Alternating table row colors for light/dark mode */
+.sfia-lors-table tbody tr:nth-child(even),
+table tbody tr:nth-child(even) {
+  background: light-dark(#f7f7f7, #23272f);
+}
+.sfia-lors-table tbody tr:nth-child(odd),
+table tbody tr:nth-child(odd) {
+  background: light-dark(#fff, #181a1b);
+}
+
+/* Ensure <th> and <tr> headers are theme-aware */
+.sfia-lors-table thead th, table thead th {
+  background: light-dark(#f2f2f2, #23272f);
+  color: light-dark(#222, #f3f6fa);
+  border: 1px solid light-dark(#ddd, #444);
+}
+
+/* Navbar theme switching */
+.navbar.bg-light {
+  background-color: light-dark(#f8f9fa, #23272f) !important;
+  color: light-dark(#222, #f3f6fa) !important;
+}
+.navbar.bg-dark {
+  background-color: light-dark(#23272f, #181a1b) !important;
+  color: light-dark(#f3f6fa, #f3f6fa) !important;
+}
+.navbar, .navbar-nav .nav-link, .navbar-brand {
+  color: inherit !important;
+}
+
+@media (prefers-contrast: high) {
+  .card, .card-body, .col-12, .form-control, .form-select, input, textarea, select, button, .btn {
+    background: light-dark(#fff, #000);
+    color: light-dark(#000, #fff);
+    border-color: light-dark(#000, #fff);
+  }
+}
+
+/* Links */
+a {
+  color: light-dark(#0066cc, #4ea1f7);
+  text-decoration-color: light-dark(rgba(0,102,204,0.4), rgba(78,161,247,0.4));
+}
+a:hover {
+  color: light-dark(#004999, #90caf9);
+  text-decoration-color: light-dark(rgba(0,73,153,0.6), rgba(144,202,249,0.6));
+}
+
+/* Focus outline */
+:focus {
+  outline: light-dark(2px solid #0066cc, 2px solid #4ea1f7);
+}
+
+/* --- Layout, Utility, and Responsive Classes (from both old CSS files) --- */
+
+/* Header */
+#top {
+  min-height: 0;
+}
+
+/* Table Responsive */
+.table-responsive {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 300px);
+}
+
+/* Output Section */
+#sfia-output:empty:before {
+  content: "To begin, please select a skill level";
+}
+#sfia-output {
+  height: 502px;
+  overflow: scroll;
+}
+
+/* Column Widths */
+.sfia-table td.root_key,
+.sfia-table th.root_key_th { width: 16%; min-width: 115px; }
+.sfia-table td.sub_key,
+.sfia-table th.sub_key_th { width: 16%; min-width: 115px; }
+.sfia-table td.skill_key,
+.sfia-table th.skill_key_th { width: 28%; min-width: 210px; }
+.sfia-table td.col-checkbox,
+.sfia-table th.skill_level_th { width: 5%; min-width: 45px; }
+
+/* Skill Key */
+.sfia-table td.skill_key span { margin-right: 15px; }
+
+/* Skill Level */
+.sfia-table th.skill_level_th { padding-right: 15px; text-align: center; }
+
+/* Checkbox Styling */
+.col-checkbox input[type=checkbox] { font-size: 2em; }
+
+/* Grid Layout Styles */
+.row.mt-3 { margin-bottom: 20px; }
+.panel { height: 100%; margin-bottom: 20px; }
+.panel-body { min-height: 300px; max-height: 300px; overflow-y: auto; }
+.levels-of-responsibility { height: 100%; }
+.selected { background-color: #ccc; color: #fff; }
+
+/* Responsive adjustments */
+@media (min-width: 992px) {
+  .col-lg-8, .col-lg-4 { margin-bottom: 20px; }
+}
+@media (max-width: 768px) { /* Adjust styles for smaller screens here */ }
+@media (min-width: 768px) and (max-width: 992px) { /* Adjust styles for medium screens here */ }
+@media (min-width: 992px) and (max-width: 1200px) { /* Adjust styles for large screens here */ }
+@media (min-width: 1200px) { /* Adjust styles for extra-large screens here */ }
+
+/* SFIA Levels of Responsibility Table */
+.sfia-lors-table { width: 100%; border-collapse: collapse; text-align: center; }
+.sfia-lors-table thead th { background-color: #f2f2f2; padding: 10px; border: 1px solid #ddd; font-weight: bold; }
+.sfia-lors-table tbody td { padding: 10px; border: 1px solid #ddd; vertical-align: middle; }
+
+/* Tooltip */
+.tooltiptext {
+  visibility: hidden;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  font-size: 12px;
+}
+.sfia-lors-table input[type="checkbox"]:hover + .tooltiptext { visibility: visible; }
+
+/* Sticky footer CSS */
+html { position: relative; min-height: 100%; }
+body { margin-bottom: 60px; }
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  background-color: light-dark(#f5f5f5, #23272f);
+  color: light-dark(#222, #f3f6fa);
+  border-top: 1px solid light-dark(#e0e0e0, #33383b);
+}
+.footer p {
+  margin: 20px 0;
+  color: inherit;
+}
+
+.text-muted {
+  color: light-dark(#6c757d, #b0b8c1) !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.container, .container-fluid {
+  background: light-dark(#fff, #181a1b);
+  color: light-dark(#222, #f3f6fa);
+  border-radius: 0.5rem;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* LoR Output */
+.lor-output-container {
+  background-color: light-dark(#f4f4f4, #23272f);
+  color: light-dark(#222, #f3f6fa);
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px light-dark(rgba(0,0,0,0.1), rgba(0,0,0,0.5));
+}
+.lor-category {
+  color: light-dark(#333, #f3f6fa);
+  margin-bottom: 20px;
+}
+.lor-item {
+  background-color: light-dark(#fff, #2c313a);
+  color: light-dark(#222, #f3f6fa);
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px light-dark(rgba(0,0,0,0.05), rgba(0,0,0,0.3));
+}
+.lor-title {
+  color: light-dark(#007bff, #90caf9);
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+.lor-level, .lor-description {
+  color: light-dark(#333, #f3f6fa);
+  font-size: 16px;
+  margin-bottom: 0;
+}
+
+/* Grid Layout Adjustments */
+.container-fluid .row { display: flex; flex-wrap: wrap; }
+.col-lg-8 .panel, .col-lg-4 .panel { height: auto; margin-bottom: 20px; }
+.col-lg-8 .panel { display: flex; flex-direction: column; height: 100%; }
+.col-lg-8 .panel .table-responsive { flex: 1; overflow-y: auto; }
+.col-lg-4 { display: flex; flex-direction: column; }
+.col-lg-4 .panel { flex: 0 0 auto; }
+.col-lg-8 .panel .table-responsive { max-height: 600px; overflow-y: auto; }
+.levels-of-responsibility .table-responsive { max-height: 300px; overflow-y: auto; }
+
+/* Remove unnecessary spacing */
+.mt-3 { margin-top: 0 !important; }
+
+/* Ensure the panel footer is at the bottom */
+.panel-footer { display: flex; justify-content: space-between; align-items: center; }
+
+/* Hamburger Menu Styles and Utility Classes */
+.absolute { position: absolute; }
+.top-2 { top: 0.5rem; }
+.right-2 { right: 0.5rem; }
+.text-gray-500 { color: #6b7280; }
+.hover\:text-gray-700:hover { color: #374151; }
+.h-6 { height: 1.5rem; }
+.w-6 { width: 1.5rem; }
+.hidden { display: none; }
+.bg-white { background-color: #fff; }
+.rounded-lg { border-radius: 0.5rem; }
+.shadow-md { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
+.p-6 { padding: 1.5rem; }
+.space-y-4 > * + * { margin-top: 1rem; }
+.flex { display: flex; }
+.space-x-6 > * + * { margin-left: 1.5rem; }
+.items-center { align-items: center; }
+.space-x-2 > * + * { margin-left: 0.5rem; }
+.cursor-pointer { cursor: pointer; }
+.text-blue-500 { color: #3b82f6; }
+.h-5 { height: 1.25rem; }
+.w-5 { width: 1.25rem; }
+.text-gray-600 { color: #4b5563; }
+.block { display: block; }
+.text-sm { font-size: 0.875rem; }
+.font-medium { font-weight: 500; }
+.text-gray-700 { color: #374151; }
+.mb-1 { margin-bottom: 0.25rem; }
+.relative { position: relative; }
+.w-full { width: 100%; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.border { border-width: 1px; }
+.border-gray-300 { border-color: #d1d5db; }
+.rounded-md { border-radius: 0.375rem; }
+.focus\:ring-blue-500:focus { --tw-ring-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.5); outline: 2px solid transparent; outline-offset: 2px; }
+.focus\:border-blue-500:focus { border-color: #3b82f6; }
+.inset-y-0 { top: 0; bottom: 0; }
+.right-0 { right: 0; }
+.px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+.transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-timing-function: cubic-bezier(0.4,0,0.2,1); transition-duration: 150ms; }
+.hover\:bg-blue-600:hover { background-color: #2563eb; }
+.mr-2 { margin-right: 0.5rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+
+/* Settings Menu and Panel */
+.settings-menu { position: relative; z-index: 1000; }
+.hamburger-btn { background: none; border: none; cursor: pointer; padding: 8px; transition: transform 0.3s ease; display: flex; align-items: center; justify-content: center; }
+.hamburger-btn:hover { transform: scale(1.1); }
+.hamburger-btn svg { fill: #666; }
+.settings-panel { position: absolute; top: 100%; right: 0; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 20px; min-width: 300px; z-index: 1001; opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
+.settings-panel.hidden { opacity: 0; visibility: hidden; pointer-events: none; display: none; }
+.api-selector { margin-bottom: 20px; }
+.api-option { display: block; margin: 10px 0; cursor: pointer; }
+.input-group { margin-bottom: 15px; position: relative; }
+.input-group label { display: block; margin-bottom: 5px; color: #666; }
+.input-group input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; padding-right: 40px; }
+.toggle-password { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #666; cursor: pointer; }
+.save-btn { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+.save-btn:hover { background: #0056b3; }
+
+/* Notification Styles */
+.notification-container { position: fixed; top: 20px; right: 20px; z-index: 1050; max-width: 350px; }
+.notification { position: relative; padding: 15px 40px 15px 15px; margin-bottom: 10px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: slideIn 0.5s ease-out; opacity: 1; transition: opacity 0.3s ease-in-out; }
+.notification-close { position: absolute; top: 50%; right: 10px; transform: translateY(-50%); font-size: 20px; font-weight: bold; color: inherit; text-decoration: none; opacity: 0.5; cursor: pointer; background: none; border: none; padding: 0 5px; }
+.notification-close:hover { opacity: 1; }
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.notification.fade-out { opacity: 0; }
+
+/* SFIA Table Layout Fixes */
+.sfia-table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+.sfia-table thead, .sfia-table tbody, .sfia-table tr { display: table; width: 100%; table-layout: fixed; }
+.sfia-table tbody { display: block; overflow-y: auto; max-height: 600px; width: calc(100% + 17px); }
+.sfia-table th:nth-child(1), .sfia-table td:nth-child(1) { width: 15%; }
+.sfia-table th:nth-child(2), .sfia-table td:nth-child(2) { width: 15%; }
+.sfia-table th:nth-child(3), .sfia-table td:nth-child(3) { width: 30%; }
+.sfia-table th:nth-child(n+4), .sfia-table td:nth-child(n+4) { width: 5%; text-align: center; padding: 10px 5px; }
+.sfia-table thead { position: sticky; top: 0; z-index: 2; background: rgb(100,100,100); display: table; width: 100%; }
+.sfia-table th, .sfia-table td { padding: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
+.sfia-table thead, .sfia-table tbody { display: table; width: 100%; }
+
+/* --- End of migrated layout, utility, and responsive classes --- */
+
+/* --- Themeable and accessibility rules remain as previously migrated --- */
+
+/* Category Background Colors */
+/* Restore vivid light mode category colors, keep dark mode support */
+.strategy_and_architecture {
+  background-color: light-dark(#00bf7d, #004d40);
+  color: light-dark(#000, #fff);
+}
+body.light-theme .strategy_and_architecture {
+  background-color: #00bf7d;
+  color: #fff;
+}
+body.light-theme .change_and_transformation {
+  background-color: #00b4c5;
+  color: light-dark(#000, #fff);
+}
+body.light-theme .development_and_implementation {
+  background-color: #0073e6;
+  color: #fff;
+}
+body.light-theme .delivery_and_operation {
+  background-color: #2546f0;
+  color: light-dark(#000, #fff);
+}
+body.light-theme .skills_and_quality {
+  background-color: #5928ed;
+  color: #fff;
+}
+body.light-theme .relationships_and_engagement {
+  background-color: #f64d0a;
+  color: light-dark(#000, #fff);
+}
+body.light-theme .people_and_skills {
+  background-color: rgb(0,155,205);
+  color: #fff;
+}
+.change_and_transformation {
+  background-color: light-dark(#00b4c5, #01579b);
+  color: light-dark(#000, #fff);
+}
+.development_and_implementation {
+  background-color: light-dark(#0073e6, #1a237e);
+  color: #fff;
+}
+.delivery_and_operation {
+  background-color: light-dark(#2546f0, #311b92);
+  color: light-dark(#000, #fff);
+}
+.skills_and_quality {
+  background-color: light-dark(#5928ed, #4a148c);
+  color: #fff;
+}
+.relationships_and_engagement {
+  background-color: light-dark(#f64d0a, #b71c1c);
+  color: light-dark(#000, #fff);
+}
+.people_and_skills {
+  background-color: light-dark(rgb(0,155,205), #006064);
+  color: #fff;
+}
+
+/* Notification Styles */
+.notification.success {
+  background-color: light-dark(#d4edda, #1b5e20);
+  border-color: light-dark(#c3e6cb, #2d8a3d);
+  color: light-dark(#155724, #fff);
+}
+.notification.error {
+  background-color: light-dark(#f8d7da, #c62828);
+  border-color: light-dark(#f5c6cb, #d32f2f);
+  color: light-dark(#721c24, #fff);
+}
+.notification.info {
+  background-color: light-dark(#cce5ff, #0d47a1);
+  border-color: light-dark(#b8daff, #1565c0);
+  color: light-dark(#004085, #fff);
+}
+
+/* Settings Panel */
+.settings-panel {
+  background-color: light-dark(#fff, #181a1b);
+  border: 1px solid light-dark(#e0e0e0, #33383b);
+  color: light-dark(#222222, #f3f3f3);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: light-dark(#0066cc, #4ea1f7);
+  border-color: light-dark(#e0e0e0, #33383b);
+  color: light-dark(#fff, #181a1b);
+}
+.btn-primary:hover {
+  background-color: light-dark(#004999, #90caf9);
+}
+
+/* Accessibility: High Contrast */
+@media (prefers-contrast: high) {
+  :root {
+    --color-text-primary: light-dark(#000000, #ffffff);
+    --color-bg-primary: light-dark(#ffffff, #000000);
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .sfia-table, .sfia-table th, .sfia-table td {
+    background: #fff !important;
+    color: #000 !important;
+    border-color: #000 !important;
+  }
+}
+/* Distinct row and column outlines for sfia-content table, styled like sfia-lors-table */
+#sfia-content tr > td,
+#sfia-content tr > th {
+  border-bottom: 1px solid light-dark(#ddd, #444);
+  border-right: 1px solid light-dark(#ddd, #444);
+}
+#sfia-content tr > td:last-child,
+#sfia-content tr > th:last-child {
+  border-right: none;
+/* Ensure font and background contrast in light mode for sfia-content tables */
+body.light-theme #sfia-content,
+body.light-theme #sfia-content tr,
+body.light-theme #sfia-content td,
+body.light-theme #sfia-content th {
+  background: #fff !important;
+  color: #222 !important;
+}
+/* Ensure font color is visible in light mode for sfia-content tables */
+body.light-theme #sfia-content tr > td,
+body.light-theme #sfia-content tr > th {
+  color: #222;
+}
+}
+#sfia-content tr:last-child > td,
+#sfia-content tr:last-child > th {
+  border-bottom: none;
+}

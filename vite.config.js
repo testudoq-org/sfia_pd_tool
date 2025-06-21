@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
             return '[name][extname]';
           }
           // Keep CSS files with recognizable names for theme toggle
-          if (assetInfo.name?.includes('styles-light') || assetInfo.name?.includes('styles-dark')) {
+          if (assetInfo.name?.includes('styles.css') || assetInfo.name?.includes('styles.css')) {
             return '[name][extname]';
           }
           return 'assets/[name]-[hash][extname]';
@@ -64,14 +64,9 @@ export default defineConfig(({ mode }) => ({
         this.emitFile({
           type: 'asset',
           fileName: 'styles-light.css',
-          source: fs.readFileSync(resolve('src', 'styles-light.css'))
+          source: fs.readFileSync(resolve('src', 'styles.css'))
         });
         
-        this.emitFile({
-          type: 'asset',
-          fileName: 'styles-dark.css',
-          source: fs.readFileSync(resolve('src', 'styles-dark.css'))
-        });
       },
       writeBundle(options, bundle) {
         // Move the main HTML file from src/sfiapdgen.html to sfiapdgen.html
@@ -87,6 +82,14 @@ export default defineConfig(({ mode }) => ({
           htmlContent = htmlContent.replace(/\.\.\/assets\//g, './assets/');
           // Update relative paths from ../styles- to ./styles-
           htmlContent = htmlContent.replace(/\.\.\/styles-/g, './styles-');
+
+          // Inject theme-style link if missing
+          if (!/id=["']theme-style["']/.test(htmlContent)) {
+            htmlContent = htmlContent.replace(
+              /(<\/head>)/i,
+              `<link rel="stylesheet" id="theme-style" href="./styles-light.css">\n$1`
+            );
+          }
           
           // Write to target location
           fs.writeFileSync(targetHtmlPath, htmlContent);

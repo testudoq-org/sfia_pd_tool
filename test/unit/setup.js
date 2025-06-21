@@ -34,10 +34,11 @@ global.window = window;
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+  store: {},
+  getItem: jest.fn((key) => localStorageMock.store[key] || null),
+  setItem: jest.fn((key, value) => { localStorageMock.store[key] = value; }),
+  removeItem: jest.fn((key) => { delete localStorageMock.store[key]; }),
+  clear: jest.fn(() => { localStorageMock.store = {}; }),
 };
 global.localStorage = localStorageMock;
 
@@ -116,6 +117,16 @@ global.loadMJSModule = async function(relativePath) {
       .replace(/export\s+const\s+(\w+)\s*=/g, 'global.$1 = ')
       .replace(/export\s+\{[^}]+\};?/g, '');
     
+    // Handle export { ... } blocks and attach to global
+    const exportBlockMatch = moduleContent.match(/export\s*\{\s*([^\}]+)\s*\};?/);
+    let exportNames = [];
+    if (exportBlockMatch) {
+      exportNames = exportBlockMatch[1]
+        .split(',')
+        .map(s => s.split(' as ').pop().trim())
+        .filter(Boolean);
+    }
+
     // Execute the processed content in a context with mocked dependencies
     const vm = require('vm');
     const context = {
@@ -123,6 +134,9 @@ global.loadMJSModule = async function(relativePath) {
       window: global.window,
       document: global.document,
       console: global.console,
+// Diagnostic: log context keys after running module
+// (Commented out to avoid syntax error in non-Node environments)
+// console.log('[DIAG] context keys after runInContext:', Object.keys(context));
       g_sfiahash: global.g_sfiahash,
       g_lorhash: global.g_lorhash,
       lastExportTime: global.lastExportTime,
@@ -134,6 +148,24 @@ global.loadMJSModule = async function(relativePath) {
     
     vm.createContext(context);
     vm.runInContext(processedContent, context);
+
+    // Attach exported functions from export { ... } to global, handling "as" renames
+    if (exportBlockMatch) {
+      exportBlockMatch[1].split(',').forEach(entry => {
+        const parts = entry.trim().split(/\s+as\s+/);
+        if (parts.length === 2) {
+          const [source, target] = parts;
+          if (context[source.trim()]) {
+            global[target.trim()] = context[source.trim()];
+          }
+        } else {
+          const name = parts[0].trim();
+          if (context[name]) {
+            global[name] = context[name];
+          }
+        }
+      });
+    }
     
     // Copy all new properties back to global scope
     Object.keys(context).forEach(key => {
