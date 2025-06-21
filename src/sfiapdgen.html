@@ -19,8 +19,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/mode-markdown.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/theme-monokai.js"></script>
 	<!-- Add both stylesheets with initial light theme active -->
-	<link rel="stylesheet" href="styles-light.css" id="theme-style">
-	<link rel="stylesheet" href="styles-dark.css" disabled>
+	<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -280,57 +279,76 @@
 			<p class="text-muted">Copyright 2024</p>
 		</div>
 	</footer>
-</body>
-
 <script>
-	// Theme toggle logic for icon and accessibility
-	const themeBtn = document.getElementById('theme-toggle-btn');
-	const themeIcon = document.getElementById('theme-toggle-icon');
-	const themeStyle = document.getElementById('theme-style');
-	const darkStyle = document.querySelector('link[rel="stylesheet"][href*="dark"]');
+  // Theme toggle logic using body class and localStorage
+  const themeBtn = document.getElementById('theme-toggle-btn');
+  const themeIcon = document.getElementById('theme-toggle-icon');
+  const body = document.body;
 
-	function setThemeIcon(isDark) {
-		if (isDark) {
-			themeIcon.textContent = '🌞';
-			themeBtn.setAttribute('aria-label', 'Switch to light mode');
-			themeBtn.setAttribute('title', 'Switch to light mode');
-		} else {
-			themeIcon.textContent = '🌙';
-			themeBtn.setAttribute('aria-label', 'Switch to dark mode');
-			themeBtn.setAttribute('title', 'Switch to dark mode');
-		}
-	}
+  function setTheme(theme) {
+    body.classList.remove('light-theme', 'dark-theme');
+    if (theme === 'dark') {
+      body.classList.add('dark-theme');
+      themeIcon.textContent = '🌞';
+      themeBtn.setAttribute('aria-label', 'Switch to light mode');
+      themeBtn.setAttribute('title', 'Switch to light mode');
+    } else if (theme === 'light') {
+      body.classList.add('light-theme');
+      themeIcon.textContent = '🌙';
+      themeBtn.setAttribute('aria-label', 'Switch to dark mode');
+      themeBtn.setAttribute('title', 'Switch to dark mode');
+    } else {
+      // System default
+      themeIcon.textContent = '🖥️';
+      themeBtn.setAttribute('aria-label', 'Switch to dark mode');
+      themeBtn.setAttribute('title', 'Switch to dark mode');
+    }
+  }
 
-	function isDarkTheme() {
-		return themeStyle.getAttribute('href').includes('dark');
-	}
+  function getStoredTheme() {
+    return localStorage.getItem('theme-mode');
+  }
 
-	function toggleTheme() {
-		const isDark = isDarkTheme();
-		if (isDark) {
-			if (themeStyle) themeStyle.setAttribute('href', 'styles-light.css');
-			if (darkStyle) darkStyle.disabled = true;
-			setThemeIcon(false);
-		} else {
-			if (themeStyle) themeStyle.setAttribute('href', 'styles-dark.css');
-			if (darkStyle) darkStyle.disabled = false;
-			setThemeIcon(true);
-		}
-	}
+  function storeTheme(theme) {
+    if (theme) {
+      localStorage.setItem('theme-mode', theme);
+    } else {
+      localStorage.removeItem('theme-mode');
+    }
+  }
 
-	themeBtn.addEventListener('click', toggleTheme);
-	themeBtn.addEventListener('keydown', function(e) {
-		if (e.key === 'Enter' || e.key === ' ') {
-			e.preventDefault();
-			toggleTheme();
-		}
-	});
+  function getCurrentTheme() {
+    if (body.classList.contains('dark-theme')) return 'dark';
+    if (body.classList.contains('light-theme')) return 'light';
+    return null;
+  }
 
-	// Set initial icon on load
-	document.addEventListener('DOMContentLoaded', function() {
-		console.log('[DEBUG] theme-style link present:', !!document.getElementById('theme-style'));
-		console.log('[DEBUG] dark-style link present:', !!document.querySelector('link[rel="stylesheet"][href*="dark"]'));
-		setThemeIcon(isDarkTheme());
-	});
+  function toggleTheme() {
+    const current = getCurrentTheme();
+    if (current === 'dark') {
+      setTheme('light');
+      storeTheme('light');
+    } else if (current === 'light') {
+      setTheme(null);
+      storeTheme(null);
+    } else {
+      setTheme('dark');
+      storeTheme('dark');
+    }
+  }
+
+  themeBtn.addEventListener('click', toggleTheme);
+  themeBtn.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleTheme();
+    }
+  });
+
+  // On page load, apply stored theme
+  document.addEventListener('DOMContentLoaded', function() {
+    const stored = getStoredTheme();
+    setTheme(stored);
+  });
 </script>
 </html>
