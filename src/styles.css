@@ -320,3 +320,17 @@ body { margin-bottom: 60px; }
     border-color: #000 !important;
   }
 }
+/* Distinct row and column outlines for sfia-content table, styled like sfia-lors-table */
+#sfia-content tr > td,
+#sfia-content tr > th {
+  border-bottom: 1px solid light-dark(#ddd, #444);
+  border-right: 1px solid light-dark(#ddd, #444);
+}
+#sfia-content tr > td:last-child,
+#sfia-content tr > th:last-child {
+  border-right: none;
+}
+#sfia-content tr:last-child > td,
+#sfia-content tr:last-child > th {
+  border-bottom: none;
+}
