@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
             return '[name][extname]';
           }
           // Keep CSS files with recognizable names for theme toggle
-          if (assetInfo.name?.includes('styles-light') || assetInfo.name?.includes('styles-dark')) {
+          if (assetInfo.name?.includes('styles.css') || assetInfo.name?.includes('styles.css')) {
             return '[name][extname]';
           }
           return 'assets/[name]-[hash][extname]';
@@ -64,14 +64,9 @@ export default defineConfig(({ mode }) => ({
         this.emitFile({
           type: 'asset',
           fileName: 'styles-light.css',
-          source: fs.readFileSync(resolve('src', 'styles-light.css'))
+          source: fs.readFileSync(resolve('src', 'styles.css'))
         });
         
-        this.emitFile({
-          type: 'asset',
-          fileName: 'styles-dark.css',
-          source: fs.readFileSync(resolve('src', 'styles-dark.css'))
-        });
       },
       writeBundle(options, bundle) {
         // Move the main HTML file from src/sfiapdgen.html to sfiapdgen.html
