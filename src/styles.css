@@ -1,2 +1,58 @@
 @import url("styles-light.css");
 @import url("styles-dark.css");
+/* === Theme Management: CSS Custom Properties (Additive, Step 2) === */
+
+/* Root-level variables: default (light) theme */
+:root {
+  --color-bg: #ffffff;
+  --color-text: #222222;
+  --color-accent: #0066cc;
+  --color-border: #e0e0e0;
+  --color-link: #0066cc;
+  --color-link-hover: #004999;
+  --focus-outline: 2px solid #0066cc;
+  --transition-theme: background 0.3s, color 0.3s;
+}
+
+/* Light theme overrides (optional, for explicitness) */
+[data-theme="light"],
+.theme-light {
+  --color-bg: #ffffff;
+  --color-text: #222222;
+  --color-accent: #0066cc;
+  --color-border: #e0e0e0;
+  --color-link: #0066cc;
+  --color-link-hover: #004999;
+  --focus-outline: 2px solid #0066cc;
+}
+
+/* Dark theme overrides */
+[data-theme="dark"],
+.theme-dark {
+  --color-bg: #181a1b;
+  --color-text: #f3f3f3;
+  --color-accent: #4ea1f7;
+  --color-border: #33383b;
+  --color-link: #4ea1f7;
+  --color-link-hover: #90caf9;
+  --focus-outline: 2px solid #4ea1f7;
+}
+
+/* Example usage (non-intrusive, for future migration steps):
+   body {
+     background: var(--color-bg);
+     color: var(--color-text);
+     transition: var(--transition-theme);
+   }
+   a {
+     color: var(--color-link);
+   }
+   a:hover {
+     color: var(--color-link-hover);
+   }
+   :focus {
+     outline: var(--focus-outline);
+   }
+*/
+
+/* All changes above are additive and do not alter existing selectors or rules. */
