@@ -54,36 +54,102 @@ const toggleTheme = () => {
  * Initialize theme on DOM content loaded
  */
 const initializeTheme = () => {
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    // Support 'system' mode: follow system preference, otherwise use explicit user setting
+    let savedTheme = localStorage.getItem('theme');
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const themeIcon = document.getElementById('theme-toggle-icon');
     const themeStyle = document.getElementById('theme-style');
 
-    // Set theme stylesheet
-    if (themeStyle) {
-        themeStyle.setAttribute('href', savedTheme === 'dark' ? 'styles-dark.css' : 'styles-light.css');
-    }
-    // Set icon and labels
-    if (themeIcon && themeToggleBtn) {
-        if (savedTheme === 'dark') {
-            console.log('[ThemeToggle] Setting icon for light mode:', '🌞');
-            themeIcon.textContent = '🌞';
-            themeToggleBtn.setAttribute('aria-label', 'Switch to light mode');
-            themeToggleBtn.setAttribute('title', 'Switch to light mode');
-        } else {
-            themeIcon.textContent = '🌙';
-            themeToggleBtn.setAttribute('aria-label', 'Switch to dark mode');
-            themeToggleBtn.setAttribute('title', 'Switch to dark mode');
+    function applyTheme(theme, updateIcon = true) {
+        // Set or remove data-theme and .light-theme for CSS and accessibility
+        if (theme === 'light') {
+            document.body.setAttribute('data-theme', 'light');
+            document.body.classList.add('light-theme');
+        } else if (theme === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            document.body.classList.remove('light-theme');
+        } else if (theme === 'system') {
+            document.body.removeAttribute('data-theme');
+            // Detect system theme and apply .light-theme if system is light
+            const isSystemLight = !window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (isSystemLight) {
+                document.body.classList.add('light-theme');
+            } else {
+                document.body.classList.remove('light-theme');
+            }
+        }
+        // Set stylesheet if using legacy link
+        if (themeStyle) {
+            themeStyle.setAttribute('href', theme === 'dark' ? 'styles-dark.css' : 'styles-light.css');
+        }
+        // Set icon and labels
+        if (themeIcon && themeToggleBtn && updateIcon) {
+            if (theme === 'dark') {
+                themeIcon.textContent = '🌞';
+                themeToggleBtn.setAttribute('aria-label', 'Switch to light mode');
+                themeToggleBtn.setAttribute('title', 'Switch to light mode');
+            } else if (theme === 'light') {
+                themeIcon.textContent = '🌙';
+                themeToggleBtn.setAttribute('aria-label', 'Switch to dark mode');
+                themeToggleBtn.setAttribute('title', 'Switch to dark mode');
+            } else if (theme === 'system') {
+                themeIcon.textContent = '🖥️';
+                themeToggleBtn.setAttribute('aria-label', 'Follow system theme');
+                themeToggleBtn.setAttribute('title', 'Follow system theme');
+            }
         }
     }
-    // Set data-theme attribute for accessibility
-    document.body.setAttribute('data-theme', savedTheme);
 
-    console.log('[DEBUG theme.mjs] initializeTheme: savedTheme =', savedTheme);
+    function getSystemTheme() {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    // Listen for system theme changes if in system mode
+    function setupSystemListener() {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.onchange = (e) => {
+            if (localStorage.getItem('theme') === 'system') {
+                const sysTheme = e.matches ? 'dark' : 'light';
+                // Dynamically update .light-theme class for system mode
+                if (sysTheme === 'light') {
+                    document.body.classList.add('light-theme');
+                } else {
+                    document.body.classList.remove('light-theme');
+                }
+                applyTheme(sysTheme, false);
+                document.body.dispatchEvent(new CustomEvent('themechange', {
+                    detail: { theme: sysTheme }
+                }));
+            }
+        };
+        // Initial sync for .light-theme in system mode
+        if (localStorage.getItem('theme') === 'system') {
+            const isSystemLight = !mq.matches;
+            if (isSystemLight) {
+                document.body.classList.add('light-theme');
+            } else {
+                document.body.classList.remove('light-theme');
+            }
+        }
+    }
+
+    // Determine which theme to apply
+    if (!savedTheme || savedTheme === 'system') {
+        savedTheme = 'system';
+        const sysTheme = getSystemTheme();
+        applyTheme(sysTheme);
+        setupSystemListener();
+    } else if (savedTheme === 'light' || savedTheme === 'dark') {
+        applyTheme(savedTheme);
+    } else {
+        // fallback to light
+        applyTheme('light');
+        localStorage.setItem('theme', 'light');
+    }
 
     // Dispatch custom event for extensibility
     document.body.dispatchEvent(new CustomEvent('themechange', {
-        detail: { theme: savedTheme }
+        detail: { theme: savedTheme === 'system' ? getSystemTheme() : savedTheme }
     }));
 };
 

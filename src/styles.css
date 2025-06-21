@@ -385,33 +385,62 @@ body { margin-bottom: 60px; }
 /* --- Themeable and accessibility rules remain as previously migrated --- */
 
 /* Category Background Colors */
+/* Restore vivid light mode category colors, keep dark mode support */
 .strategy_and_architecture {
   background-color: light-dark(#00bf7d, #004d40);
-  color: white;
+  color: light-dark(#000, #fff);
+}
+body.light-theme .strategy_and_architecture {
+  background-color: #00bf7d;
+  color: #fff;
+}
+body.light-theme .change_and_transformation {
+  background-color: #00b4c5;
+  color: light-dark(#000, #fff);
+}
+body.light-theme .development_and_implementation {
+  background-color: #0073e6;
+  color: #fff;
+}
+body.light-theme .delivery_and_operation {
+  background-color: #2546f0;
+  color: light-dark(#000, #fff);
+}
+body.light-theme .skills_and_quality {
+  background-color: #5928ed;
+  color: #fff;
+}
+body.light-theme .relationships_and_engagement {
+  background-color: #f64d0a;
+  color: light-dark(#000, #fff);
+}
+body.light-theme .people_and_skills {
+  background-color: rgb(0,155,205);
+  color: #fff;
 }
 .change_and_transformation {
   background-color: light-dark(#00b4c5, #01579b);
-  color: white;
+  color: light-dark(#000, #fff);
 }
 .development_and_implementation {
   background-color: light-dark(#0073e6, #1a237e);
-  color: white;
+  color: #fff;
 }
 .delivery_and_operation {
   background-color: light-dark(#2546f0, #311b92);
-  color: white;
+  color: light-dark(#000, #fff);
 }
 .skills_and_quality {
   background-color: light-dark(#5928ed, #4a148c);
-  color: white;
+  color: #fff;
 }
 .relationships_and_engagement {
   background-color: light-dark(#f64d0a, #b71c1c);
-  color: white;
+  color: light-dark(#000, #fff);
 }
 .people_and_skills {
   background-color: light-dark(rgb(0,155,205), #006064);
-  color: white;
+  color: #fff;
 }
 
 /* Notification Styles */
@@ -485,6 +514,19 @@ body { margin-bottom: 60px; }
 #sfia-content tr > td:last-child,
 #sfia-content tr > th:last-child {
   border-right: none;
+/* Ensure font and background contrast in light mode for sfia-content tables */
+body.light-theme #sfia-content,
+body.light-theme #sfia-content tr,
+body.light-theme #sfia-content td,
+body.light-theme #sfia-content th {
+  background: #fff !important;
+  color: #222 !important;
+}
+/* Ensure font color is visible in light mode for sfia-content tables */
+body.light-theme #sfia-content tr > td,
+body.light-theme #sfia-content tr > th {
+  color: #222;
+}
 }
 #sfia-content tr:last-child > td,
 #sfia-content tr:last-child > th {
