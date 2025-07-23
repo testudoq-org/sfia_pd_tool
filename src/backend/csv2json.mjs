@@ -218,6 +218,7 @@ class SFIAProcessor {
         const skill = {
             code: this.sanitizeText(code || ''),
             description: this.sanitizeText(description || ''),
+            url: this.sanitizeText(item.URL || ''),
             guidanceNotes: this.sanitizeText(guidanceNotes || ''),
             levels: this.extractLevels(levelData)
         };
