@@ -118,3 +118,60 @@
 .high-contrast .loading {
   color: #fff !important;
 }
+/* Layout for csv2json.htm main controls and output */
+.csv2json-main-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.csv2json-controls {
+  width: 100%;
+}
+.csv2json-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.csv2json-output-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+}
+.csv2json-copy-btn {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  min-width: 44px;
+  margin-right: 0.5rem;
+}
+#output {
+  flex: 1 1 0;
+  min-width: 0;
+}
+@media (max-width: 900px) {
+  .csv2json-main-layout {
+    gap: 1.2rem;
+  }
+  .csv2json-output-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .csv2json-copy-btn {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 600px) {
+  .csv2json-button-row {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+}
