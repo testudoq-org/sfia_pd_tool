@@ -312,6 +312,8 @@ class SFIAProcessor {
         const codeElement = outputElement.querySelector('code');
         if (!this.processedData) {
             if (codeElement) codeElement.textContent = 'No data to display';
+            outputElement.setAttribute('aria-live', 'polite');
+            outputElement.setAttribute('role', 'region');
             return;
         }
 
@@ -324,6 +326,9 @@ class SFIAProcessor {
             if (window.Prism && Prism.highlightElement) {
                 Prism.highlightElement(codeElement);
             }
+            // Announce update for screen readers
+            outputElement.setAttribute('aria-live', 'polite');
+            outputElement.setAttribute('role', 'region');
         }
     }
 
@@ -334,10 +339,17 @@ class SFIAProcessor {
      */
     showStatus(message, type = 'info') {
         const statusElement = document.getElementById('status');
-        const className = type === 'error' ? 'error' : 
+        const className = type === 'error' ? 'error' :
                          type === 'success' ? 'success' : 'info';
 
-        statusElement.innerHTML = `<div class="${className}">${message}</div>`;
+        // Use aria-live for screen readers
+        statusElement.setAttribute('role', 'status');
+        statusElement.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+        statusElement.innerHTML = `<div class="${className}" tabindex="0">${message}</div>`;
+
+        // Focus the status for screen reader announcement
+        const statusDiv = statusElement.querySelector('div');
+        if (statusDiv) statusDiv.focus();
 
         // Auto-hide after 5 seconds for non-error messages
         if (type !== 'error') {
@@ -397,6 +409,10 @@ class SFIAProcessor {
 
         statsElement.innerHTML = statsHtml;
         statsElement.style.display = statsElement.style.display === 'none' ? 'flex' : 'none';
+        statsElement.setAttribute('role', 'status');
+        statsElement.setAttribute('aria-live', 'polite');
+        statsElement.setAttribute('tabindex', '0');
+        statsElement.focus();
     }
 
     /**
