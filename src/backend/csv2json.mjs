@@ -1,3 +1,10 @@
+// Improvements (2025-07-23):
+// - Upgraded to Bootstrap 5 for modern, responsive UI
+// - Added ARIA roles and tabindex for accessibility on output area
+// - Added "Copy Output" button for user convenience
+// - Integrated Prism.js for JSON syntax highlighting in output
+// - Refactored CSS for Bootstrap 5 alignment and accessibility
+// - Output area now uses <pre><code class="language-json"></code></pre> for accessibility and highlighting
 // csv2json.mjs - Extracted from csv2json.htm
 // Debugging statements added and SonarQube compliance improvements
 
@@ -300,9 +307,11 @@ class SFIAProcessor {
 
     displayOutput() {
         const outputElement = document.getElementById('output');
+        if (!outputElement) return;
 
+        const codeElement = outputElement.querySelector('code');
         if (!this.processedData) {
-            outputElement.textContent = 'No data to display';
+            if (codeElement) codeElement.textContent = 'No data to display';
             return;
         }
 
@@ -310,7 +319,12 @@ class SFIAProcessor {
             ? JSON.stringify(this.processedData, null, 2)
             : JSON.stringify(this.processedData);
 
-        outputElement.textContent = jsonString;
+        if (codeElement) {
+            codeElement.textContent = jsonString;
+            if (window.Prism && Prism.highlightElement) {
+                Prism.highlightElement(codeElement);
+            }
+        }
     }
 
     /**
@@ -404,7 +418,9 @@ class SFIAProcessor {
      * Clears the output display and resets statistics
      */
     clearOutput() {
-        document.getElementById('output').textContent = 'Output cleared';
+        const outputElement = document.getElementById('output');
+        const codeElement = outputElement ? outputElement.querySelector('code') : null;
+        if (codeElement) codeElement.textContent = 'Output cleared';
         document.getElementById('status').innerHTML = '';
         const statsElement = document.getElementById('stats');
         statsElement.style.display = 'none';

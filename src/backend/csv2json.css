@@ -5,32 +5,12 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 900px;
     margin: 0 auto;
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.header {
-    text-align: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #007bff;
-}
-
-.header h1 {
-    color: #007bff;
-    margin-bottom: 10px;
-}
-
-.controls {
-    margin-bottom: 20px;
-}
-
-.btn-group {
-    margin-right: 10px;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
 }
 
 #output {
