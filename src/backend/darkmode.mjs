@@ -25,6 +25,10 @@ function setLineHeight(lh) {
 }
 function setDyslexiaFont(enabled) {
   document.body.classList.toggle('font-dyslexic', enabled);
+  const output = document.getElementById('output');
+  if (output) {
+    output.classList.toggle('font-dyslexic', enabled);
+  }
 }
 function setHighContrast(enabled) {
   document.documentElement.classList.toggle('high-contrast', enabled);

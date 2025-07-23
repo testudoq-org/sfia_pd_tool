@@ -177,3 +177,8 @@
 }
 /* Utility class for hiding elements */
 .hidden { display: none !important; }
+/* Dyslexia font for output area */
+#output.font-dyslexic, #output.font-dyslexic code {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', Arial, sans-serif !important;
+  letter-spacing: 0.03em;
+}
