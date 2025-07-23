@@ -175,3 +175,5 @@
     align-items: stretch;
   }
 }
+/* Utility class for hiding elements */
+.hidden { display: none !important; }

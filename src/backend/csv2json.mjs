@@ -1,3 +1,15 @@
+// Accessibility panel toggle logic
+document.addEventListener('DOMContentLoaded', () => {
+  const toggleBtn = document.getElementById('toggle-accessibility');
+  const panel = document.getElementById('accessibility-panel');
+  if (toggleBtn && panel) {
+    toggleBtn.addEventListener('click', () => {
+      panel.classList.toggle('hidden');
+    });
+  } else {
+    console.warn('Accessibility toggle button or panel not found.');
+  }
+});
 // Improvements (2025-07-23):
 // - Upgraded to Bootstrap 5 for modern, responsive UI
 // - Added ARIA roles and tabindex for accessibility on output area
