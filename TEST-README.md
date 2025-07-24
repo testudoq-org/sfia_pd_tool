@@ -65,6 +65,36 @@ npm run test:export
 npm run codeceptjs:ui
 ```
 
+#### UI/E2E Test Automation with Vite
+
+You can run UI/E2E tests in two ways:
+
+**1. Self-contained (Vite managed by script):**
+```bash
+# Starts Vite on port 5502, waits for it to be ready, then runs tests
+npm run test:local
+
+# Starts Vite on port 5503, waits for it to be ready, then runs tests
+npm run test:dev
+```
+These scripts will kill any process on the required port before starting.
+
+**2. Against an already-running Vite server:**
+```bash
+# If you have already started Vite manually (e.g., npm run dev:local), use:
+npm run test:local:external
+
+# Or for dev mode:
+npm run test:dev:external
+```
+These scripts will wait for the server to be available and then run tests, without starting or stopping Vite.
+
+**Best Practice:**
+Use the `:external` scripts when debugging or developing with Vite running in a separate terminal. Use the standard scripts for automated or CI runs.
+
+**Note:**
+Ensure only one Vite instance is running per port to avoid conflicts.
+
 ## 🔧 Test Configuration
 
 ### Local Environment (codecept.local.conf.js)
