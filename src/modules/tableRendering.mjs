@@ -4,6 +4,7 @@
 
 import { updateSfiaUrlHash, generateUrlHash } from './urlHandling.mjs';
 import { extractCheckedLorData, clearLorOutput, renderLorData } from './dataHandling.mjs';
+import { createEnhancedHyperlink } from './utilityFunctions.mjs';
 
 /**
  * Render the output HTML based on the selected checkboxes and the provided SFIA JSON data.
@@ -164,5 +165,35 @@ export const generateLorHashFromCheckboxes = () => {
     const newLorJson = extractCheckedLorData();
     return generateUrlHash(newLorJson);
 };
+
+function renderSfiaTableRow(categoryKey, subcategoryKey, skillKey, sfiaJson) {
+    const row = document.createElement('tr');
+
+    // Category cell
+    const categoryCell = document.createElement('td');
+    categoryCell.textContent = categoryKey;
+    row.appendChild(categoryCell);
+
+    // Subcategory cell
+    const subcategoryCell = document.createElement('td');
+    subcategoryCell.textContent = subcategoryKey;
+    row.appendChild(subcategoryCell);
+
+    // Skill Set cell
+    const skillCell = document.createElement('td');
+    skillCell.classList.add('skill_key');
+    createEnhancedHyperlink(
+        sfiaJson,
+        [categoryKey, subcategoryKey, skillKey],
+        skillCell,
+        {
+            cssClasses: ['sfia-link', 'text-primary'],
+            tooltip: true
+        }
+    );
+    row.appendChild(skillCell);
+
+    return row;
+}
 
 // EOF: src/modules/tableRendering.mjs

@@ -1,0 +1,184 @@
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode */
+.high-contrast {
+  --tw-bg-opacity: 1 !important;
+  --tw-text-opacity: 1 !important;
+  background-color: #000 !important;
+  color: #fff !important;
+}
+.high-contrast .bg-white,
+.high-contrast .bg-gray-50,
+.high-contrast .bg-gray-100,
+.high-contrast .bg-gray-200,
+.high-contrast .bg-gray-900,
+.high-contrast .dark\:bg-gray-900 {
+  background-color: #000 !important;
+}
+.high-contrast .text-gray-900,
+.high-contrast .text-gray-100,
+.high-contrast .text-gray-600,
+.high-contrast .dark\:text-gray-100,
+.high-contrast .dark\:text-gray-300 {
+  color: #fff !important;
+}
+.high-contrast .border,
+.high-contrast .border-gray-200,
+.high-contrast .border-gray-700,
+.high-contrast .dark\:border-gray-700 {
+  border-color: #fff !important;
+}
+.high-contrast .focus\:ring-2,
+.high-contrast .focus\:ring-blue-500,
+.high-contrast .focus\:ring-white {
+  box-shadow: 0 0 0 3px #fff !important;
+}
+.high-contrast .rounded-full,
+.high-contrast .rounded-md,
+.high-contrast .rounded-lg {
+  border-radius: 0 !important;
+  border-width: 2px !important;
+}
+
+/* Sepia mode */
+.sepia {
+  background-color: #f4ecd8 !important;
+  color: #5b4636 !important;
+}
+.sepia .bg-white,
+.sepia .bg-gray-50,
+.sepia .bg-gray-100 {
+  background-color: #f4ecd8 !important;
+}
+.sepia .text-gray-900,
+.sepia .text-gray-100,
+.sepia .text-gray-600 {
+  color: #5b4636 !important;
+}
+
+/* Reading ruler overlay */
+#reading-ruler {
+  pointer-events: none;
+  height: 3em;
+  background: linear-gradient(90deg, #c7e0ff 0%, #e0e7ff 100%);
+  opacity: 0.7;
+  border-radius: 0.5em;
+  transition: top 0.1s;
+  z-index: 30;
+}
+
+/* Error and success messages */
+.error {
+  color: #dc2626;
+  background-color: #fee2e2;
+  border: 1px solid #fca5a5;
+  padding: 10px;
+  border-radius: 0.5em;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+.success {
+  color: #166534;
+  background-color: #bbf7d0;
+  border: 1px solid #4ade80;
+  padding: 10px;
+  border-radius: 0.5em;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+/* Stats panel */
+#stats {
+  font-size: 1rem;
+}
+.stat-item {
+  text-align: center;
+}
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2563eb;
+}
+.high-contrast .stat-number {
+  color: #fff !important;
+}
+
+/* Loading state */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+}
+.high-contrast .loading {
+  color: #fff !important;
+}
+/* Layout for csv2json.htm main controls and output */
+.csv2json-main-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.csv2json-controls {
+  width: 100%;
+}
+.csv2json-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.csv2json-output-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+}
+.csv2json-copy-btn {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  min-width: 44px;
+  margin-right: 0.5rem;
+}
+#output {
+  flex: 1 1 0;
+  min-width: 0;
+}
+@media (max-width: 900px) {
+  .csv2json-main-layout {
+    gap: 1.2rem;
+  }
+  .csv2json-output-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .csv2json-copy-btn {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 600px) {
+  .csv2json-button-row {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+}
+/* Utility class for hiding elements */
+.hidden { display: none !important; }
+/* Dyslexia font for output area */
+#output.font-dyslexic, #output.font-dyslexic code {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', Arial, sans-serif !important;
+  letter-spacing: 0.03em;
+}

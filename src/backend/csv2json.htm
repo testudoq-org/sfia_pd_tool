@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SFIA - Position Description Generator</title>
+
+    <!-- Tailwind CSS CDN with custom config -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography,forms,aspect-ratio,line-clamp"></script>
+    <script type="module" src="./tailwind.mjs"></script>
+    <script type="module" src="./darkmode.mjs"></script>
+    <!-- OpenDyslexic font -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/open-dyslexic@0.0.1/open-dyslexic.min.css" />
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <!-- Font Awesome 6 for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="./csv2json.css" />
+  </head>
+  <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-readable min-h-screen transition-colors duration-300">
+    <!-- Skip Navigation -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-md z-50 focus:outline-none focus:ring-2 focus:ring-white">
+      Skip to main content
+    </a>
+    <!-- Accessibility Control Panel -->
+    <div id="accessibility-panel" class="hidden fixed top-4 right-4 z-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md dark:shadow-gray-900/20 rounded-lg p-4 flex flex-col gap-3 w-72 transition-all"
+         role="region" aria-label="Accessibility Controls">
+      <div class="flex items-center justify-between">
+        <span class="font-semibold text-gray-700 dark:text-gray-200 text-base">Accessibility</span>
+        <button id="close-access-panel" class="text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none" aria-label="Close accessibility panel">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="flex flex-col gap-2">
+        <label class="flex items-center gap-2">
+          <span class="text-sm">Font Size</span>
+          <input id="font-size-slider" type="range" min="16" max="24" step="1" value="18" class="w-full accent-blue-600" aria-valuemin="16" aria-valuemax="24" aria-valuenow="18" aria-label="Font size slider">
+          <span id="font-size-value" class="text-xs w-8 text-right">18px</span>
+        </label>
+        <label class="flex items-center gap-2">
+          <span class="text-sm">Line Height</span>
+          <input id="line-height-slider" type="range" min="1.4" max="1.8" step="0.05" value="1.6" class="w-full accent-blue-600" aria-valuemin="1.4" aria-valuemax="1.8" aria-valuenow="1.6" aria-label="Line height slider">
+          <span id="line-height-value" class="text-xs w-8 text-right">1.6</span>
+        </label>
+        <label class="flex items-center gap-2">
+          <span class="text-sm">Dyslexia Font</span>
+          <input id="dyslexia-toggle" type="checkbox" class="accent-blue-600" aria-checked="false" aria-label="Toggle dyslexia-friendly font">
+        </label>
+        <label class="flex items-center gap-2">
+          <span class="text-sm">High Contrast</span>
+          <input id="contrast-toggle" type="checkbox" class="accent-blue-600" aria-checked="false" aria-label="Toggle high contrast mode">
+        </label>
+        <label class="flex items-center gap-2">
+          <span class="text-sm">Reading Ruler</span>
+          <input id="ruler-toggle" type="checkbox" class="accent-blue-600" aria-checked="false" aria-label="Toggle reading ruler">
+        </label>
+        <label class="flex items-center gap-2">
+          <span class="text-sm">Theme</span>
+          <select id="theme-select" class="w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-blue-500" aria-label="Theme selector">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="high-contrast">High Contrast</option>
+            <option value="sepia">Sepia</option>
+          </select>
+        </label>
+        <button id="reset-accessibility" class="bg-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 text-white px-4 py-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 min-h-[44px] text-sm">
+          Reset to Defaults
+        </button>
+      </div>
+    </div>
+    <!-- Reading Ruler Overlay -->
+    <div id="reading-ruler" class="pointer-events-none fixed left-0 w-full h-12 bg-blue-200/40 dark:bg-blue-900/30 z-30 rounded-md shadow-lg hidden transition-all"></div>
+    <!-- Main Content -->
+    <div id="main-content" tabindex="-1" class="max-w-7xl mx-auto px-4 my-8">
+      <div class="text-center mb-8 border-b border-gray-200 dark:border-gray-700 pb-6">
+        <h1 class="text-blue-600 dark:text-blue-400 text-3xl font-bold">SFIA Position Description Generator</h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300">Convert SFIA skill data to structured JSON format</p>
+      </div>
+      <div class="csv2json-main-layout">
+        <div class="csv2json-controls">
+          <div class="csv2json-button-row">
+            <button
+              type="button"
+              class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 min-h-[44px] flex items-center justify-center gap-2"
+              onclick="sfiaProcessor.processData()"
+              aria-label="Process Data"
+            >
+              <i class="fas fa-play" aria-hidden="true"></i>
+              <span>Process Data</span>
+            </button>
+            <button
+              type="button"
+              class="bg-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 text-white px-6 py-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 min-h-[44px] flex items-center justify-center gap-2"
+              onclick="sfiaProcessor.clearOutput()"
+              aria-label="Clear Output"
+            >
+              <i class="fas fa-trash" aria-hidden="true"></i>
+              <span>Clear Output</span>
+            </button>
+            <button
+              type="button"
+              class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-6 py-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 min-h-[44px] flex items-center justify-center gap-2"
+              onclick="sfiaProcessor.downloadJson()"
+              aria-label="Download JSON"
+            >
+              <i class="fas fa-download" aria-hidden="true"></i>
+              <span>Download JSON</span>
+            </button>
+            <button
+              type="button"
+              class="bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-200 px-6 py-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 dark:focus:ring-offset-gray-800 min-h-[44px] flex items-center justify-center gap-2"
+              onclick="sfiaProcessor.toggleFormat()"
+              aria-label="Toggle Format"
+            >
+              <i class="fas fa-code" aria-hidden="true"></i>
+              <span>Toggle Format</span>
+            </button>
+            <button
+              type="button"
+              class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 dark:focus:ring-offset-gray-800 min-h-[44px] flex items-center justify-center gap-2"
+              onclick="sfiaProcessor.showStats()"
+              aria-label="Show Statistics"
+            >
+              <i class="fas fa-chart-bar" aria-hidden="true"></i>
+              <span>Show Statistics</span>
+            </button>
+            <button
+              type="button"
+              class="bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white px-6 py-3 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 min-h-[44px] flex items-center justify-center gap-2"
+              id="toggle-accessibility"
+              aria-label="Toggle Accessibility Panel"
+            >
+              <i class="fas fa-universal-access" aria-hidden="true"></i>
+              <span>Accessibility</span>
+            </button>
+            <button
+              type="button"
+              class="csv2json-copy-btn bg-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 text-white px-4 py-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 min-h-[44px] flex items-center gap-2"
+              id="copyOutputBtn"
+              aria-label="Copy JSON output to clipboard"
+            >
+              <i class="fas fa-copy" aria-hidden="true"></i>
+              <span>Copy Output</span>
+            </button>
+          </div>
+          <div id="status" aria-live="polite"></div>
+          <div id="stats" class="flex justify-around mb-4 p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm" style="display: none"></div>
+        </div>
+        <div class="csv2json-output-row">
+          <pre id="output"
+               class="loading bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 font-mono text-base-accessible max-h-[70vh] min-h-[40vh] overflow-y-auto whitespace-pre-wrap break-words shadow-md dark:shadow-gray-900/20"
+               aria-live="polite"
+               tabindex="0"
+               role="region"
+               aria-label="JSON output area"
+               style="margin-bottom:0;">
+            <code class="language-json">Click "Process Data" to convert SFIA data to JSON</code>
+          </pre>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="./csv2json.mjs"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+  </body>
+</html>

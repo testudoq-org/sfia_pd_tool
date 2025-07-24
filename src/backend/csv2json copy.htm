@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html >
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SFIA - Position Description Generator</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <link rel="stylesheet" href="./styles.css" >
+        <!--<link rel="icon" type="image/x-icon" href="/favicon.ico" />-->
+    </head>
+    <body onload="showJson()">
+
+        <div id="sfia8"></div>
+        <script type="text/javascript" src="./sfia2csv.json.js"></script>
+		<!--<script type="text/javascript" src="./functions.js"></script>-->
+
+        <script>
+            const sfia8 = {};
+            
+            function addCategories(arr, dataObj) {
+                var cat = {};
+                var lookup = {};
+                for (var item, i = 0; item = arr[i++];) {
+                    var cat = item.Category;
+                    //console.log(cat);
+                    if (!(cat in lookup)) {
+                        lookup[cat] = 1;
+                        
+                        dataObj[cat] = {};
+                        addSubCategories(cat, arr, dataObj);
+                        console.log(cat);
+                       //portfolioArr.push(portfolio);
+                    }
+                    
+                }
+                return true;
+            };
+
+            function addSubCategories(cat, arr, dataObj){
+                var subCatArr = [];
+                var lookup = {};
+
+                for (var item, i = 0; item = arr[i++];) {
+                    var subCat = item.Subcategory;
+                    
+                    if (item.Category == cat) {
+                        //console.log(cat);
+                        if (!(subCat in lookup)) {
+                        lookup[subCat] = 1;
+                        catObj = dataObj[cat];
+                        catObj[subCat] = addSkills(subCat, arr);
+                        console.log(subCat);
+                        
+                        }                      
+                    }
+                    
+                }
+                return true;
+            }
+
+            function addSkills(subCat, arr){
+                var skill = {};
+                const skills = {};
+
+                for (var item, i = 0; item = arr[i++];) {
+
+                    if(item.Subcategory == subCat){
+                   
+                        skill.code = item.Code;
+                        skill.description = item["Overall description"];
+                        skill.guidanceNotes = item["Guidance notes"];
+                        skill.levels = {};
+                        if(item["Level 1 description"] != "") skill.levels["1"] = item["Level 1 description"];
+                        if(item["Level 2 description"] != "") skill.levels["2"] = item["Level 2 description"];
+                        if(item["Level 3 description"] != "") skill.levels["3"] = item["Level 3 description"];
+                        if(item["Level 4 description"] != "") skill.levels["4"] = item["Level 4 description"];
+                        if(item["Level 5 description"] != "") skill.levels["5"] = item["Level 5 description"];
+                        if(item["Level 6 description"] != "") skill.levels["6"] = item["Level 6 description"];
+                        if(item["Level 7 description"] != "") skill.levels["7"] = item["Level 7 description"];
+                        
+
+                        skills[item.Skill] = skill;
+                    }
+                    skill = {};
+                }
+                return skills;
+            }
+
+
+            function showJson(){
+                addCategories(sfia2csv, sfia8)
+                document.getElementById('sfia8').innerHTML = JSON.stringify(sfia8);
+            }
+        </script>
+
+
+    </body>
+</html>
