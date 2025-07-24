@@ -1,8 +1,142 @@
 // BOF: src/modules/utilityFunctions.mjs
-
 // This file includes utility functions, such as checking if the last export was within a specified timeout duration and searching for text in the SFIA table.
 
 import { lastExportTime } from './constants.mjs';
+
+/**
+ * Enhanced hyperlink creation from nested JSON data.
+ * - Modern JS, robust error handling, accessibility, security, and configurability.
+ * @param {Object} jsonData - Root JSON object.
+ * @param {string[]} keyPath - Path to target object [category, subcategory, skill].
+ * @param {HTMLElement} parentElement - Container element to append to.
+ * @param {Object} options - Configuration options.
+ * @returns {HTMLAnchorElement|HTMLSpanElement|null} Created element or null.
+ */
+export function createEnhancedHyperlink(jsonData, keyPath, parentElement, options = {}) {
+    const defaultOptions = {
+        urlProperty: 'url',
+        textProperties: ['code', 'title', 'name', 'description'],
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        cssClasses: ['sfia-link'],
+        ariaLabel: null,
+        tooltip: true,
+        fallbackElement: 'span',
+        onError: null,
+        onClick: null,
+        validateUrl: true
+    };
+    const config = { ...defaultOptions, ...options };
+
+    try {
+        // Validate input types
+        if (typeof jsonData !== 'object' || !Array.isArray(keyPath) || !(parentElement instanceof HTMLElement)) {
+            throw new TypeError('[createEnhancedHyperlink] Invalid arguments.');
+        }
+
+        // Traverse JSON by keyPath
+        let target = jsonData;
+        for (const key of keyPath) {
+            if (target && Object.prototype.hasOwnProperty.call(target, key)) {
+                target = target[key];
+            } else {
+                throw new Error(`[createEnhancedHyperlink] Key '${key}' not found in path: ${keyPath.join(' > ')}`);
+            }
+        }
+        if (!target || typeof target !== 'object') {
+            throw new Error('[createEnhancedHyperlink] Target object not found or invalid.');
+        }
+
+        // Get URL and display text
+        const url = target[config.urlProperty];
+        let displayText = '';
+        for (const prop of config.textProperties) {
+            if (typeof target[prop] === 'string' && target[prop].trim().length > 0) {
+                displayText = target[prop].trim();
+                break;
+            }
+        }
+        if (!displayText) displayText = '(No label)';
+
+        // Validate URL (basic check)
+        const isValidUrl = config.validateUrl &&
+            typeof url === 'string' &&
+            /^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(url.trim());
+
+        // Accessibility: ARIA label
+        let ariaLabel = config.ariaLabel;
+        if (!ariaLabel) {
+            ariaLabel = displayText;
+            if (target.description && typeof target.description === 'string') {
+                ariaLabel += `: ${target.description.trim()}`;
+            }
+        }
+
+        // Tooltip text (prefer description)
+        const tooltipText = config.tooltip && target.description
+            ? target.description.trim()
+            : '';
+
+        // Create element
+        let el;
+        if (isValidUrl) {
+            el = document.createElement('a');
+            el.href = url.trim();
+            el.target = config.target;
+            el.rel = config.rel;
+            el.textContent = displayText;
+            el.setAttribute('aria-label', ariaLabel);
+            if (tooltipText) {
+                el.setAttribute('title', tooltipText);
+                el.setAttribute('data-bs-toggle', 'tooltip');
+            }
+            if (Array.isArray(config.cssClasses)) {
+                el.classList.add(...config.cssClasses);
+            }
+            // Keyboard focus
+            el.tabIndex = 0;
+            // Optional click handler
+            if (typeof config.onClick === 'function') {
+                el.addEventListener('click', config.onClick);
+            }
+        } else {
+            // Fallback: <span>
+            el = document.createElement(config.fallbackElement);
+            el.textContent = displayText;
+            el.setAttribute('aria-label', ariaLabel);
+            if (tooltipText) {
+                el.setAttribute('title', tooltipText);
+                el.setAttribute('data-bs-toggle', 'tooltip');
+            }
+            if (Array.isArray(config.cssClasses)) {
+                el.classList.add(...config.cssClasses, 'sfia-link-fallback');
+            }
+            el.tabIndex = 0;
+        }
+
+        // Security: prevent XSS by not injecting HTML, only textContent
+        parentElement.appendChild(el);
+
+        // Bootstrap tooltip integration (if present)
+        if (tooltipText && typeof window.bootstrap !== 'undefined' && window.bootstrap.Tooltip) {
+            try {
+                new window.bootstrap.Tooltip(el);
+            } catch (e) {
+                // Ignore tooltip errors
+            }
+        }
+
+        return el;
+    } catch (err) {
+        // Error handling
+        if (typeof options.onError === 'function') {
+            options.onError(err, { jsonData, keyPath, parentElement, options });
+        } else {
+            console.error('[createEnhancedHyperlink] Error:', err);
+        }
+        return null;
+    }
+}
 
 /**
  * Checks if the last export was within the specified timeout duration.

@@ -35,3 +35,23 @@ Scenario('Check that the Select Json version operates correctly for version 7', 
     // Check if cookie is set correctly
     I.seeCookie('selectedVersion', 'json_source_v7');
 });
+
+Scenario('Check that the Select Json version operates correctly for version 9', async ({ I }) => {
+    // Open the page
+    I.amOnPage('/sfiapdgen.html');
+    I.seeInTitle('SFIA POSITION DESCRIPTION Generator');
+
+    // Check version 9 selection
+    I.selectOption('#jsonVersionSelect', 'version 9');
+    
+    // Verify dropdown selection using seeInField
+    I.seeInField('#jsonVersionSelect', 'version 9');
+    
+    // Additional verification that the option exists and is visible
+    I.see('version 9', '#jsonVersionSelect');
+
+    // Check if cookie is set correctly
+    I.seeCookie('selectedVersion', 'json_source_v9');
+});
+
+//

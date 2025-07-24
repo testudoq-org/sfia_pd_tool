@@ -89,11 +89,29 @@ export const initializeSFIAContent = async (sfiaJson) => {
                     const col3 = document.createElement('td');
                     col3.className += " skill_key";
                     row.appendChild(col3);
-                    
-                    const skillcode = sfiaJson[rootKey][subKey][skillKey]["code"];
+
+                    const skillObj = sfiaJson[rootKey][subKey][skillKey];
+                    const skillcode = skillObj["code"];
+                    const skillDesc = skillObj["description"] || '';
+                    const skillUrl = skillObj["url"];
+
                     const skillSpan = document.createElement('span');
-                    skillSpan.textContent = `${skillKey} - ${sfiaJson[rootKey][subKey][skillKey]["code"]}`;
-                    skillSpan.title = sfiaJson[rootKey][subKey][skillKey]["description"];
+                    skillSpan.title = skillDesc;
+
+                    // Always show: [Skill Name] - [code or <a>code</a>]
+                    skillSpan.appendChild(document.createTextNode(`${skillKey} - `));
+                    if (skillUrl && typeof skillUrl === 'string' && skillUrl.trim().length > 0) {
+                        const codeLink = document.createElement('a');
+                        codeLink.href = skillUrl;
+                        codeLink.textContent = skillcode;
+                        codeLink.target = '_blank';
+                        codeLink.rel = 'noopener noreferrer';
+                        codeLink.className = 'sfia-link text-primary';
+                        skillSpan.appendChild(codeLink);
+                    } else {
+                        // No URL: just show code as plain text
+                        skillSpan.appendChild(document.createTextNode(skillcode));
+                    }
                     col3.appendChild(skillSpan);
 
                     // Add the selection boxes to the row
