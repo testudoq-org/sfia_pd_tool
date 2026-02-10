@@ -286,22 +286,30 @@
   const body = document.body;
 
   function setTheme(theme) {
-    body.classList.remove('light-theme', 'dark-theme');
+    // Remove existing theme classes and data attribute
+    body.classList.remove('light-theme', 'dark-theme', 'light-mode', 'dark-mode');
+    body.removeAttribute('data-theme');
+
     if (theme === 'dark') {
       body.classList.add('dark-theme');
+      body.classList.add('dark-mode');
       themeIcon.textContent = '🌞';
       themeBtn.setAttribute('aria-label', 'Switch to light mode');
       themeBtn.setAttribute('title', 'Switch to light mode');
+      body.setAttribute('data-theme', 'dark');
     } else if (theme === 'light') {
       body.classList.add('light-theme');
+      body.classList.add('light-mode');
       themeIcon.textContent = '🌙';
       themeBtn.setAttribute('aria-label', 'Switch to dark mode');
       themeBtn.setAttribute('title', 'Switch to dark mode');
+      body.setAttribute('data-theme', 'light');
     } else {
       // System default
       themeIcon.textContent = '🖥️';
       themeBtn.setAttribute('aria-label', 'Switch to dark mode');
       themeBtn.setAttribute('title', 'Switch to dark mode');
+      body.setAttribute('data-theme', 'system');
     }
   }
 
@@ -345,10 +353,10 @@
     }
   });
 
-  // On page load, apply stored theme
+  // On page load, apply stored theme (default to light for deterministic tests)
   document.addEventListener('DOMContentLoaded', function() {
     const stored = getStoredTheme();
-    setTheme(stored);
+    setTheme(stored || 'light');
   });
 </script>
 </html>

@@ -47,3 +47,7 @@ coverage/
 
 # Yarn Integrity file
 .yarn-integrity
+
+
+#Ignore vscode AI rules
+.github\instructions\codacy.instructions.md

@@ -7,5 +7,6 @@
     "sonarlint.connectedMode.project": {
         "connectionId": "testudoq-org",
         "projectKey": "testudoq-org_testudoq3"
-    }
+    },
+    "snyk.advanced.autoSelectOrganization": true
 }

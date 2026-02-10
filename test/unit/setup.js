@@ -5,15 +5,21 @@ const fs = require('fs');
 const path = require('path');
 
 // Mock window.location for URL testing
-Object.defineProperty(window, 'location', {
-  value: {
-    hash: '',
-    origin: 'http://127.0.0.1:5501',
-    pathname: '/sfiapdgen.html',
-    hostname: '127.0.0.1'
-  },
-  writable: true
-});
+try {
+  // Only redefine if possible; newer jsdom/Jest may make this non-configurable
+  Object.defineProperty(window, 'location', {
+    value: {
+      hash: '',
+      origin: 'http://127.0.0.1:5501',
+      pathname: '/sfiapdgen.html',
+      hostname: '127.0.0.1'
+    },
+    writable: true
+  });
+} catch (err) {
+  // Best-effort - log and continue when running under environments where location is non-configurable
+  console.warn('[TEST SETUP] Could not redefine window.location:', err && err.message ? err.message : err);
+}
 
 // Mock global variables that are normally defined in constants.js
 global.g_sfiahash = '';

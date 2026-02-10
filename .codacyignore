@@ -1,0 +1,16 @@
+# Ignore generated and large binary artifacts from Codacy analysis
+output/videos/**
+output/**/videos/**
+output/trace/**
+output/*.png
+coverage/**
+coverage/lcov-report/**
+coverage/unit/**
+package/prd/**
+package/dev/**
+package/**
+src/backend/**
+vendor/**
+output/downloads/**
+# Ignore node_modules (already usually ignored by default)
+node_modules/**
