@@ -66,14 +66,17 @@ window.clearAllSelections = () => {
 
 /**
  * Update the selection count badge in the toolbar.
+ * Counts both SFIA skill and LoR checkbox selections.
  */
 const updateSelectionCount = () => {
-    const count = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked').length;
+    const sfiaCount = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked').length;
+    const lorCount = document.querySelectorAll('input[type=checkbox][id^="lor-"]:checked').length;
+    const totalCount = sfiaCount + lorCount;
     const badge = document.getElementById('selection-count');
     if (badge) {
-        badge.textContent = `${count} selected`;
-        badge.classList.toggle('bg-primary', count === 0);
-        badge.classList.toggle('bg-success', count > 0);
+        badge.textContent = totalCount === 0 ? '0 selected' : `${sfiaCount} skill${sfiaCount !== 1 ? 's' : ''}, ${lorCount} LoR`;
+        badge.classList.toggle('bg-primary', totalCount === 0);
+        badge.classList.toggle('bg-success', totalCount > 0);
     }
 };
 window._updateSelectionCount = updateSelectionCount;

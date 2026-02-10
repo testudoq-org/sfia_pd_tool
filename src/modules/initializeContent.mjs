@@ -223,13 +223,13 @@ export const initializeLorContent = async () => {
             
             row.innerHTML = `
             <td>${responsibility.Responsibility}</td> <!-- Responsibility -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-1" value="${responsibilityPrefix}-1" title="1 - Follow ~ ${responsibility['1 - Follow']}"></td> <!-- Level 1 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-2" value="${responsibilityPrefix}-2" title="2 - Assist ~ ${responsibility['2 - Assist']}"></td> <!-- Level 2 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-3" value="${responsibilityPrefix}-3" title="3 - Apply ~ ${responsibility['3 - Apply']}"></td> <!-- Level 3 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-4" value="${responsibilityPrefix}-4" title="4 - Enable ~ ${responsibility['4 - Enable']}"></td> <!-- Level 4 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-5" value="${responsibilityPrefix}-5" title="5 - Ensure,advise ~ ${responsibility['5 - Ensure,advise']}"></td> <!-- Level 5 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-6" value="${responsibilityPrefix}-6" title="6 - Initiate, influence ~ ${responsibility['6 - Initiate, influence']}"></td> <!-- Level 6 -->
-            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-7" value="${responsibilityPrefix}-7" title="7 - Set strategy, inspire, mobilise ~ ${responsibility['7 - Set strategy, inspire, mobilise']}"></td> <!-- Level 7 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-1" value="${responsibilityPrefix}-1" title="1 - Follow ~ ${responsibility['1 - Follow']}" aria-label="${responsibility.Responsibility} Level 1"></td> <!-- Level 1 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-2" value="${responsibilityPrefix}-2" title="2 - Assist ~ ${responsibility['2 - Assist']}" aria-label="${responsibility.Responsibility} Level 2"></td> <!-- Level 2 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-3" value="${responsibilityPrefix}-3" title="3 - Apply ~ ${responsibility['3 - Apply']}" aria-label="${responsibility.Responsibility} Level 3"></td> <!-- Level 3 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-4" value="${responsibilityPrefix}-4" title="4 - Enable ~ ${responsibility['4 - Enable']}" aria-label="${responsibility.Responsibility} Level 4"></td> <!-- Level 4 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-5" value="${responsibilityPrefix}-5" title="5 - Ensure,advise ~ ${responsibility['5 - Ensure,advise']}" aria-label="${responsibility.Responsibility} Level 5"></td> <!-- Level 5 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-6" value="${responsibilityPrefix}-6" title="6 - Initiate, influence ~ ${responsibility['6 - Initiate, influence']}" aria-label="${responsibility.Responsibility} Level 6"></td> <!-- Level 6 -->
+            <td><input type="checkbox" id="lor-checkbox-${index}-${responsibility.Responsibility}-7" value="${responsibilityPrefix}-7" title="7 - Set strategy, inspire, mobilise ~ ${responsibility['7 - Set strategy, inspire, mobilise']}" aria-label="${responsibility.Responsibility} Level 7"></td> <!-- Level 7 -->
         `;
             document.getElementById('sfia-lors-content').appendChild(row);
 
@@ -243,6 +243,10 @@ export const initializeLorContent = async () => {
                     // Then update the URL hash using dynamic import to avoid circular dependency
                     const { updateURLWithLorCheckboxes } = await import('./urlHandling.mjs');
                     updateURLWithLorCheckboxes();
+                    // Update selection count badge
+                    if (typeof window._updateSelectionCount === 'function') {
+                        window._updateSelectionCount();
+                    }
                 }, false);
             });
         });

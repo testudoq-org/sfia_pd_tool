@@ -478,6 +478,16 @@ export const initializeMenuHandlers = () => {
         }
     });
 
+    // Close menu on Escape key and return focus to toggle button
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !menuContent.classList.contains('hidden')) {
+            menuContent.classList.add('hidden');
+            toggleMenu.setAttribute('aria-expanded', 'false');
+            menuContent.setAttribute('aria-hidden', 'true');
+            toggleMenu.focus();
+        }
+    });
+
     // Initialize menu state
     menuContent.classList.add('hidden');
     toggleMenu.setAttribute('aria-expanded', 'false');
