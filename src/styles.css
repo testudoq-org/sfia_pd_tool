@@ -380,6 +380,12 @@ body { margin-bottom: 60px; }
 .sfia-table th, .sfia-table td { padding: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
 .sfia-table thead, .sfia-table tbody { display: table; width: 100%; }
 
+/* Performance: Browser-level virtualization for table rows */
+.sfia-table tbody tr {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 48px;
+}
+
 /* --- End of migrated layout, utility, and responsive classes --- */
 
 /* --- Themeable and accessibility rules remain as previously migrated --- */

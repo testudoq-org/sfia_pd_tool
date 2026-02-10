@@ -202,7 +202,10 @@ describe('Utility Functions', () => {
       });
     });
   });
-  describe('searchForText', () => {
+  describe('searchForText (immediate / core filtering logic)', () => {
+    // Unit tests call _searchForTextImmediate (the core filtering logic) directly.
+    // The exported searchForText is a debounced wrapper (250 ms) that delegates to
+    // _searchForTextImmediate — debounce behaviour is tested separately / in E2E.
     let consolErrorSpy;
 
     beforeEach(() => {
@@ -249,7 +252,7 @@ describe('Utility Functions', () => {
       input.value = 'BPTS';
       
       // Call the actual searchForText function
-      global.searchForText();
+      global._searchForTextImmediate();
       
       const rows = document.querySelectorAll('#sfia-content tr');
       expect(rows.length).toBe(3);
@@ -264,7 +267,7 @@ describe('Utility Functions', () => {
       const input = document.getElementById('myInput');
       input.value = '';
       
-      global.searchForText();
+      global._searchForTextImmediate();
       
       const rows = document.querySelectorAll('#sfia-content tr');
       rows.forEach(row => {
@@ -278,7 +281,7 @@ describe('Utility Functions', () => {
       const input = document.getElementById('myInput');
       input.value = 'bpts'; // lowercase
       
-      global.searchForText();
+      global._searchForTextImmediate();
       
       const rows = document.querySelectorAll('#sfia-content tr');
       expect(rows[0].style.display).toBe(''); // BPTS row should be visible
@@ -292,7 +295,7 @@ describe('Utility Functions', () => {
       const input = document.getElementById('myInput');
       input.value = 'Acceptance';
       
-      global.searchForText();
+      global._searchForTextImmediate();
       
       const rows = document.querySelectorAll('#sfia-content tr');
       expect(rows[0].style.display).toBe(''); // BPTS row should be visible
@@ -311,7 +314,7 @@ describe('Utility Functions', () => {
       
       // Should not throw error
       expect(() => {
-        global.searchForText();
+        global._searchForTextImmediate();
       }).not.toThrow();
       
       // Check that error was logged
@@ -334,7 +337,7 @@ describe('Utility Functions', () => {
       
       // Should not throw error
       expect(() => {
-        global.searchForText();
+        global._searchForTextImmediate();
       }).not.toThrow();
       
       // Check that error was logged
@@ -356,7 +359,7 @@ describe('Utility Functions', () => {
       
       // Should not throw error
       expect(() => {
-        global.searchForText();
+        global._searchForTextImmediate();
       }).not.toThrow();
       
       // Check that error was logged
@@ -375,7 +378,7 @@ describe('Utility Functions', () => {
       
       // Should not throw error
       expect(() => {
-        global.searchForText();
+        global._searchForTextImmediate();
       }).not.toThrow();
       
       // Check that error was logged
@@ -390,7 +393,7 @@ describe('Utility Functions', () => {
       
       // Should not throw error
       expect(() => {
-        global.searchForText();
+        global._searchForTextImmediate();
       }).not.toThrow();
       
       const rows = document.querySelectorAll('#sfia-content tr');
@@ -420,7 +423,7 @@ describe('Utility Functions', () => {
 
       const startTime = performance.now();
       
-      global.searchForText();
+      global._searchForTextImmediate();
       
       const endTime = performance.now();
       const executionTime = endTime - startTime;
@@ -457,7 +460,7 @@ describe('Utility Functions', () => {
       
       // Should not throw error
       expect(() => {
-        global.searchForText();
+        global._searchForTextImmediate();
       }).not.toThrow();
       
       const rows = document.querySelectorAll('#sfia-content tr');

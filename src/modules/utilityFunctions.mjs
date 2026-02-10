@@ -4,6 +4,21 @@
 import { lastExportTime } from './constants.mjs';
 
 /**
+ * Creates a debounced version of a function that delays invocation
+ * until after `delay` milliseconds have passed since the last call.
+ * @param {Function} fn - The function to debounce.
+ * @param {number} delay - Delay in milliseconds.
+ * @returns {Function} Debounced function.
+ */
+export function debounce(fn, delay) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+    };
+}
+
+/**
  * Enhanced hyperlink creation from nested JSON data.
  * - Modern JS, robust error handling, accessibility, security, and configurability.
  * @param {Object} jsonData - Root JSON object.
@@ -153,48 +168,59 @@ export function isExportSkippedDueToTimeout(timeoutDuration) {
 /**
  * Function to search for text in the SFIA table and show/hide rows based on the filter.
  */
-export function searchForText() {
+/**
+ * Core search logic — filters the SFIA table rows by the current input value.
+ * Separated from the debounced wrapper so it can be tested / called directly.
+ */
+export function _searchForTextImmediate() {
     try {
-        // Get user input and filter value
-        const input = document.getElementById('myInput'); // Get the input element
-        if (!input) { // Check if the input element was found
+        const input = document.getElementById('myInput');
+        if (!input) {
             console.error("Input element not found.");
             return;
         }
-        const filterValue = input.value.toUpperCase(); // Convert the input value to uppercase
+        const filterValue = input.value.toUpperCase();
 
-        // Get table body and rows
-        const tableBody = document.getElementById("sfia-content"); // Get the table body element
-        if (!tableBody) { // Check if the table body element was found
+        const tableBody = document.getElementById("sfia-content");
+        if (!tableBody) {
             console.error("Table body element not found.");
             return;
         }
-        const tableRows = tableBody.getElementsByTagName('tr'); // Get all the table rows
-        if (!tableRows || tableRows.length === 0) { // Check if table rows were found
+        const tableRows = tableBody.getElementsByTagName('tr');
+        if (!tableRows || tableRows.length === 0) {
             console.error("No table rows found.");
             return;
         }
 
-        // Loop through rows and show/hide based on filter
         for (let i = 0; i < tableRows.length; i++) {
-            const skillKey = tableRows[i].querySelector(".skill_key"); // Use querySelector for better resilience
-            if (!skillKey) { // Check if the skill key element was found
+            const skillKey = tableRows[i].querySelector(".skill_key");
+            if (!skillKey) {
                 console.error(`Skill key element not found for row ${i}.`);
-                continue; // Skip this row
+                continue;
             }
-            const skillText = skillKey.textContent || skillKey.innerText || ''; // Get the text content with fallback
-            
-            // Handle empty filter value - show all rows
+            const skillText = skillKey.textContent || skillKey.innerText || '';
+
             if (filterValue === '' || skillText.toUpperCase().includes(filterValue)) {
-                tableRows[i].style.display = ""; // Show the row
+                tableRows[i].style.display = "";
             } else {
-                tableRows[i].style.display = "none"; // Hide the row
+                tableRows[i].style.display = "none";
             }
         }
     } catch (error) {
         console.error("An error occurred:", error.message);
     }
 }
+
+/**
+ * Debounced search handler — waits 250 ms after the last keystroke before filtering.
+ * Falls back to the immediate version in test environments where timers may not fire.
+ */
+export const searchForText = (() => {
+    const debouncedSearch = debounce(_searchForTextImmediate, 250);
+    return () => {
+        debouncedSearch();
+    };
+})();
 
 /**
  * Updates the Ace editor content with formatted SFIA and LOR content
