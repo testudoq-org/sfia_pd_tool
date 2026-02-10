@@ -22,9 +22,14 @@ import { setupEventListeners } from './eventListeners.mjs';
 import { changeJsonVersion } from './jsonHandling.mjs';
 import { exportCSV, exportHTML, saveSfiaContent, saveLorContent } from './exportFunctions.mjs';
 
+// Register Web Components (side-effect imports — customElements.define runs at import time)
+import './components/sfia-notification.mjs';
+import './components/sfia-back-to-top.mjs';
+import './components/sfia-theme-toggle.mjs';
+
 // Import utility and data handling functions
 import { fetchData } from './dataFetching.mjs';
-import { initializeContent, initializeSFIAContent, initializeLorContent } from './initializeContent.mjs';
+import { initializeContent, initializeSFIAContent, initializeLorContent, getSfiaScroller } from './initializeContent.mjs';
 import { renderSfiaOutput, renderLorOutput } from './tableRendering.mjs';
 import { getCookie, setCookie, getStoredVersionFromCookie, setStoredVersionToCookie, searchForText, updateEditorContent } from './utilityFunctions.mjs';
 import { updateCombinedUrlHash, parseLorValuesFromHash } from './urlHandling.mjs';
@@ -43,13 +48,21 @@ window.saveLorContent = saveLorContent;
 window.searchForText = searchForText;
 window.updateEditorContent = updateEditorContent;
 window.setStoredVersionToCookie = setStoredVersionToCookie;
+window._getSfiaScroller = getSfiaScroller;
 
 /**
  * Clear all SFIA and LoR checkbox selections and update the UI.
  */
 window.clearAllSelections = () => {
-    document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked')
-        .forEach(cb => { cb.checked = false; });
+    // Clear SFIA selections via virtual scroller (preferred) or DOM fallback
+    const scroller = getSfiaScroller();
+    if (scroller) {
+        scroller.clearAll();
+    } else {
+        document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked')
+            .forEach(cb => { cb.checked = false; });
+    }
+    // Clear LoR selections (always DOM-based)
     document.querySelectorAll('input[type=checkbox][id^="lor-"]:checked')
         .forEach(cb => { cb.checked = false; });
     // Re-render outputs and URL
@@ -69,7 +82,11 @@ window.clearAllSelections = () => {
  * Counts both SFIA skill and LoR checkbox selections.
  */
 const updateSelectionCount = () => {
-    const sfiaCount = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked').length;
+    // Use virtual scroller data model for SFIA counts (works even for off-screen rows)
+    const scroller = getSfiaScroller();
+    const sfiaCount = scroller
+        ? scroller.getCheckedSelections().length
+        : document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked').length;
     const lorCount = document.querySelectorAll('input[type=checkbox][id^="lor-"]:checked').length;
     const totalCount = sfiaCount + lorCount;
     const badge = document.getElementById('selection-count');
@@ -112,7 +129,7 @@ const initializeApp = async () => {
 
         // 6. Phase 6: minor UI enhancements
         initializeCopyrightYear();
-        initializeBackToTop();
+        // Back-to-top is now handled by <sfia-back-to-top> Web Component
         initializeKeyboardShortcuts();
         
         console.log('SFIA application initialization complete.');
@@ -130,19 +147,6 @@ const initializeApp = async () => {
 const initializeCopyrightYear = () => {
     const el = document.getElementById('copyright-year');
     if (el) el.textContent = new Date().getFullYear();
-};
-
-/* ── 3c: Back-to-top button ────────────────────────────────────────── */
-const initializeBackToTop = () => {
-    const btn = document.getElementById('back-to-top');
-    if (!btn) return;
-    const THRESHOLD = 400;
-    window.addEventListener('scroll', () => {
-        btn.classList.toggle('visible', window.scrollY > THRESHOLD);
-    }, { passive: true });
-    btn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
 };
 
 /* ── 3b: Keyboard shortcuts ────────────────────────────────────────── */

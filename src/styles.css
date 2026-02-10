@@ -253,6 +253,20 @@ a:hover {
   max-height: calc(100vh - 300px);
 }
 
+/* Virtual Scroll Container for SFIA table */
+.virtual-scroll-container {
+  position: relative;
+  overflow-y: auto;
+  overflow-x: auto;
+  max-height: calc(100vh - 300px);
+  will-change: scroll-position;
+}
+.virtual-spacer td {
+  padding: 0 !important;
+  border: none !important;
+  line-height: 0;
+}
+
 /* Output Section */
 #sfia-output:empty:before {
   content: "To begin, please select a skill level";

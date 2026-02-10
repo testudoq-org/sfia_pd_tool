@@ -170,8 +170,31 @@ export function isExportSkippedDueToTimeout(timeoutDuration) {
  */
 /**
  * Core search logic — filters the SFIA table rows by the current input value.
- * Separated from the debounced wrapper so it can be tested / called directly.
+ * Uses the virtual scroller when available, falling back to DOM-based filtering.
  */
+/** @type {Function|null} Cached getter for scroller instance */
+let _getSfiaScrollerCached = null;
+
+/**
+ * Lazily import and cache the getSfiaScroller function.
+ * @returns {Object|null} The virtual scroller instance or null
+ */
+function _getScroller() {
+    if (_getSfiaScrollerCached) return _getSfiaScrollerCached();
+    // Try synchronous access via window (set by app.mjs)
+    if (typeof window._getSfiaScroller === 'function') {
+        _getSfiaScrollerCached = window._getSfiaScroller;
+        return _getSfiaScrollerCached();
+    }
+    // Fallback: async import (cached on resolve for next call)
+    try {
+        import('./initializeContent.mjs').then(({ getSfiaScroller }) => {
+            _getSfiaScrollerCached = getSfiaScroller;
+        }).catch(() => { /* ignore — DOM fallback will be used */ });
+    } catch { /* ignore */ }
+    return null;
+}
+
 export function _searchForTextImmediate() {
     try {
         const input = document.getElementById('myInput');
@@ -181,45 +204,57 @@ export function _searchForTextImmediate() {
         }
         const filterValue = input.value.toUpperCase();
 
-        const tableBody = document.getElementById("sfia-content");
-        if (!tableBody) {
-            console.error("Table body element not found.");
+        // Try virtual scroller first (preferred path)
+        const scroller = _getScroller();
+        if (scroller) {
+            const result = scroller.filter(input.value);
+            const countEl = document.getElementById('search-results-count');
+            if (countEl) {
+                countEl.textContent = filterValue
+                    ? `Showing ${result.visibleCount} of ${result.totalCount} skills`
+                    : '';
+            }
             return;
         }
-        const tableRows = tableBody.getElementsByTagName('tr');
-        if (!tableRows || tableRows.length === 0) {
-            console.error("No table rows found.");
-            return;
-        }
 
-        let visibleCount = 0;
-        const totalCount = tableRows.length;
-
-        for (let i = 0; i < tableRows.length; i++) {
-            const skillKey = tableRows[i].querySelector(".skill_key");
-            if (!skillKey) {
-                console.error(`Skill key element not found for row ${i}.`);
-                continue;
-            }
-            const skillText = skillKey.textContent || skillKey.innerText || '';
-
-            if (filterValue === '' || skillText.toUpperCase().includes(filterValue)) {
-                tableRows[i].style.display = "";
-                visibleCount++;
-            } else {
-                tableRows[i].style.display = "none";
-            }
-        }
-
-        // 3a: Update search results count
-        const countEl = document.getElementById('search-results-count');
-        if (countEl) {
-            countEl.textContent = filterValue
-                ? `Showing ${visibleCount} of ${totalCount} skills`
-                : '';
-        }
+        // Fall through to DOM-based filtering if no scroller
+        _searchForTextDOM(filterValue);
     } catch (error) {
         console.error("An error occurred:", error.message);
+    }
+}
+
+/**
+ * DOM-based search fallback for when virtual scroller is not available.
+ * @param {string} filterValue - Uppercased search string
+ */
+function _searchForTextDOM(filterValue) {
+    const tableBody = document.getElementById("sfia-content");
+    if (!tableBody) return;
+    const tableRows = tableBody.getElementsByTagName('tr');
+    if (!tableRows || tableRows.length === 0) return;
+
+    let visibleCount = 0;
+    const totalCount = tableRows.length;
+
+    for (let i = 0; i < tableRows.length; i++) {
+        const skillKey = tableRows[i].querySelector(".skill_key");
+        if (!skillKey) continue;
+        const skillText = skillKey.textContent || skillKey.innerText || '';
+
+        if (filterValue === '' || skillText.toUpperCase().includes(filterValue)) {
+            tableRows[i].style.display = "";
+            visibleCount++;
+        } else {
+            tableRows[i].style.display = "none";
+        }
+    }
+
+    const countEl = document.getElementById('search-results-count');
+    if (countEl) {
+        countEl.textContent = filterValue
+            ? `Showing ${visibleCount} of ${totalCount} skills`
+            : '';
     }
 }
 
@@ -361,11 +396,17 @@ export function copyToClipboard() {
  */
 export function saveContent(type) {
     if (type === 'sfia') {
-        const sfiaContent = $('#sfia-output').html();
-        $('#sfia-editor').val(sfiaContent);
+        const sfiaOutput = document.getElementById('sfia-output');
+        const sfiaEditor = document.getElementById('sfia-editor');
+        if (sfiaOutput && sfiaEditor) {
+            sfiaEditor.value = sfiaOutput.innerHTML;
+        }
     } else if (type === 'lor') {
-        const lorContent = $('#lor-output').html();
-        $('#lor-editor').val(lorContent);
+        const lorOutput = document.getElementById('lor-output');
+        const lorEditor = document.getElementById('lor-editor');
+        if (lorOutput && lorEditor) {
+            lorEditor.value = lorOutput.innerHTML;
+        }
     }
 }
 
