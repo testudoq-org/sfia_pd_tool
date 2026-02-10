@@ -1,16 +1,21 @@
 # Current Active Context - SFIA Position Description Generator
 
-**Last Updated:** June 19, 2025
-**Current Status:** Production Ready with Complete ES6 Architecture and Optimized Structure
+**Last Updated:** February 10, 2026
+**Current Status:** Production Ready — UI Modernisation branch active with 6 phases complete
 
 ## 🎯 Current Project State
 
+### Active Branch
+- **Branch:** `feature-modernise-and-improve-ui-and-performance-security-review`
+- **Commits:** 8 commits ahead of main (`3f44485` → `266d125` → `5d965c0` → `ab7fde0` → `588c808` → `d65541a` → `bacd0b5`)
+- **Status:** All phases complete, ready for PR/merge
+
 ### System Architecture Status ✅
-- **Build System**: Vite operational with complete ES6 module integration
+- **Build System**: Vite v7.0.6 operational with complete ES6 module integration
 - **Module System**: **16 ES6 modules** fully implemented and operational
-- **Development Environment**: Live server running with optimized file structure
-- **Testing Infrastructure**: 100% test pass rate achieved (36/36 unit tests + full E2E suite)
-- **Structure Cleanup**: Application structure reviewed and optimized
+- **Development Environment**: Vite dev server on port 5502 (local) / 5503 (dev)
+- **Testing Infrastructure**: **81 unit tests** (6 suites, Jest v30.0.5) + **31 E2E tests** (CodeceptJS v3.7.3 + Playwright v1.54.1) — all passing
+- **Runtime**: Node v22.16.0, npm v11.7.0, Windows 10
 
 ### Active Code Implementation
 
@@ -50,33 +55,38 @@ The project implements a **complete 16-module ES6 system** with specialized resp
 - **Checkbox Selection**: Full functionality for skill and level selection
 - **URL Hash Management**: Complete SFIA + LoR hash processing
 - **Export Features**: HTML and CSV export fully operational
-- **Theme System**: Dark/light theme switching with persistence
-- **Search Functionality**: Real-time skill search working
+- **Theme System**: 3-way toggle (light/system/dark) with `theme-mode` localStorage key, FOUC-prevention inline script, consolidated `theme.mjs` module
+- **Search Functionality**: Real-time skill search with results counter ("Showing X of Y skills")
 - **AI Integration**: Cohere and Hugging Face API integration active
+- **Keyboard Shortcuts**: Ctrl+Shift+E (export HTML), Ctrl+K (focus search)
+- **Back-to-Top**: Smooth scroll button appears after 400px scroll
 
 #### Build System ✅
 - **Development Build**: `npm run build:dev` → `package/dev/` (unminified, sourcemaps)
 - **Production Build**: `npm run build:prd` → `package/prd/` (minified, optimized) 
-- **Live Server**: Running on port 8080 for development
+- **Live Server**: Vite dev server on port 5502 (local) / 5503 (dev)
 - **Asset Processing**: HTML, CSS, JSON copying automated
 - **Module Bundling**: Vite handling ES6 module transpilation
 
 #### Testing Infrastructure ✅
-- **Unit Tests**: 36/36 passing (Jest with ES6 support)
-- **E2E Tests**: 100% pass rate (CodeceptJS with Playwright)
+- **Unit Tests**: 81/81 passing, 8 skipped (Jest v30.0.5 with ES6 support)
+- **E2E Tests**: 31/31 passing (CodeceptJS v3.7.3 with Playwright v1.54.1)
 - **Test Coverage**: Critical functions comprehensively tested
 - **CI/CD Ready**: All tests run consistently without failures
 
-### Recent Achievements (June 2025)
+### Recent Achievements (February 2026)
 
-#### ✅ Major Fixes Completed
-1. **SFIA Content Loading Issues Resolved**
-   - Fixed Vite bundle JavaScript errors
-   - Corrected Promise vs Data confusion in [`constants.mjs`](src/modules/constants.mjs:28)
-   - Resolved circular dependencies between modules
-   - Updated [`jsonHandling.js`](src/jsonHandling.js:29) path logic for `package/dev/` serving
-
-2. **ES6 Module Migration Success**
+#### ✅ UI Modernisation — 6 Phases Complete
+1. **Phase 1 — Performance**: `content-visibility: auto` on table rows, debounced search (250ms).
+2. **Phase 2 — Visual Modernisation**: CSS custom properties, modern colour palette, `light-dark()`, selection count badge, "Clear All" button.
+3. **Phase 3 — Accessibility**: Skip-to-content link, ARIA labels, Escape key handler, `scope` attributes.
+4. **Phase 4 — Code Quality**: `eslint.config.mjs` flat config with browser/CDN/test globals.
+5. **Phase 5 — Visual Polish**: Row animations, badge pulse, version-switch fade, preconnect hints, custom scrollbar, AI button shine, search glow, footer gradient, print styles.
+6. **Phase 6 — UI Polish & Theme Consolidation**:
+   - CSS: Instructions chevron, row hover, empty-state, button/notification icons, mobile responsive, ~40 dead classes removed, output typography.
+   - HTML: `<meta name="description">`, deferred Ace scripts, dynamic copyright year.
+   - Theme: Consolidated inline script (70→14 lines) + rewrote `theme.mjs` (unified `theme-mode` key, 3-way cycle, data-driven config).
+   - JS: Search results counter, keyboard shortcuts (Ctrl+Shift+E, Ctrl+K), back-to-top button.
    - Complete ES6 infrastructure implemented
    - Modern JavaScript patterns adopted (arrow functions, template literals, destructuring)
    - Enhanced error handling with structured return objects
@@ -110,10 +120,11 @@ The project implements a **complete 16-module ES6 system** with specialized resp
 ### Active Development Context
 
 #### Current Serving Configuration
-- **Base URL**: `http://127.0.0.1:5501/sfiapdgen.html`
-- **Serving Directory**: `package/dev/`
+- **Local URL**: `http://localhost:5502/src/sfiapdgen.html`
+- **Dev URL**: `http://localhost:5503/src/sfiapdgen.html`
+- **Serving Directory**: `src/` (Vite dev server root)
 - **JSON Data**: All versions available and loading correctly
-- **Live Reload**: Active development environment
+- **Hot Module Reload**: Active development environment via Vite
 
 #### Optimized File Structure Status
 ```
@@ -136,8 +147,8 @@ src/
 │   ├── utilityFunctions.mjs # Core utilities
 │   └── windowEvents.mjs # Window events
 ├── *.json            # ✅ SFIA data (v7, v8, v9) + LoR data
-├── sfiapdgen.html    # ✅ Main application entry point
-├── styles*.css       # ✅ Complete theme system (main, dark, light)
+├── sfiapdgen.html    # ✅ Main application entry point (with FOUC-prevention inline script)
+├── styles.css        # ✅ Single stylesheet with light-dark() theming
 ├── main.mjs          # ✅ Application integration point
 └── favicon.ico       # ✅ Application icon
 
@@ -173,18 +184,20 @@ The SFIA Position Description Generator is currently **production-ready** with a
 
 **Key Strengths:**
 - ✅ **Complete ES6 module architecture** (16 specialized modules operational)
-- ✅ **Stable testing infrastructure** (36 unit tests + comprehensive E2E suite)
-- ✅ **Modern build system** (Vite with complete ES6 integration)
-- ✅ **Optimized application structure** (563.4 MB freed, organized file system)
+- ✅ **Stable testing infrastructure** (81 unit tests + 31 E2E tests)
+- ✅ **Modern build system** (Vite v7.0.6 with complete ES6 integration)
+- ✅ **UI modernisation** — 6 phases of performance, visual, accessibility, and code quality improvements
+- ✅ **Consolidated theme system** — 3-way toggle, single localStorage key, FOUC-prevention
 - ✅ **Comprehensive error handling** and validation throughout
 - ✅ **Excellent performance** and cross-browser compatibility
 - ✅ **Accurate documentation** reflecting actual application state
 - ✅ **Clean codebase** with proper separation of concerns
 
 **Recent Achievements:**
-- ✅ **Application structure review** completed with cleanup optimization
-- ✅ **Documentation alignment** - all files now reflect current reality
-- ✅ **Technical debt reduction** through intelligent file organization
-- ✅ **Architecture validation** - confirmed all 16 ES6 modules are essential and functional
+- ✅ **UI Modernisation** — 6 phases complete on feature branch (8 commits)
+- ✅ **Theme consolidation** — inline script + module unified on `theme-mode` key
+- ✅ **Dead CSS removed** — ~40 unused Tailwind-style utility classes cleaned up
+- ✅ **New features** — search counter, keyboard shortcuts, back-to-top, mobile responsive
+- ✅ **ESLint config** — flat config resolving Codacy false positives
 
 The project is positioned for continued success with a **modern, maintainable architecture**, **accurate documentation**, and a **clear technical foundation** for future development.

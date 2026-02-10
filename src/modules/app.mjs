@@ -77,6 +77,11 @@ const updateSelectionCount = () => {
         badge.textContent = totalCount === 0 ? '0 selected' : `${sfiaCount} skill${sfiaCount !== 1 ? 's' : ''}, ${lorCount} LoR`;
         badge.classList.toggle('bg-primary', totalCount === 0);
         badge.classList.toggle('bg-success', totalCount > 0);
+        // Trigger pulse animation on change
+        badge.classList.remove('pulse');
+        // Force reflow so re-adding the class restarts the animation
+        void badge.offsetWidth;
+        badge.classList.add('pulse');
     }
 };
 window._updateSelectionCount = updateSelectionCount;
@@ -104,6 +109,11 @@ const initializeApp = async () => {
         
         // 5. Set up hash change listener for navigation
         window.addEventListener('hashchange', handleHashChange);
+
+        // 6. Phase 6: minor UI enhancements
+        initializeCopyrightYear();
+        initializeBackToTop();
+        initializeKeyboardShortcuts();
         
         console.log('SFIA application initialization complete.');
         
@@ -114,6 +124,46 @@ const initializeApp = async () => {
             showNotification('Application initialization failed. Please refresh the page.', 'error');
         }
     }
+};
+
+/* ── 2d: Dynamic copyright year ────────────────────────────────────── */
+const initializeCopyrightYear = () => {
+    const el = document.getElementById('copyright-year');
+    if (el) el.textContent = new Date().getFullYear();
+};
+
+/* ── 3c: Back-to-top button ────────────────────────────────────────── */
+const initializeBackToTop = () => {
+    const btn = document.getElementById('back-to-top');
+    if (!btn) return;
+    const THRESHOLD = 400;
+    window.addEventListener('scroll', () => {
+        btn.classList.toggle('visible', window.scrollY > THRESHOLD);
+    }, { passive: true });
+    btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+};
+
+/* ── 3b: Keyboard shortcuts ────────────────────────────────────────── */
+const initializeKeyboardShortcuts = () => {
+    document.addEventListener('keydown', (e) => {
+        // Ignore when user is typing in an input / textarea / contenteditable
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
+
+        // Ctrl+Shift+E → export HTML
+        if (e.ctrlKey && e.shiftKey && e.key === 'E') {
+            e.preventDefault();
+            if (typeof window.exportHTML === 'function') window.exportHTML();
+        }
+        // Ctrl+K → focus search
+        if (e.ctrlKey && !e.shiftKey && e.key === 'k') {
+            e.preventDefault();
+            const input = document.getElementById('myInput');
+            if (input) input.focus();
+        }
+    });
 };
 
 /**

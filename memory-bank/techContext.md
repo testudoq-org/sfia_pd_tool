@@ -30,6 +30,30 @@ Branch: `feature-modernise-and-improve-ui-and-performance-security-review`
 - Selection count badge (`#selection-count`) — shows "X skills, Y LoR" when selections are active.
 - "Clear All" button (`#clearAllBtn`) — resets all SFIA and LoR checkbox selections.
 
+**Phase 5 — Visual Polish (commit `d65541a`):**
+- Row entrance animations (`@keyframes fadeSlideIn`) and selected-row highlight on checked rows.
+- Badge pulse animation on selection count changes.
+- Smooth version-switch fade transition in `jsonHandling.mjs`.
+- Preconnect hints for CDN origins (jsdelivr, jquery, cloudflare).
+- Custom scrollbar styling, AI button shine effect, search input glow on focus.
+- Footer gradient border, enhanced `@media print` styles.
+
+**Phase 6 — UI Polish & Theme Consolidation (commit `bacd0b5`):**
+- **CSS cleanup:** Removed ~40 dead Tailwind-style utility classes (kept `.hidden`, `.mr-2`, `.mb-6`). Instructions chevron indicator (`::after`). Table row hover highlight. Empty-state `::before` styling for `#sfia-output`. Export button icon prefixes (`::before`). Notification icon prefixes (success ✓ / error ✗ / info ℹ). Mobile responsive block (`@media max-width: 768px`). Output div typography improvements.
+- **HTML improvements:** Added `<meta name="description">`. Deferred Ace editor scripts (`defer` attribute). Dynamic copyright year (`<span id="copyright-year">`). `<span id="search-results-count">` below search input. `<button id="back-to-top">` after footer.
+- **Theme consolidation (2c):** Rewrote [`theme.mjs`](../src/modules/theme.mjs) from scratch:
+  - Unified on `theme-mode` localStorage key (previously inline script used `theme-mode`, module used `theme`).
+  - 3-way toggle cycle: light → system → dark → light, matching the inline script's original behaviour.
+  - Removed legacy stylesheet-swapping code (references to `styles-light.css`/`styles-dark.css` which no longer exist).
+  - Data-driven `THEME_CONFIG` map reduces cyclomatic complexity.
+  - Inline `<script>` reduced from 70 lines to 14-line FOUC-prevention snippet (applies body classes before modules load).
+  - `initializeTheme()` now binds click/keydown listeners on `#theme-toggle-btn` (previously done by inline script).
+- **JS features:**
+  - **3a — Search results count:** `_searchForTextImmediate()` in `utilityFunctions.mjs` now updates `#search-results-count` with "Showing X of Y skills" during filtering.
+  - **3b — Keyboard shortcuts:** `Ctrl+Shift+E` triggers `exportHTML()`, `Ctrl+K` focuses search input. Registered in `app.mjs` via `initializeKeyboardShortcuts()`. Ignored when user is typing in inputs/textareas.
+  - **3c — Back-to-top button:** Shows after 400px scroll, smooth-scrolls to top on click. CSS transition with `.visible` class. Registered in `app.mjs` via `initializeBackToTop()`.
+  - **2d — Dynamic copyright year:** Set via `initializeCopyrightYear()` in `app.mjs`.
+
 **Code Quality:**
 - Added [`eslint.config.mjs`](../eslint.config.mjs) (ESLint flat config) declaring browser globals (`window`, `document`, `console`), CDN library globals (`$`, `jQuery`, `ace`, `CryptoJS`), and test globals (`describe`, `Feature`, etc.). Resolves Codacy `no-undef` false positives.
 
@@ -39,14 +63,15 @@ Branch: `feature-modernise-and-improve-ui-and-performance-security-review`
 
 ### Theme Management and UI Testing
 
-- The theme toggle system now uses "🌞" as the light mode icon and "🌙" for dark mode, standardized across both implementation and UI tests.
-- [`src/modules/theme.mjs`](../src/modules/theme.mjs) manages theme switching, icon updates, and accessibility attributes.
+- The theme toggle system uses a **3-way cycle**: light (🌙) → system (🖥️) → dark (🌞) → light.
+- Theme preference is stored under the `theme-mode` localStorage key.
+- **FOUC prevention**: A minimal 14-line inline `<script>` applies the stored theme body classes before ES6 modules load.
+- [`src/modules/theme.mjs`](../src/modules/theme.mjs) manages the toggle cycle, button binding, icon updates, and custom event dispatch (`themechange`, `theme-updated`).
+- Theme applies body classes `light-theme`/`dark-theme` + `light-mode`/`dark-mode` and sets `data-theme` attribute.
 - [`test/ui/themeManagement.test.js`](../test/ui/themeManagement.test.js) verifies:
-  - Presence and visibility of the theme toggle button and icon.
-  - Initial theme state (CSS class, data attribute, icon).
-  - Switching between light and dark modes, including icon and attribute changes.
-  - Accessibility attributes (`aria-label`, `title`) update correctly.
-- All theme management UI tests now pass after aligning the icon usage.
+  - Initial light mode state (`light-mode` class, `data-theme=light`, 🌙 icon).
+  - 3-click cycle: light → system (`data-theme=system`, 🖥️) → dark (`dark-mode`, `data-theme=dark`, 🌞) → light.
+  - All theme management UI tests pass after the consolidation.
 
 ---
 
