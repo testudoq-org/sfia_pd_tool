@@ -725,3 +725,158 @@ body.light-theme #sfia-content tr > th {
   opacity: 0.4;
   pointer-events: none;
 }
+
+/* ═══════════════════════════════════════════════════
+   Phase 5 — "Wow" visual polish (additive only)
+   ═══════════════════════════════════════════════════ */
+
+/* ─── Staggered row entrance animation ─── */
+@keyframes row-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.sfia-table tbody tr,
+.sfia-lors-table tbody tr {
+  animation: row-fade-in 0.35s ease both;
+}
+/* Stagger: each row gets a tiny extra delay via nth-child */
+.sfia-table tbody tr:nth-child(1)  { animation-delay: 0s; }
+.sfia-table tbody tr:nth-child(2)  { animation-delay: 20ms; }
+.sfia-table tbody tr:nth-child(3)  { animation-delay: 40ms; }
+.sfia-table tbody tr:nth-child(4)  { animation-delay: 60ms; }
+.sfia-table tbody tr:nth-child(5)  { animation-delay: 80ms; }
+.sfia-table tbody tr:nth-child(6)  { animation-delay: 100ms; }
+.sfia-table tbody tr:nth-child(7)  { animation-delay: 120ms; }
+.sfia-table tbody tr:nth-child(8)  { animation-delay: 140ms; }
+.sfia-table tbody tr:nth-child(9)  { animation-delay: 160ms; }
+.sfia-table tbody tr:nth-child(10) { animation-delay: 180ms; }
+/* Beyond 10 rows the animation fires instantly — no perceptible jank */
+
+/* ─── Sticky thead with frosted-glass blur ─── */
+.sfia-table thead {
+  backdrop-filter: blur(8px) saturate(1.4);
+  -webkit-backdrop-filter: blur(8px) saturate(1.4);
+}
+
+/* ─── Checkbox micro-interaction: pop on check ─── */
+@keyframes checkbox-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+.sfia-table input[type="checkbox"]:checked,
+.sfia-lors-table input[type="checkbox"]:checked {
+  animation: checkbox-pop 0.25s ease;
+}
+
+/* ─── Selected row highlight via :has() ─── */
+.sfia-table tbody tr:has(input[type="checkbox"]:checked) {
+  background: light-dark(rgba(37, 99, 235, 0.06), rgba(96, 165, 250, 0.10)) !important;
+  box-shadow: inset 3px 0 0 light-dark(#2563eb, #60a5fa);
+}
+.sfia-lors-table tbody tr:has(input[type="checkbox"]:checked) {
+  background: light-dark(rgba(37, 99, 235, 0.06), rgba(96, 165, 250, 0.10)) !important;
+  box-shadow: inset 3px 0 0 light-dark(#2563eb, #60a5fa);
+}
+
+/* ─── Badge pulse animation ─── */
+@keyframes badge-pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+#selection-count.pulse {
+  animation: badge-pulse 0.3s ease;
+}
+
+/* ─── Card hover elevation ─── */
+.card {
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+.card:hover {
+  box-shadow: 0 4px 16px light-dark(rgba(0,0,0,0.08), rgba(0,0,0,0.5));
+  transform: translateY(-2px);
+}
+
+/* ─── Theme toggle: full rotation on click ─── */
+#theme-toggle-btn:active .theme-toggle-icon {
+  transform: rotate(360deg);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Settings panel slide-in ─── */
+.settings-panel:not(.hidden) {
+  animation: settings-slide-in 0.3s ease;
+}
+@keyframes settings-slide-in {
+  from { opacity: 0; transform: translateY(-10px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ─── Custom scrollbar for SFIA table ─── */
+.sfia-table tbody::-webkit-scrollbar {
+  width: 8px;
+}
+.sfia-table tbody::-webkit-scrollbar-track {
+  background: light-dark(#f5f6f8, #0d0d0d);
+  border-radius: 4px;
+}
+.sfia-table tbody::-webkit-scrollbar-thumb {
+  background: light-dark(#c4c8cf, #333);
+  border-radius: 4px;
+}
+.sfia-table tbody::-webkit-scrollbar-thumb:hover {
+  background: light-dark(#9ca3af, #555);
+}
+/* Firefox scrollbar */
+.sfia-table tbody {
+  scrollbar-width: thin;
+  scrollbar-color: light-dark(#c4c8cf, #333) light-dark(#f5f6f8, #0d0d0d);
+}
+
+/* ─── AI Conversation button shine sweep ─── */
+.btn-info {
+  position: relative;
+  overflow: hidden;
+}
+.btn-info::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -75%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  transform: skewX(-25deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+.btn-info:hover::after {
+  left: 125%;
+}
+
+/* ─── Search focus glow + expand ─── */
+#myInput:focus {
+  box-shadow: 0 0 0 3px light-dark(rgba(37,99,235,0.18), rgba(96,165,250,0.22)),
+              0 4px 12px light-dark(rgba(37,99,235,0.08), rgba(96,165,250,0.12));
+  border-color: light-dark(#2563eb, #60a5fa);
+}
+
+/* ─── Footer subtle gradient ─── */
+.footer {
+  background: light-dark(
+    linear-gradient(180deg, #f9fafb 0%, #f0f1f3 100%),
+    linear-gradient(180deg, #161616 0%, #111 100%)
+  ) !important;
+}
+
+/* ─── Enhanced print styles ─── */
+@media print {
+  .navbar, .footer, .settings-menu, #theme-toggle-btn,
+  #clearAllBtn, .btn-group, .skip-to-content,
+  .notification-container, #ace-editor { display: none !important; }
+  .card { break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc; }
+  .sfia-table tbody { max-height: none; overflow: visible; }
+  .table-responsive { max-height: none; overflow: visible; }
+  #sfia-output, #lor-output { height: auto; overflow: visible; }
+}

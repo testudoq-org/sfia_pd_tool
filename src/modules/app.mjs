@@ -77,6 +77,11 @@ const updateSelectionCount = () => {
         badge.textContent = totalCount === 0 ? '0 selected' : `${sfiaCount} skill${sfiaCount !== 1 ? 's' : ''}, ${lorCount} LoR`;
         badge.classList.toggle('bg-primary', totalCount === 0);
         badge.classList.toggle('bg-success', totalCount > 0);
+        // Trigger pulse animation on change
+        badge.classList.remove('pulse');
+        // Force reflow so re-adding the class restarts the animation
+        void badge.offsetWidth;
+        badge.classList.add('pulse');
     }
 };
 window._updateSelectionCount = updateSelectionCount;

@@ -17,6 +17,10 @@ import { setSfiaJson } from './constants.mjs';
  */
 export const changeJsonVersion = async () => {
 
+    // Smooth fade-out before loading new version
+    const sfiaBody = document.getElementById('sfia-content');
+    if (sfiaBody) sfiaBody.classList.add('loading');
+
     // Get the selected value from the dropdown
     let selectedVersion = document.getElementById("jsonVersionSelect").value;
 
@@ -73,9 +77,14 @@ export const changeJsonVersion = async () => {
         // Call the function to set up event listeners
         await setupEventListeners(data);
 
+        // Smooth fade-in after content loaded
+        if (sfiaBody) sfiaBody.classList.remove('loading');
+
         return data;
     } catch (error) {
         console.error('There was a problem with the fetch request:', error);
+        // Ensure loading state is removed even on error
+        if (sfiaBody) sfiaBody.classList.remove('loading');
         throw error;
     }
 };
