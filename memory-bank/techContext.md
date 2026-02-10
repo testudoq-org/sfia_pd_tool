@@ -1,5 +1,67 @@
 # Technical Context and Implementation Details
 
+## Update: February 2026 — Architectural Enhancements 4a–4d (PR #52)
+
+### Overview
+Branch: `main` (merged via PR #52 — 17 files changed, 1884 insertions, 288 deletions)
+
+**Four architectural enhancements were implemented and merged:**
+
+### 4a — Theme Consolidation
+- Created [`theme-init.js`](../src/modules/theme-init.js) as an inline FOUC-prevention script that applies stored theme body classes before ES6 modules load.
+- Consolidated all theme styles into a single [`styles.css`](../src/styles.css) using the CSS `light-dark()` colour function.
+- Removed separate `styles-light.css` / `styles-dark.css` theme stylesheets.
+- The `theme.mjs` module continues to manage the 3-way toggle cycle (light → system → dark → light).
+
+### 4b — jQuery Removal
+- Replaced **all** jQuery (`$`, `jQuery`) usage with vanilla JavaScript throughout the codebase.
+- DOM queries use `document.querySelector` / `querySelectorAll`.
+- Event binding uses `addEventListener`.
+- DOM manipulation uses `classList`, `textContent`, `innerHTML`, `setAttribute`, etc.
+- jQuery is no longer a runtime dependency.
+
+### 4c — Virtual Scrolling
+- Implemented [`virtualScroller.mjs`](../src/modules/virtualScroller.mjs) (405 lines) — a `VirtualScroller` class that renders only visible rows for the SFIA skill table (495 checkboxes, 121 skills).
+- Integrated into:
+  - [`initializeContent.mjs`](../src/modules/initializeContent.mjs) — table initialization uses virtual scroller
+  - [`utilityFunctions.mjs`](../src/modules/utilityFunctions.mjs) — scroller access via `window._getSfiaScroller` (synchronous)
+  - [`app.mjs`](../src/modules/app.mjs) — registers `window._getSfiaScroller` global
+  - [`styles.css`](../src/styles.css) — virtual scroller container styling
+- **Testing:** 27 unit tests in [`virtualScroller.test.js`](../test/unit/virtualScroller.test.js).
+
+### 4d — Web Components
+Three custom elements introduced in [`src/modules/components/`](../src/modules/components/):
+
+1. **`<sfia-notification>`** ([`sfia-notification.mjs`](../src/modules/components/sfia-notification.mjs)):
+   - **Light DOM** toast notification component with `.notification.{type}` CSS classes.
+   - Includes `id="notification-container"` for backward compatibility with existing CSS and E2E tests.
+   - `showNotification(message, type, duration)` method for programmatic use.
+   - `windowEvents.mjs` delegates `showNotification` calls to this component.
+
+2. **`<sfia-back-to-top>`** ([`sfia-back-to-top.mjs`](../src/modules/components/sfia-back-to-top.mjs)):
+   - **Shadow DOM** scroll-to-top button with self-contained styles.
+   - Appears after scrolling past threshold, smooth-scrolls to top on click.
+
+3. **`<sfia-theme-toggle>`** ([`sfia-theme-toggle.mjs`](../src/modules/components/sfia-theme-toggle.mjs)):
+   - **Shadow DOM** 3-way theme toggle button (light → system → dark → light).
+   - Encapsulates theme toggle UI independently of main page styles.
+
+- Modified [`sfiapdgen.html`](../src/sfiapdgen.html) — custom elements replace old HTML divs/buttons.
+- Modified [`app.mjs`](../src/modules/app.mjs) — imports and registers all three components.
+- **Testing:** 30 unit tests in [`webComponents.test.js`](../test/unit/webComponents.test.js).
+
+### E2E Test Adaptations
+After the 4d Web Component changes, 8 E2E tests initially failed and were fixed:
+- **Theme toggle tests**: Updated to use `executeScript()` to pierce `<sfia-theme-toggle>` Shadow DOM.
+- **Notification tests**: Work correctly with light DOM `<sfia-notification>` component (no shadow DOM piercing needed).
+- **Search tests**: Fixed by switching `_getScroller()` in `utilityFunctions.mjs` to use `window._getSfiaScroller` synchronously instead of async dynamic import.
+
+### Test Results (Post-Merge)
+- **Unit tests:** 138 passed, 8 skipped, 0 failures (8 suites)
+- **E2E tests:** 31 passed, 0 failures
+
+---
+
 ## Update: February 10, 2026
 
 ### UI Modernisation & Performance Review
