@@ -129,7 +129,13 @@ export const initializeSFIAContent = async (sfiaJson) => {
         // Add a click event listener to each checkbox
         const sfiacheckboxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]');
         sfiacheckboxes.forEach((checkbox) => {
-            checkbox.addEventListener('click', () => renderSfiaOutput(sfiaJson), false);
+            checkbox.addEventListener('click', () => {
+                renderSfiaOutput(sfiaJson);
+                // Update selection count badge if available
+                if (typeof window._updateSelectionCount === 'function') {
+                    window._updateSelectionCount();
+                }
+            }, false);
         });
         console.log('[DEBUG SFIA] Click event listeners added to checkboxes');
         console.log('[DEBUG SFIA] Total checkboxes created:', sfiacheckboxes.length);

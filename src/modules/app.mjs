@@ -45,6 +45,40 @@ window.updateEditorContent = updateEditorContent;
 window.setStoredVersionToCookie = setStoredVersionToCookie;
 
 /**
+ * Clear all SFIA and LoR checkbox selections and update the UI.
+ */
+window.clearAllSelections = () => {
+    document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked')
+        .forEach(cb => { cb.checked = false; });
+    document.querySelectorAll('input[type=checkbox][id^="lor-"]:checked')
+        .forEach(cb => { cb.checked = false; });
+    // Re-render outputs and URL
+    import('./constants.mjs').then(({ sfiaJson: currentSfiaJson }) => {
+        renderSfiaOutput(currentSfiaJson);
+    });
+    import('./tableRendering.mjs').then(({ renderLorOutput: rlo }) => {
+        import('./constants.mjs').then(({ lorJson: currentLorJson }) => {
+            rlo(currentLorJson);
+        });
+    });
+    updateSelectionCount();
+};
+
+/**
+ * Update the selection count badge in the toolbar.
+ */
+const updateSelectionCount = () => {
+    const count = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked').length;
+    const badge = document.getElementById('selection-count');
+    if (badge) {
+        badge.textContent = `${count} selected`;
+        badge.classList.toggle('bg-primary', count === 0);
+        badge.classList.toggle('bg-success', count > 0);
+    }
+};
+window._updateSelectionCount = updateSelectionCount;
+
+/**
  * Main application initialization function
  * Called when the DOM is fully loaded
  */
