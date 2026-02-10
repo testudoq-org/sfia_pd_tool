@@ -2,6 +2,41 @@
 
 ## Date: July 24, 2025
 
+## Update: February 2026 (Architectural Enhancements 4a–4d — PR #52 Merged)
+- **Branch:** `main` — PR #52 merged from `feature-modernise-and-improve-ui-and-performance-security-review`
+- **Scope:** 17 files changed, 1884 insertions, 288 deletions
+- **Test Status:** 138 unit tests (8 suites), 31 E2E tests — all passing
+
+### 4a — Theme Consolidation
+- Created [`theme-init.js`](../src/modules/theme-init.js) for FOUC-prevention inline theme application.
+- Consolidated all theme styles into single [`styles.css`](../src/styles.css) using CSS `light-dark()` function.
+- Removed separate `styles-light.css` / `styles-dark.css` theme stylesheets.
+
+### 4b — jQuery Removal
+- Replaced all jQuery (`$`, `jQuery`) usage with vanilla JavaScript throughout the codebase.
+- Eliminated jQuery as a runtime dependency — the application is now jQuery-free.
+- DOM operations use native `document.querySelector`, `addEventListener`, `classList`, etc.
+
+### 4c — Virtual Scrolling
+- Implemented [`virtualScroller.mjs`](../src/modules/virtualScroller.mjs) (405 lines) for efficient rendering of large SFIA skill tables (495 checkboxes, 121 skills).
+- Integrated into [`initializeContent.mjs`](../src/modules/initializeContent.mjs), [`utilityFunctions.mjs`](../src/modules/utilityFunctions.mjs), and [`app.mjs`](../src/modules/app.mjs).
+- Added `window._getSfiaScroller` global for synchronous scroller access across modules.
+- 27 unit tests in [`virtualScroller.test.js`](../test/unit/virtualScroller.test.js).
+
+### 4d — Web Components
+- Introduced 3 custom elements in [`src/modules/components/`](../src/modules/components/):
+  - **`<sfia-notification>`** ([`sfia-notification.mjs`](../src/modules/components/sfia-notification.mjs)) — Light DOM toast notification with `.notification.{type}` classes. Includes `id="notification-container"` for backward compatibility with existing CSS and tests.
+  - **`<sfia-back-to-top>`** ([`sfia-back-to-top.mjs`](../src/modules/components/sfia-back-to-top.mjs)) — Shadow DOM scroll-to-top button.
+  - **`<sfia-theme-toggle>`** ([`sfia-theme-toggle.mjs`](../src/modules/components/sfia-theme-toggle.mjs)) — Shadow DOM 3-way theme toggle button.
+- Modified [`sfiapdgen.html`](../src/sfiapdgen.html) to use custom elements replacing old HTML divs/buttons.
+- Modified [`windowEvents.mjs`](../src/modules/windowEvents.mjs) to delegate `showNotification` to `<sfia-notification>` component.
+- 30 unit tests in [`webComponents.test.js`](../test/unit/webComponents.test.js).
+
+### E2E Test Fixes (post-4d)
+- **Theme toggle test**: Updated to use `executeScript()` to pierce `<sfia-theme-toggle>` Shadow DOM.
+- **Notification tests**: Work correctly with light DOM `<sfia-notification>` component.
+- **Search tests**: Fixed via `window._getSfiaScroller` synchronous scroller resolution in `utilityFunctions.mjs`.
+
 ## Update: February 10, 2026 (UI Modernisation Branch)
 - **Branch:** `feature-modernise-and-improve-ui-and-performance-security-review` — comprehensive UI modernisation, performance, accessibility, and code quality review.
 - **Phase 1 — Performance** (commit `3f44485`):
@@ -45,9 +80,9 @@
 - **Verification:** Ran unit tests and E2E tests locally after the cleanup — **unit:** 6 suites / 81 tests passed; **E2E:** 31 tests passed.
 
 ## Current Branch Status (February 2026)
-- **Branch:** `feature-modernise-and-improve-ui-and-performance-security-review`
-- **Commits ahead of main:** 8 (`3f44485` → `266d125` → `5d965c0` → `ab7fde0` → `588c808` → `d65541a` → `bacd0b5`)
-- **Test status:** 81 unit tests (6 suites), 31 E2E tests — all passing.
+- **Branch:** `main` — all architectural enhancements merged
+- **PR #52:** Merged — "feat: Architectural enhancements 4a–4d" (17 files, 1884 insertions, 288 deletions)
+- **Test status:** 138 unit tests (8 suites), 31 E2E tests — all passing.
 
 ## ✅ Project Status: COMPLETE & PRODUCTION READY
 

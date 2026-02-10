@@ -40,7 +40,7 @@ npm run build:prd   # Production build
 - **Phase 1** ✅: ES6 infrastructure established (url handling, utilities)
 - **Phase 2** ✅: Complete ES6 module implementation (all 16 modules operational)
 - **Phase 3** ✅: Full Vite integration with optimized build pipeline
-- **Current State**: **Complete modernization achieved** - ES6 module architecture fully operational
+- **Current State**: **Complete modernization achieved** - ES6 module architecture fully operational, jQuery removed, Web Components adopted
 - **Backward Compatibility**: Legacy functions preserved where essential, modern ES6 patterns adopted throughout
 
 ### Application Structure
@@ -55,9 +55,9 @@ graph TD
     B --> F[Legacy JS Support]
 ```
 
-2. **Complete ES6 Module Architecture** (`src/modules/`) - **16 Active Modules**:
+2. **Complete ES6 Module Architecture** (`src/modules/`) - **19 Active Modules + 3 Web Components**:
 - **Application Entry & Orchestration**:
-  - [`app.mjs`](src/modules/app.mjs:1): Main application orchestration and coordination
+  - [`app.mjs`](src/modules/app.mjs:1): Main application orchestration, component imports, `window._getSfiaScroller` global
   - [`init.mjs`](src/modules/init.mjs:1): Application initialization and startup logic
   - [`constants.mjs`](src/modules/constants.mjs:1): System constants, configuration, and global state
 - **Data Management Layer**:
@@ -70,13 +70,19 @@ graph TD
   - [`initializeContent.mjs`](src/modules/initializeContent.mjs:1): Content initialization and SFIA table creation
   - [`exportFunctions.mjs`](src/modules/exportFunctions.mjs:1): CSV/HTML export capabilities and file generation
   - [`theme.mjs`](src/modules/theme.mjs:1): Theme management, persistence, and UI theming
+  - [`theme-init.js`](src/modules/theme-init.js:1): FOUC-prevention inline theme application (4a consolidation)
+  - [`virtualScroller.mjs`](src/modules/virtualScroller.mjs:1): Virtual scrolling for large SFIA tables (405 lines, 4c enhancement)
+- **Web Components** (`src/modules/components/`) — **4d Enhancement**:
+  - [`sfia-notification.mjs`](src/modules/components/sfia-notification.mjs:1): Light DOM toast notifications with `.notification.{type}` classes
+  - [`sfia-back-to-top.mjs`](src/modules/components/sfia-back-to-top.mjs:1): Shadow DOM scroll-to-top button
+  - [`sfia-theme-toggle.mjs`](src/modules/components/sfia-theme-toggle.mjs:1): Shadow DOM 3-way theme toggle button
 - **Core Utilities & Processing**:
-  - [`utilityFunctions.mjs`](src/modules/utilityFunctions.mjs:1): Enhanced helper functions with performance optimizations
+  - [`utilityFunctions.mjs`](src/modules/utilityFunctions.mjs:1): Enhanced helper functions, scroller resolution via `window._getSfiaScroller`
   - [`urlHandling.mjs`](src/modules/urlHandling.mjs:1): Modern URL processing, hash management, and validation
   - [`browserUpdate.mjs`](src/modules/browserUpdate.mjs:1): Browser compatibility checking and feature detection
 - **Event Management System**:
   - [`eventListeners.mjs`](src/modules/eventListeners.mjs:1): Centralized DOM event handling and delegation
-  - [`windowEvents.mjs`](src/modules/windowEvents.mjs:1): Window-level event management and lifecycle handling
+  - [`windowEvents.mjs`](src/modules/windowEvents.mjs:1): Window-level event management, `showNotification` delegates to `<sfia-notification>`
 
 3. **Application Data Assets**:
    - **SFIA Framework Data**: Multiple versions (v7, v8, v9) supporting different framework releases
@@ -86,10 +92,10 @@ graph TD
 
 ### External Dependencies
 1. **Core Libraries**:
-   - jQuery 3.7.1
    - Bootstrap 5.3.3
    - CryptoJS 4.1.1
    - Ace Editor 1.32.8
+   - ~~jQuery 3.7.1~~ — **Removed** (4b enhancement: replaced with vanilla JS)
 
 2. **Development Tools**:
    - Vite for module bundling and build automation
@@ -130,16 +136,31 @@ graph LR
    - Single `styles.css` with `light-dark()` colour function (no separate theme stylesheets)
 
 3. **Theme Architecture**
-   - Inline `<script>` applies stored theme body classes immediately (FOUC prevention)
+   - Inline `<script>` (`theme-init.js`) applies stored theme body classes immediately (FOUC prevention)
    - `theme.mjs` module handles toggle cycle, button binding, and event dispatch
+   - `<sfia-theme-toggle>` Web Component (Shadow DOM) provides the toggle UI (4d enhancement)
    - 3-way toggle: light → system → dark → light
    - `theme-mode` localStorage key as single source of truth
    - Body classes: `light-theme`/`dark-theme` + `light-mode`/`dark-mode`; `data-theme` attribute
 
 4. **Testing Approach**
-   - UI Tests: CodeceptJS
+   - Unit Tests: Jest (138 tests, 8 suites)
+   - UI Tests: CodeceptJS (31 tests)
    - Multiple test configurations (local, dist, production)
    - Automated test pipeline
+
+5. **Virtual Scrolling (4c)**
+   - `VirtualScroller` class in `virtualScroller.mjs` (405 lines) renders only visible rows
+   - Integrated with `initializeContent.mjs` for SFIA table initialization
+   - `window._getSfiaScroller` provides synchronous access from any module
+   - Reduces DOM nodes for large datasets (495 checkboxes, 121 skills)
+
+6. **Web Components (4d)**
+   - `<sfia-notification>` — Light DOM for CSS compatibility, `id="notification-container"` for backward compat
+   - `<sfia-back-to-top>` — Shadow DOM encapsulation
+   - `<sfia-theme-toggle>` — Shadow DOM encapsulation with 3-way cycle
+   - Custom elements registered in `app.mjs` and used in `sfiapdgen.html`
+   - E2E tests use `executeScript()` to pierce Shadow DOM boundaries
 
 ## Integration Points
 
@@ -165,28 +186,29 @@ graph LR
    - **Performance optimized** with proper bundling and minification
 
 3. **Code Organization** ✅
-   - **Excellent modularization** - 16 specialized modules with clear responsibilities
-   - **Separation of concerns** - distinct layers for data, UI, events, and utilities
-   - **Modern architecture patterns** - ES6 modules with proper import/export relationships
+   - **Excellent modularization** - 19 specialized modules + 3 Web Components with clear responsibilities
+   - **Separation of concerns** - distinct layers for data, UI, events, utilities, and components
+   - **Modern architecture patterns** - ES6 modules, Web Components, virtual scrolling
 
 ## Current State & Future Readiness
 
 1. **Modernization Status** ✅ COMPLETE
-   - **ES6+ module system** fully adopted (16 modules operational)
-   - **Component-based architecture** implemented with specialized modules
+   - **ES6+ module system** fully adopted (19 modules + 3 Web Components operational)
+   - **Component-based architecture** implemented with specialized modules and custom elements
    - **Modern build system** (Vite) successfully integrated and operational
+   - **jQuery removed** — all DOM operations use vanilla JavaScript (4b)
 
 2. **Performance Optimization** ✅ ACHIEVED
    - **Optimized bundle sizes** through Vite's advanced bundling
    - **Efficient module loading** with proper ES6 import/export
-   - **Performance utilities** implemented (debounce, throttle)
+   - **Performance utilities** implemented (debounce, throttle, virtual scrolling)
    - **Caching strategies** built into build system
 
 3. **Security & Quality** ✅ IMPLEMENTED
    - **CSP headers** implemented in production builds
    - **Input validation** comprehensive throughout ES6 modules
    - **Error handling** enhanced with structured return objects
-   - **Testing coverage** 81 unit tests (6 suites) + 31 E2E tests passing
+   - **Testing coverage** 138 unit tests (8 suites) + 31 E2E tests passing
 
 ## UI Modernisation Features (February 2026)
 
