@@ -114,7 +114,7 @@ graph LR
 
 ### 3. State Management
 - URL hash-based state persistence
-- Local storage for theme preferences
+- Local storage for theme preferences (`theme-mode` key, 3-way: light/system/dark)
 - In-memory data store for runtime state
 
 ## Technical Decisions
@@ -127,9 +127,16 @@ graph LR
 2. **Build Strategy**
    - Development: Concatenated files with sourcemaps
    - Production: Minified bundle with vendor dependencies
-   - Separate CSS for light/dark themes
+   - Single `styles.css` with `light-dark()` colour function (no separate theme stylesheets)
 
-3. **Testing Approach**
+3. **Theme Architecture**
+   - Inline `<script>` applies stored theme body classes immediately (FOUC prevention)
+   - `theme.mjs` module handles toggle cycle, button binding, and event dispatch
+   - 3-way toggle: light → system → dark → light
+   - `theme-mode` localStorage key as single source of truth
+   - Body classes: `light-theme`/`dark-theme` + `light-mode`/`dark-mode`; `data-theme` attribute
+
+4. **Testing Approach**
    - UI Tests: CodeceptJS
    - Multiple test configurations (local, dist, production)
    - Automated test pipeline
@@ -179,7 +186,38 @@ graph LR
    - **CSP headers** implemented in production builds
    - **Input validation** comprehensive throughout ES6 modules
    - **Error handling** enhanced with structured return objects
-   - **Testing coverage** 100% (36/36 tests passing)
+   - **Testing coverage** 81 unit tests (6 suites) + 31 E2E tests passing
+
+## UI Modernisation Features (February 2026)
+
+### Performance
+- `content-visibility: auto` on SFIA table rows (495 checkboxes, 121 skills)
+- Debounced search input (250ms) via `debounce()` utility
+- Deferred Ace editor scripts (`defer` attribute)
+- Preconnect hints for CDN origins
+
+### Accessibility
+- Skip-to-content link with animated focus reveal
+- `aria-label` on nav, LoR checkboxes, footer `role="contentinfo"`
+- `scope="col"` on all table `<th>` elements
+- Selection count badge with `aria-live="polite"`
+- Escape key closes settings panel with focus return
+- Keyboard shortcuts: `Ctrl+Shift+E` (export), `Ctrl+K` (search focus)
+- `type="search"` and `role="search"` on search form
+- `<meta name="description">` for SEO
+
+### Visual Polish
+- CSS custom properties (design tokens) for typography, spacing, radii, transitions
+- Modern colour palette with `light-dark()` function throughout
+- `:focus-visible` replaces `:focus` for modern focus rings
+- Row entrance animations, selected-row highlight, badge pulse animation
+- Instructions chevron indicator, table row hover, empty-state styling
+- Export button and notification icon prefixes via `::before`
+- Custom scrollbar, AI button shine, search glow, footer gradient
+- Back-to-top button with smooth scroll (appears after 400px)
+- Enhanced `@media print` styles
+- Mobile responsive polish (`@media max-width: 768px`)
+- ~40 dead Tailwind-style utility classes removed
 
 ## Architecture Benefits Realized
 

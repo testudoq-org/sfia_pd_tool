@@ -25,13 +25,29 @@
 - **Phase 4 — Code Quality** (commit `ab7fde0`):
   - Created `eslint.config.mjs` (flat config) declaring browser globals, CDN library globals, and test globals.
   - Resolves Codacy `no-undef` false positives for `window`, `document`, `console`, `$`, `ace`, etc.
-- **Verification:** All 81 unit tests passed and 31 E2E tests passed after each phase.
+- **Phase 5 — Visual Polish** (commit `d65541a`):
+  - Row entrance animations (`@keyframes fadeSlideIn`) and selected-row highlight.
+  - Badge pulse animation on selection count change.
+  - Smooth version-switch fade transition in `jsonHandling.mjs`.
+  - Preconnect hints for CDN origins (jsdelivr, jquery, cloudflare).
+  - Custom scrollbar styling, AI button shine effect, search input glow on focus.
+  - Footer gradient border, enhanced print styles (`@media print`).
+- **Phase 6 — UI Polish & Theme Consolidation** (commit `bacd0b5`):
+  - **CSS (1a–1h):** Instructions chevron indicator, table row hover highlight, empty-state styling for `#sfia-output`, export button icon prefixes (`::before`), notification icon prefixes (success/error/info), mobile responsive polish (`@media max-width: 768px`), removed ~40 dead Tailwind-style utility classes, output div typography improvements.
+  - **HTML (2a–2d):** Added `<meta name="description">`, deferred Ace editor scripts (`defer`), consolidated 70-line inline theme script into 14-line FOUC-prevention snippet, dynamic copyright year.
+  - **Theme consolidation (2c):** Rewrote `theme.mjs` to use `theme-mode` localStorage key with 3-way toggle cycle (light→system→dark→light). Removed legacy stylesheet-swapping code (`styles-light.css`/`styles-dark.css` references). Inline script reduced to body-class application only.
+  - **JS features (3a–3c):** Search results counter ("Showing X of Y skills"), keyboard shortcuts (Ctrl+Shift+E export, Ctrl+K search focus), back-to-top button with smooth scroll.
+- **Verification:** All 81 unit tests and 31 E2E tests passed after each phase.
 
 ## Update: February 10, 2026
 - **Removed tracked test output artifacts** under `output/`, added `output/` to `.gitignore`, and removed the files from the repository to avoid committing binary test artifacts in future.
 - **Branch & PR:** Updated branch `SFIA-27-Improve-the-UX-for-mobile-and-devices` to include main changes, removed artifacts, and opened PR #49 (SFIA-27: Bring branch up-to-date with main and verify tests).
 - **Verification:** Ran unit tests and E2E tests locally after the cleanup — **unit:** 6 suites / 81 tests passed; **E2E:** 31 tests passed.
 
+## Current Branch Status (February 2026)
+- **Branch:** `feature-modernise-and-improve-ui-and-performance-security-review`
+- **Commits ahead of main:** 8 (`3f44485` → `266d125` → `5d965c0` → `ab7fde0` → `588c808` → `d65541a` → `bacd0b5`)
+- **Test status:** 81 unit tests (6 suites), 31 E2E tests — all passing.
 
 ## ✅ Project Status: COMPLETE & PRODUCTION READY
 
