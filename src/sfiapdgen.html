@@ -4,6 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Generate SFIA-based position descriptions by selecting skills and competency levels from the Skills Framework for the Information Age.">
 	<title>SFIA POSITION DESCRIPTION Generator</title>
 	<!-- Preconnect to CDN origins for faster loading -->
 	<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -18,10 +19,10 @@
 		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
 		crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-	<!-- Add Ace editor dependencies -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/ace.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/mode-markdown.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/theme-monokai.js"></script>
+	<!-- Add Ace editor dependencies (deferred — not needed until editor section) -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/ace.js" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/mode-markdown.js" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.8/theme-monokai.js" defer></script>
 	<!-- Add both stylesheets with initial light theme active -->
 	<link rel="stylesheet" href="styles.css">
 </head>
@@ -153,6 +154,7 @@
 							title="Type a skill to search for it.">Search for Skills:</label>
 						<input type="search" class="form-control" id="myInput" onkeyup="searchForText()"
 							placeholder="Enter skill..." autocomplete="off" style="width: 100%;">
+						<span id="search-results-count" aria-live="polite"></span>
 					</div>
 				</form>
 			</div>
@@ -286,87 +288,25 @@
 	</main>
 	<footer class="footer text-center" role="contentinfo">
 		<div class="container">
-			<p class="text-muted">Copyright 2024</p>
+			<p class="text-muted">&copy; <span id="copyright-year">2024</span> SFIA PD Generator</p>
 		</div>
 	</footer>
+	<!-- Back to top button (3c) -->
+	<button id="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
 <script>
-  // Theme toggle logic using body class and localStorage
-  const themeBtn = document.getElementById('theme-toggle-btn');
-  const themeIcon = document.getElementById('theme-toggle-icon');
-  const body = document.body;
-
-  function setTheme(theme) {
-    // Remove existing theme classes and data attribute
-    body.classList.remove('light-theme', 'dark-theme', 'light-mode', 'dark-mode');
-    body.removeAttribute('data-theme');
-
-    if (theme === 'dark') {
-      body.classList.add('dark-theme');
-      body.classList.add('dark-mode');
-      themeIcon.textContent = '🌞';
-      themeBtn.setAttribute('aria-label', 'Switch to light mode');
-      themeBtn.setAttribute('title', 'Switch to light mode');
-      body.setAttribute('data-theme', 'dark');
-    } else if (theme === 'light') {
-      body.classList.add('light-theme');
-      body.classList.add('light-mode');
-      themeIcon.textContent = '🌙';
-      themeBtn.setAttribute('aria-label', 'Switch to dark mode');
-      themeBtn.setAttribute('title', 'Switch to dark mode');
-      body.setAttribute('data-theme', 'light');
+  /* FOUC prevention — apply stored theme immediately, before modules load */
+  (function() {
+    var t = localStorage.getItem('theme-mode');
+    var b = document.body;
+    if (t === 'dark') {
+      b.classList.add('dark-theme','dark-mode');
+      b.setAttribute('data-theme','dark');
+    } else if (t === 'light' || !t) {
+      b.classList.add('light-theme','light-mode');
+      b.setAttribute('data-theme','light');
     } else {
-      // System default
-      themeIcon.textContent = '🖥️';
-      themeBtn.setAttribute('aria-label', 'Switch to dark mode');
-      themeBtn.setAttribute('title', 'Switch to dark mode');
-      body.setAttribute('data-theme', 'system');
+      b.setAttribute('data-theme','system');
     }
-  }
-
-  function getStoredTheme() {
-    return localStorage.getItem('theme-mode');
-  }
-
-  function storeTheme(theme) {
-    if (theme) {
-      localStorage.setItem('theme-mode', theme);
-    } else {
-      localStorage.removeItem('theme-mode');
-    }
-  }
-
-  function getCurrentTheme() {
-    if (body.classList.contains('dark-theme')) return 'dark';
-    if (body.classList.contains('light-theme')) return 'light';
-    return null;
-  }
-
-  function toggleTheme() {
-    const current = getCurrentTheme();
-    if (current === 'dark') {
-      setTheme('light');
-      storeTheme('light');
-    } else if (current === 'light') {
-      setTheme(null);
-      storeTheme(null);
-    } else {
-      setTheme('dark');
-      storeTheme('dark');
-    }
-  }
-
-  themeBtn.addEventListener('click', toggleTheme);
-  themeBtn.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      toggleTheme();
-    }
-  });
-
-  // On page load, apply stored theme (default to light for deterministic tests)
-  document.addEventListener('DOMContentLoaded', function() {
-    const stored = getStoredTheme();
-    setTheme(stored || 'light');
-  });
+  })();
 </script>
 </html>

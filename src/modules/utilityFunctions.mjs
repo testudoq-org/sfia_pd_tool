@@ -192,6 +192,9 @@ export function _searchForTextImmediate() {
             return;
         }
 
+        let visibleCount = 0;
+        const totalCount = tableRows.length;
+
         for (let i = 0; i < tableRows.length; i++) {
             const skillKey = tableRows[i].querySelector(".skill_key");
             if (!skillKey) {
@@ -202,9 +205,18 @@ export function _searchForTextImmediate() {
 
             if (filterValue === '' || skillText.toUpperCase().includes(filterValue)) {
                 tableRows[i].style.display = "";
+                visibleCount++;
             } else {
                 tableRows[i].style.display = "none";
             }
+        }
+
+        // 3a: Update search results count
+        const countEl = document.getElementById('search-results-count');
+        if (countEl) {
+            countEl.textContent = filterValue
+                ? `Showing ${visibleCount} of ${totalCount} skills`
+                : '';
         }
     } catch (error) {
         console.error("An error occurred:", error.message);
