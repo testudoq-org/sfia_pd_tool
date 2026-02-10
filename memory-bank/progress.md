@@ -2,6 +2,12 @@
 
 ## Date: July 24, 2025
 
+## Update: February 10, 2026
+- **Removed tracked test output artifacts** under `output/`, added `output/` to `.gitignore`, and removed the files from the repository to avoid committing binary test artifacts in future.
+- **Branch & PR:** Updated branch `SFIA-27-Improve-the-UX-for-mobile-and-devices` to include main changes, removed artifacts, and opened PR #49 (SFIA-27: Bring branch up-to-date with main and verify tests).
+- **Verification:** Ran unit tests and E2E tests locally after the cleanup — **unit:** 6 suites / 81 tests passed; **E2E:** 31 tests passed.
+
+
 ## ✅ Project Status: COMPLETE & PRODUCTION READY
 
 The SFIA Position Description Generator continues to evolve with robust ES6 architecture, comprehensive testing, and modern frontend/backend integration. **Latest Update**: July 2025 introduces enhanced skill link accessibility, improved table rendering, and expanded backend helper utilities.
