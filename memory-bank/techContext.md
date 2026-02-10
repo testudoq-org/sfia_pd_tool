@@ -1,5 +1,40 @@
 # Technical Context and Implementation Details
 
+## Update: February 10, 2026
+
+### UI Modernisation & Performance Review
+
+Branch: `feature-modernise-and-improve-ui-and-performance-security-review`
+
+**Performance Optimisations:**
+- `content-visibility: auto` with `contain-intrinsic-size: auto 48px` on `.sfia-table tbody tr` — improves rendering performance for the 495-checkbox, 121-skill table.
+- Search input debounced at 250ms via `debounce()` in [`utilityFunctions.mjs`](../src/modules/utilityFunctions.mjs). Core filtering logic extracted to `_searchForTextImmediate()` for synchronous unit testing.
+
+**CSS Architecture:**
+- CSS custom properties (design tokens) in `:root` for typography, spacing, border-radius, and transitions.
+- Modern colour palette: `#2563eb`/`#60a5fa` primary, `#0d0d0d` dark background, `light-dark()` throughout.
+- `:focus-visible` replaces `:focus` for modern focus ring behaviour.
+- `.skip-to-content` and `.sr-only` accessibility utilities added.
+- Theme toggle, checkbox hover, loading skeleton, and smooth version-switch transition styles added.
+
+**Accessibility:**
+- Skip-to-content link at top of page (visible on Tab focus).
+- `aria-label` on nav, all LoR checkboxes, footer `role="contentinfo"`.
+- `scope="col"` on all SFIA and LoR table `<th>` elements.
+- Selection count badge with `aria-live="polite"` announces selections to screen readers.
+- Escape key closes settings panel and returns focus to toggle button.
+- `type="search"` and `role="search"` on search form.
+- Removed `maximum-scale=1.0` from viewport meta.
+
+**New UI Features:**
+- Selection count badge (`#selection-count`) — shows "X skills, Y LoR" when selections are active.
+- "Clear All" button (`#clearAllBtn`) — resets all SFIA and LoR checkbox selections.
+
+**Code Quality:**
+- Added [`eslint.config.mjs`](../eslint.config.mjs) (ESLint flat config) declaring browser globals (`window`, `document`, `console`), CDN library globals (`$`, `jQuery`, `ace`, `CryptoJS`), and test globals (`describe`, `Feature`, etc.). Resolves Codacy `no-undef` false positives.
+
+---
+
 ## Update: June 21, 2025
 
 ### Theme Management and UI Testing

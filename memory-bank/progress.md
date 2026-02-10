@@ -2,6 +2,31 @@
 
 ## Date: July 24, 2025
 
+## Update: February 10, 2026 (UI Modernisation Branch)
+- **Branch:** `feature-modernise-and-improve-ui-and-performance-security-review` — comprehensive UI modernisation, performance, accessibility, and code quality review.
+- **Phase 1 — Performance** (commit `3f44485`):
+  - Added `content-visibility: auto` on SFIA table rows for rendering optimisation (495 checkboxes, 121 skills).
+  - Debounced search input (250ms) to prevent excessive DOM filtering on keystrokes.
+- **Phase 2 — Visual Modernisation** (commit `266d125`):
+  - Introduced CSS custom properties (design tokens) for typography, spacing, radii, and transitions.
+  - Modernised colour palette: deeper dark mode (#0d0d0d), blue-600 primary (#2563eb), cleaner card/form/table styling.
+  - Updated sticky `<thead>` from hardcoded `rgb(100,100,100)` to themed `light-dark()`.
+  - Changed `:focus` to `:focus-visible` for modern focus ring behaviour.
+  - Added selection count badge (#selection-count) with `aria-live="polite"`.
+  - Added "Clear All" button to reset all selections.
+  - Improved HTML semantics: `type="search"`, `role="search"`, `scope="col"` on table headers.
+  - Fixed pre-existing CSS syntax bug (missing closing brace).
+- **Phase 3 — Accessibility & UX** (commit `5d965c0`):
+  - Added skip-to-content link with animated focus reveal.
+  - Added `aria-label` to nav, LoR table headers (`scope`), LoR checkboxes, and footer (`role="contentinfo"`).
+  - Added Escape key handler for settings panel with focus return to toggle button.
+  - Selection count badge now shows both SFIA skills and LoR counts.
+  - Added `.sr-only` and `.skip-to-content` CSS utility classes.
+- **Phase 4 — Code Quality** (commit `ab7fde0`):
+  - Created `eslint.config.mjs` (flat config) declaring browser globals, CDN library globals, and test globals.
+  - Resolves Codacy `no-undef` false positives for `window`, `document`, `console`, `$`, `ace`, etc.
+- **Verification:** All 81 unit tests passed and 31 E2E tests passed after each phase.
+
 ## Update: February 10, 2026
 - **Removed tracked test output artifacts** under `output/`, added `output/` to `.gitignore`, and removed the files from the repository to avoid committing binary test artifacts in future.
 - **Branch & PR:** Updated branch `SFIA-27-Improve-the-UX-for-mobile-and-devices` to include main changes, removed artifacts, and opened PR #49 (SFIA-27: Bring branch up-to-date with main and verify tests).

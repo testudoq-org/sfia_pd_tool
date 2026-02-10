@@ -45,6 +45,43 @@ window.updateEditorContent = updateEditorContent;
 window.setStoredVersionToCookie = setStoredVersionToCookie;
 
 /**
+ * Clear all SFIA and LoR checkbox selections and update the UI.
+ */
+window.clearAllSelections = () => {
+    document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked')
+        .forEach(cb => { cb.checked = false; });
+    document.querySelectorAll('input[type=checkbox][id^="lor-"]:checked')
+        .forEach(cb => { cb.checked = false; });
+    // Re-render outputs and URL
+    import('./constants.mjs').then(({ sfiaJson: currentSfiaJson }) => {
+        renderSfiaOutput(currentSfiaJson);
+    });
+    import('./tableRendering.mjs').then(({ renderLorOutput: rlo }) => {
+        import('./constants.mjs').then(({ lorJson: currentLorJson }) => {
+            rlo(currentLorJson);
+        });
+    });
+    updateSelectionCount();
+};
+
+/**
+ * Update the selection count badge in the toolbar.
+ * Counts both SFIA skill and LoR checkbox selections.
+ */
+const updateSelectionCount = () => {
+    const sfiaCount = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]:checked').length;
+    const lorCount = document.querySelectorAll('input[type=checkbox][id^="lor-"]:checked').length;
+    const totalCount = sfiaCount + lorCount;
+    const badge = document.getElementById('selection-count');
+    if (badge) {
+        badge.textContent = totalCount === 0 ? '0 selected' : `${sfiaCount} skill${sfiaCount !== 1 ? 's' : ''}, ${lorCount} LoR`;
+        badge.classList.toggle('bg-primary', totalCount === 0);
+        badge.classList.toggle('bg-success', totalCount > 0);
+    }
+};
+window._updateSelectionCount = updateSelectionCount;
+
+/**
  * Main application initialization function
  * Called when the DOM is fully loaded
  */
