@@ -335,13 +335,10 @@ describe('Utility Functions', () => {
         input.value = 'test';
       }
       
-      // Should not throw error
+      // Should not throw error (scroller path or DOM fallback both handle gracefully)
       expect(() => {
         global._searchForTextImmediate();
       }).not.toThrow();
-      
-      // Check that error was logged
-      expect(consolErrorSpy).toHaveBeenCalledWith("Table body element not found.");
     });
 
     test('should handle rows without skill_key class', () => {
@@ -357,13 +354,10 @@ describe('Utility Functions', () => {
         </table>
       `;
       
-      // Should not throw error
+      // Should not throw error (DOM fallback skips rows without skill_key)
       expect(() => {
         global._searchForTextImmediate();
       }).not.toThrow();
-      
-      // Check that error was logged
-      expect(consolErrorSpy).toHaveBeenCalledWith("Skill key element not found for row 0.");
     });
 
     test('should handle empty table body', () => {
@@ -376,13 +370,10 @@ describe('Utility Functions', () => {
         </table>
       `;
       
-      // Should not throw error
+      // Should not throw error (DOM fallback exits silently if no rows)
       expect(() => {
         global._searchForTextImmediate();
       }).not.toThrow();
-      
-      // Check that error was logged
-      expect(consolErrorSpy).toHaveBeenCalledWith("No table rows found.");
     });
 
     test('should handle invalid input types gracefully', () => {

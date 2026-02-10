@@ -60,6 +60,13 @@ export default defineConfig(({ mode }) => ({
           source: fs.readFileSync(resolve('src', 'sfia-skills-table.html'))
         });
         
+        // Copy theme FOUC prevention script
+        this.emitFile({
+          type: 'asset',
+          fileName: 'modules/theme-init.js',
+          source: fs.readFileSync(resolve('src', 'modules/theme-init.js'))
+        });
+        
         // Copy CSS files with original names for theme toggle
         this.emitFile({
           type: 'asset',

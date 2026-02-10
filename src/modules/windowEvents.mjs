@@ -363,63 +363,35 @@ document.addEventListener('DOMContentLoaded', setupDOMContentLoadedHandler);
 // All API key management is now handled by setupMenuHandlers
 
 /**
- * Shows a notification message
+ * Shows a notification message via the <sfia-notification> Web Component.
+ * Falls back to a document-level custom event if the element isn't found.
  * @param {string} message - The message to display
  * @param {string} type - The type of notification (success, error, info)
  * @param {number} duration - How long to show the notification in milliseconds
  */
 export const showNotification = (message, type = 'success', duration = 5000) => {
-    console.log('[DEBUG NOTIFICATION] Creating notification:', { message, type, duration });
-    const container = document.getElementById('notification-container');
-    console.log('[DEBUG NOTIFICATION] Container found:', container ? 'YES' : 'NO');
-
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    console.log('[DEBUG NOTIFICATION] Notification classes:', notification.className);
-
-    // Create message text
-    const messageText = document.createElement('span');
-    messageText.textContent = message;
-
-    // Create close button
-    const closeButton = document.createElement('button');
-    closeButton.className = 'notification-close';
-    closeButton.innerHTML = '&times;';
-    closeButton.setAttribute('aria-label', 'Close notification');
-
-    // Assemble notification
-    notification.appendChild(messageText);
-    notification.appendChild(closeButton);
-    container.appendChild(notification);
-    console.log('[DEBUG NOTIFICATION] Notification added to DOM');
-
-    // Handle close button click
-    closeButton.addEventListener('click', () => {
-        removeNotification(notification);
-    });
-
-    // Auto-remove after duration
-    if (duration > 0) {
-        setTimeout(() => {
-            if (notification.parentElement) {
-                removeNotification(notification);
-            }
-        }, duration);
+    const el = document.querySelector('sfia-notification');
+    if (el && typeof el.show === 'function') {
+        el.show(message, type, duration);
+    } else {
+        // Dispatch event — the component will pick it up once connected
+        document.dispatchEvent(new CustomEvent('sfia:notify', {
+            detail: { message, type, duration }
+        }));
     }
 };
 
 /**
- * Removes a notification with animation
- * @param {HTMLElement} notification - The notification element to remove
+ * @deprecated Notification dismissal is now handled by the <sfia-notification> component.
+ * Kept for backward compatibility with any external callers.
  */
 export const removeNotification = (notification) => {
-    notification.classList.add('fade-out');
-    setTimeout(() => {
-        if (notification.parentElement) {
-            notification.parentElement.removeChild(notification);
-        }
-    }, 300); // Match this with CSS transition duration
+    if (notification && notification.parentElement) {
+        notification.classList.add('fade-out');
+        setTimeout(() => {
+            if (notification.parentElement) notification.parentElement.removeChild(notification);
+        }, 300);
+    }
 };
 
 // Replace clipboard alert with notification

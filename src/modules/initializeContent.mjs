@@ -4,6 +4,16 @@
 import { renderSfiaOutput, renderLorOutput } from './tableRendering.mjs';
 import { sfiaJson, lorJson, setSfiaJson, setLorJson } from './constants.mjs';
 import { setSfiaDataLoaded } from './dataHandling.mjs';
+import { VirtualScroller, computeRowData } from './virtualScroller.mjs';
+
+/** @type {VirtualScroller|null} Singleton virtual scroller instance */
+let _sfiaScroller = null;
+
+/**
+ * Return the active VirtualScroller instance (for external modules).
+ * @returns {VirtualScroller|null}
+ */
+export const getSfiaScroller = () => _sfiaScroller;
 
 /**
  * Asynchronously initializes the content by calling the functions to initialize SFIA and LOR content.
@@ -39,122 +49,53 @@ export const initializeCheckboxesAndContent = async (sfiaJson) => {
 };
 
 /**
- * Initialize SFIA content by populating a table with SFIA JSON data.
+ * Initialize SFIA content using virtual scrolling for performance.
  * @param {Object} sfiaJson - The SFIA JSON data.
  */
 export const initializeSFIAContent = async (sfiaJson) => {
     try {
-        console.log('[DEBUG SFIA] Initializing SFIA content...');
+        console.log('[DEBUG SFIA] Initializing SFIA content (virtual scroller)...');
         console.log('[DEBUG SFIA] sfiaJson available:', !!sfiaJson);
-        console.log('[DEBUG SFIA] sfiaJson keys:', sfiaJson ? Object.keys(sfiaJson) : 'undefined');
 
-        // Arrays to keep track of printed root and sub keys
-        const rootKeyPrinted = [];
-        const subKeyPrinted = [];
+        // Find (or create) the scroll container that wraps the SFIA table
+        const tableWrapper = document.querySelector('.sfia-table')?.closest('.table-responsive')
+            || document.getElementById('sfia-content')?.parentElement;
 
-        // Get the table element
-        const table = document.getElementById('sfia-content');
-        table.innerHTML = ''; // Clear existing content before populating with new data
-        console.log('Table element cleared');
-
-        // Loop through the SFIA JSON and populate the table with data
-        for (const rootKey in sfiaJson) {
-            console.log('Processing root key:', rootKey);
-            for (const subKey in sfiaJson[rootKey]) {
-                console.log('Processing sub key:', subKey);
-                for (const skillKey in sfiaJson[rootKey][subKey]) {
-                    // Create a new row for each skill
-                    const row = document.createElement('tr');
-                    row.className += ` ${rootKey.trim().replace(/ /g, "_").toLowerCase()}`;
-
-                    // Add the root key to the row if it hasn't been printed before
-                    const col1 = document.createElement('td');
-                    if (rootKeyPrinted.indexOf(rootKey) === -1) {
-                        rootKeyPrinted.push(rootKey);
-                        col1.textContent = rootKey;
-                    }
-                    col1.className += " root_key";
-                    row.appendChild(col1);
-
-                    // Add the sub key to the row if it hasn't been printed before
-                    const col2 = document.createElement('td');
-                    if (subKeyPrinted.indexOf(subKey) === -1) {
-                        subKeyPrinted.push(subKey);
-                        col2.textContent = subKey;
-                    }
-                    col2.className += " sub_key";
-                    row.appendChild(col2);
-
-                    // Add the skill key and its code to the row
-                    const col3 = document.createElement('td');
-                    col3.className += " skill_key";
-                    row.appendChild(col3);
-
-                    const skillObj = sfiaJson[rootKey][subKey][skillKey];
-                    const skillcode = skillObj["code"];
-                    const skillDesc = skillObj["description"] || '';
-                    const skillUrl = skillObj["url"];
-
-                    const skillSpan = document.createElement('span');
-                    skillSpan.title = skillDesc;
-
-                    // Always show: [Skill Name] - [code or <a>code</a>]
-                    skillSpan.appendChild(document.createTextNode(`${skillKey} - `));
-                    if (skillUrl && typeof skillUrl === 'string' && skillUrl.trim().length > 0) {
-                        const codeLink = document.createElement('a');
-                        codeLink.href = skillUrl;
-                        codeLink.textContent = skillcode;
-                        codeLink.target = '_blank';
-                        codeLink.rel = 'noopener noreferrer';
-                        codeLink.className = 'sfia-link text-primary';
-                        skillSpan.appendChild(codeLink);
-                    } else {
-                        // No URL: just show code as plain text
-                        skillSpan.appendChild(document.createTextNode(skillcode));
-                    }
-                    col3.appendChild(skillSpan);
-
-                    // Add the selection boxes to the row
-                    for (let i = 1; i < 8; i++) {
-                        const skillData = sfiaJson[rootKey][subKey][skillKey];
-                        const selectionBox = createSfiaSelectionBox(i, skillData, skillcode, rootKey, subKey, skillKey);
-                        row.appendChild(selectionBox);
-                    }
-
-                    table.appendChild(row); // add entire row to table.
-                }
-            }
+        if (!tableWrapper) {
+            console.error('[SFIA] Could not find table wrapper element');
+            setSfiaDataLoaded(false);
+            return;
         }
 
-        // Add a click event listener to each checkbox
-        const sfiacheckboxes = document.querySelectorAll('input[type=checkbox][id^="sfia-checkbox-"]');
-        sfiacheckboxes.forEach((checkbox) => {
-            checkbox.addEventListener('click', () => {
-                renderSfiaOutput(sfiaJson);
-                // Update selection count badge if available
-                if (typeof window._updateSelectionCount === 'function') {
-                    window._updateSelectionCount();
-                }
-            }, false);
+        // Destroy previous scroller if re-initialising (e.g. version switch)
+        if (_sfiaScroller) {
+            _sfiaScroller.destroy();
+            _sfiaScroller = null;
+        }
+
+        // Pre-compute flat row data from the nested JSON
+        const rowData = computeRowData(sfiaJson);
+        console.log('[DEBUG SFIA] Computed row data:', rowData.length, 'skills');
+
+        // Create the virtual scroller
+        _sfiaScroller = new VirtualScroller(tableWrapper, {
+            rowHeight: 42,
+            buffer: 15,
         });
-        console.log('[DEBUG SFIA] Click event listeners added to checkboxes');
-        console.log('[DEBUG SFIA] Total checkboxes created:', sfiacheckboxes.length);
-        
-        // Log checkboxes with sfia-data containing "Acceptance testing"
-        const acceptanceTestingCheckboxes = Array.from(sfiacheckboxes).filter(cb => {
-            const sfiaData = cb.getAttribute('sfia-data');
-            return sfiaData && sfiaData.includes('Acceptance testing');
-        });
-        console.log('[DEBUG SFIA] Acceptance testing checkboxes found:', acceptanceTestingCheckboxes.length);
-        acceptanceTestingCheckboxes.forEach(cb => {
-            console.log('[DEBUG SFIA] Acceptance testing checkbox:', {
-                id: cb.id,
-                sfiaData: cb.getAttribute('sfia-data')
-            });
-        });
+
+        // Wire checkbox changes to rendering + URL hash + selection count
+        _sfiaScroller.onCheckboxChange = async (_row, _lvl, _checked) => {
+            renderSfiaOutput(sfiaJson);
+            if (typeof window._updateSelectionCount === 'function') {
+                window._updateSelectionCount();
+            }
+        };
+
+        _sfiaScroller.setRows(rowData);
 
         // Signal that SFIA data loading is complete
         setSfiaDataLoaded(true);
+        console.log('[DEBUG SFIA] Virtual scroller initialised with', rowData.length, 'rows');
 
     } catch (error) {
         console.error('Error initializing SFIA content:', error);
@@ -356,17 +297,27 @@ const selectSfiaCheckboxesAndInitialize = async (sfiaJson) => {
             skillSelections.forEach(selection => {
                 if (selection.includes("-")) {
                     const [skillCode, level] = selection.split("-");
-                    const checkboxSelector = `#sfia-checkbox-${skillCode}-${level}`;
-                    const checkbox = document.querySelector(checkboxSelector);
-                    
+                    const lvl = parseInt(level, 10);
+
+                    // Update virtual scroller data model (works for off-screen rows)
+                    if (_sfiaScroller) {
+                        _sfiaScroller.setChecked(skillCode, lvl, true);
+                    }
+
+                    // Also update DOM if checkbox is currently rendered
+                    const checkbox = document.querySelector(`#sfia-checkbox-${skillCode}-${level}`);
                     if (checkbox) {
                         checkbox.checked = true;
-                        console.log('Selected SFIA checkbox:', checkboxSelector);
-                    } else {
-                        console.warn('SFIA checkbox not found:', checkboxSelector);
+                        console.log('Selected SFIA checkbox:', `#sfia-checkbox-${skillCode}-${level}`);
                     }
                 }
             });
+
+            // Force re-render so visible checkboxes reflect updated state
+            if (_sfiaScroller) {
+                _sfiaScroller._startIdx = -1; // force redraw
+                _sfiaScroller._render();
+            }
             
             // Render the output with selected checkboxes
             renderSfiaOutput(sfiaJson, false);
