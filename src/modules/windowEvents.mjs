@@ -158,6 +158,15 @@ export const startConversation = () => {
     startButton.disabled = true;
     startButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Communicating...';
 
+    // Guard against empty or insufficient content to avoid 400 from Cohere
+    if (!formattedContent || formattedContent.trim().length < 10) {
+        console.warn('[AI] Aborting startConversation: formatted content is empty or too short');
+        showNotification('Please select at least one SFIA skill or LOR before starting the AI conversation.', 'error', 5000);
+        startButton.disabled = false;
+        startButton.innerHTML = 'Start AI Conversation';
+        return;
+    }
+
 
 
     if (selectedApi === 'cohere' && cohereApiKey) {
@@ -170,7 +179,8 @@ export const startConversation = () => {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Failed to communicate with Cohere API');
+            // Surface the underlying error message to the user for better diagnostics
+            alert(`Failed to communicate with Cohere API: ${error.message || 'Unknown error'}`);
             startButton.disabled = false;
             startButton.innerHTML = 'Start AI Conversation';
         });

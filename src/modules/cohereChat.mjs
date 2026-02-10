@@ -1,23 +1,41 @@
 /* eslint-env browser */
+/* global console */
 // Cohere Chat helper utilities
+// Cohere Chat API v2 endpoint
+const COHERE_CHAT_URL = 'https://api.cohere.com/v2/chat';
+
+// Default model — use a current Cohere model (command-a-03-2025 is the latest)
+const DEFAULT_MODEL = 'command-a-03-2025';
+
 export async function sendCohereChatRequest(apiKey, userContent, options = {}) {
-    const model = options.model || 'command-xlarge';
+    const model = options.model || DEFAULT_MODEL;
     const max_tokens = options.max_tokens || 1000;
     const temperature = (options.temperature === undefined) ? 0.3 : options.temperature;
 
     const systemPrompt = 'You are a helpful assistant. Reword the user supplied questions for clarity and provide additional thought-provoking questions with examples where relevant. Only output the questions and examples—no introductions, explanations, or concluding remarks.';
 
+    // Validate user content to avoid sending empty messages to Cohere
+    const trimmedContent = typeof userContent === 'string' ? userContent.trim() : '';
+    if (!trimmedContent) {
+        throw new Error('No content provided for Cohere Chat request');
+    }
+
+    // Cohere v2 Chat API: messages[].content is a plain string
+    // See https://docs.cohere.com/reference/chat
     const body = {
         model,
         messages: [
             { role: 'system', content: systemPrompt },
-            { role: 'user', content: `${userContent}` }
+            { role: 'user', content: trimmedContent }
         ],
         max_tokens,
         temperature
     };
 
-    const res = await globalThis.fetch('https://api.cohere.ai/chat', {
+    // Debug output to help diagnose client-side payload issues in DevTools
+    console.debug('[Cohere v2] Request body:', JSON.stringify(body, null, 2));
+
+    const res = await globalThis.fetch(COHERE_CHAT_URL, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${apiKey}`,
@@ -35,6 +53,25 @@ export async function sendCohereChatRequest(apiKey, userContent, options = {}) {
     return parseCohereAssistantText(data);
 }
 
+function extractFromArray(arr) {
+    const normalized = arr.map(item => {
+        if (typeof item === 'string') return item;
+        if (item && typeof item === 'object') return item.text ?? item.content ?? JSON.stringify(item);
+        return '';
+    }).filter(Boolean);
+    return normalized.length ? normalized.join('\n') : '';
+}
+
+function extractFromObject(obj) {
+    if (typeof obj.content === 'string') return obj.content;
+    if (typeof obj.text === 'string') return obj.text;
+    try {
+        return JSON.stringify(obj);
+    } catch (e) {
+        return '';
+    }
+}
+
 export function parseCohereAssistantText(data) {
     if (!data) return '';
 
@@ -46,19 +83,13 @@ export function parseCohereAssistantText(data) {
         data.text
     ];
 
-    for (const c of candidates) {
-        if (!c) continue;
+    const normalized = candidates.map(c => {
+        if (!c) return '';
         if (typeof c === 'string') return c;
-        if (Array.isArray(c)) {
-            if (c.every(item => typeof item === 'string')) return c.join('\n');
-            if (c[0]?.text) return c.map(x => x.text).join('\n');
-            if (c[0]?.content) return c.map(x => (typeof x.content === 'string' ? x.content : JSON.stringify(x.content))).join('\n');
-        }
-        if (typeof c === 'object') {
-            if (typeof c.content === 'string') return c.content;
-            if (typeof c.text === 'string') return c.text;
-        }
-    }
+        if (Array.isArray(c)) return extractFromArray(c);
+        if (c && typeof c === 'object') return extractFromObject(c);
+        return '';
+    });
 
-    return '';
+    return normalized.find(Boolean) || '';
 }
