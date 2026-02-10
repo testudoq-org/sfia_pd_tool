@@ -532,3 +532,13 @@ body.light-theme #sfia-content tr > th {
 #sfia-content tr:last-child > th {
   border-bottom: none;
 }
+/* ENHANCED: Ensure all text in #sfia-content table cells, rows, and spans wraps and prevents overflow */
+#sfia-content td,
+#sfia-content th,
+#sfia-content tr,
+#sfia-content td span {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  hyphens: auto;
+}

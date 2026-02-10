@@ -1,3 +1,5 @@
+/* eslint-env browser */
+/* global console, window, document, localStorage, alert, fetch, ace, setTimeout, navigator */
 // BOF: src/modules/windowEvents.mjs
 
 // This file contains functions to handle window events, such as 'hashchange' and 'onload'.
@@ -8,7 +10,6 @@ import { SELECTED_VERSION } from './constants.mjs';
 // Import utility functions
 import {
     getCookie,
-    setCookie,
     getStoredVersionFromCookie,
     setStoredVersion,
     updateEditorContent,
@@ -22,8 +23,6 @@ import { updateCombinedUrlHash, parseLorValuesFromHash } from './urlHandling.mjs
 import { fetchData } from './dataFetching.mjs';
 import {
     initializeContent,
-    initializeSFIAContent,
-    initializeLorContent,
     initializeCheckboxesAndContent
 } from './initializeContent.mjs';
 
@@ -159,21 +158,13 @@ export const startConversation = () => {
     startButton.disabled = true;
     startButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Communicating...';
 
+
+
     if (selectedApi === 'cohere' && cohereApiKey) {
-        fetch('https://api.cohere.ai/generate', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${cohereApiKey}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                prompt: `Reword the following questions for clarity and provide additional thought-provoking questions with examples where relevant. Only output the questions and examples—no introductions, explanations, or concluding remarks.\n\n${formattedContent}`,
-                max_tokens: 1000
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            editor.setValue(`${editor.getValue()}\n\nSFIA Ideas:\n${data.text}`);
+        // Use Cohere Chat API via simple fetch. Keep it minimal and parse multiple possible response shapes.
+        sendCohereChatRequest(cohereApiKey, formattedContent)
+        .then(assistantText => {
+            editor.setValue(`${editor.getValue()}\n\nSFIA Ideas:\n${assistantText}`);
             startButton.disabled = false;
             startButton.innerHTML = 'Start AI Conversation';
         })
@@ -191,7 +182,7 @@ export const startConversation = () => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                inputs: editorContent
+                inputs: formattedContent
             })
         })
         .then(response => response.json())
@@ -207,7 +198,11 @@ export const startConversation = () => {
     }
 };
 
+// Import Cohere chat helper
+import { sendCohereChatRequest } from './cohereChat.mjs';
+
 // Initialize Ace editor
+/* eslint-disable-next-line no-unused-vars */
 let editor;
 
 const initializeAceEditor = () => {
@@ -238,7 +233,7 @@ const initializeAceEditor = () => {
 const setupMenuHandlers = () => {
     const toggleMenu = document.getElementById('toggle-menu');
     const menuContent = document.getElementById('menu-content');
-    const saveKeysBtn = document.getElementById('save-keys-btn');
+    // Save button handled inline to avoid unused variable warnings
 
     if (!toggleMenu || !menuContent) {
         console.error('Menu elements not found during setup');
@@ -287,7 +282,7 @@ const setupMenuHandlers = () => {
     });
 
     // Save API keys
-    saveKeysBtn?.addEventListener('click', (e) => {
+    document.getElementById('save-keys-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         console.log('[DEBUG API] Save button clicked - setupMenuHandlers');
         const cohereKey = document.getElementById('cohere-api').value;
@@ -432,7 +427,7 @@ export const copyToClipboard = () => {
 export const initializeMenuHandlers = () => {
     const toggleMenu = document.getElementById('toggle-menu');
     const menuContent = document.getElementById('menu-content');
-    const saveKeysBtn = document.getElementById('save-keys-btn');
+    // Save button handled elsewhere; avoid unused variable
 
     if (!toggleMenu || !menuContent) {
         console.error('Menu elements not found');

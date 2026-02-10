@@ -88,8 +88,9 @@ class SkillsEditorPage {
    * @param {CodeceptJS.I} I - CodeceptJS actor
    */
   async waitForAiConversation(I) {
+    // Accept either proxy local /api/cohere requests or direct requests to Cohere's domain
     await I.waitForResponse(
-      response => response.url().includes('/api/cohere'),
+      response => response.url().includes('/api/cohere') || response.url().includes('api.cohere.ai'),
       30
     );
   }
