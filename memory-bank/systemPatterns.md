@@ -143,6 +143,14 @@ graph LR
    - `theme-mode` localStorage key as single source of truth
    - Body classes: `light-theme`/`dark-theme` + `light-mode`/`dark-mode`; `data-theme` attribute
 
+4. **SFIA Category Colour System (NIWA-Matched)**
+   - 7 category classes (`.strategy_and_architecture`, `.change_and_transformation`, etc.) use CSS custom properties for background and text colour
+   - Colours match the NIWA reference site (`https://niwa.github.io/sfia-position-description-tool`)
+   - Light/dark variants defined in `:root` and `body.dark-theme` respectively
+   - NIWA overlay pattern: generic semi-transparent overlays on `td.sub_key`, `td.skill_key`, `td.no_select_col` (not per-category)
+   - Overlay variables (`--sfia-overlay-sub/skill/nosel`) invert direction in dark mode (white→black overlays)
+   - Virtual scroller assigns category class via `row.rootKey.trim().replace(/ /g, '_').toLowerCase()`
+
 4. **Testing Approach**
    - Unit Tests: Jest (138 tests, 8 suites)
    - UI Tests: CodeceptJS (31 tests)

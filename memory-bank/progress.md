@@ -7,6 +7,41 @@
 - **Scope:** 17 files changed, 1884 insertions, 288 deletions
 - **Test Status:** 138 unit tests (8 suites), 31 E2E tests — all passing
 
+## Update: February 2026 (SFIA Category Colours Toggle — Visual Fix)
+- **Branch:** `feature-improve-table-and-skill-colors`
+- **Scope:** Fixed SFIA category colours not rendering despite CSS rules being present; added settings toggle
+- **Test Status:** 138 unit tests passing
+
+### SFIA Colours Toggle Feature
+- Added **"Use Official SFIA Colours"** checkbox to the settings menu (Display Options section) in `sfiapdgen.html`.
+- Toggle handler in `windowEvents.mjs` adds/removes `body.sfia-colours-on` class and persists to `localStorage`.
+- `theme-init.js` restores `sfia-colours-on` class early to prevent FOUC.
+
+### CSS Fix: Colours Not Rendering (Root Cause & Resolution)
+- **Root cause:** A `body.light-theme #sfia-content tr { background: #fff !important; }` rule (line ~691) with `!important` was overriding ALL category colour rules regardless of specificity.
+- **Fix 1:** Changed the `!important` rule to `body.light-theme:not(.sfia-colours-on)` so it only applies when SFIA colours are OFF.
+- **Fix 2:** Increased specificity of category colour selectors from `body.sfia-colours-on .delivery_and_operation` (0,2,1) to `body.sfia-colours-on .sfia-table tbody tr.delivery_and_operation` (0,3,3) to match the zebra-stripe override's specificity and win by cascade order.
+- **NIWA-style approach**: Full category colour on `<tr>`, white `rgba()` overlays on `<td>` cells (sub_key 25%, skill_key 80%, checkbox cols 85%). Dark mode uses black `rgba()` overlays instead.
+- Light and dark mode both visually verified via Playwright automation.
+
+## Update: February 11, 2026 (NIWA Colour Integration & E2E Fix)
+- **Branch:** `feature-improve-table-and-skill-colors`
+- **Scope:** CSS category colour refactoring, NIWA overlay pattern adoption, E2E test resilience fix
+- **Test Status:** 138 unit tests passing; E2E test failure (`api_key_management.test.js` @skills) addressed
+
+### CSS: NIWA-Matched Category & Overlay Colours
+- Replaced ad-hoc category background colours with **NIWA reference site** values using CSS custom properties:
+  - `--sfia-strategy: rgb(216,48,80)`, `--sfia-change: rgb(188,81,141)`, `--sfia-development: rgb(236,193,59)`, `--sfia-delivery: rgb(162,96,47)`, `--sfia-people: rgb(25,155,197)`, `--sfia-relationships: rgb(0,153,79)`, `--sfia-skills: rgb(0,155,205)`
+- Fixed `.skills_and_quality` mapping: was incorrectly using `--sfia-people`, now uses `--sfia-skills` (NIWA's `rgb(0,155,205)`).
+- **Adopted NIWA overlay pattern**: Generic semi-transparent overlays on `td.sub_key` (`rgba(255,255,255,0.25)`), `td.skill_key` (`rgba(255,255,255,0.80)`), and `td.no_select_col` (`rgba(255,255,255,0.85)`) replacing broken per-category subcategory rules.
+- Replaced 7 broken per-category subcategory rules (referencing undefined `--sfia-strategy-sub` etc.) with 3 generic overlay rules using `--sfia-overlay-sub/skill/nosel` variables.
+- Dark mode overlays use inverted direction: `rgba(0,0,0,0.20/0.50/0.55)`.
+- Dark mode hover states added for all 7 category classes.
+
+### E2E Test Fix: `copyToClipboard()` Resilience
+- **Root cause:** `copyToClipboard()` in `windowEvents.mjs` called `editor.getValue()` without null-checking. If the Ace editor wasn't initialized, it threw a TypeError before reaching the clipboard API, so no notification was ever shown.
+- **Fix:** Added try-catch wrapper, optional chaining (`(editor || window.editor)?.getValue?.()`), and fallback error notification. The function now always produces either a `.notification.success` or `.notification.error` instead of silently failing.
+
 ### 4a — Theme Consolidation
 - Created [`theme-init.js`](../src/modules/theme-init.js) for FOUC-prevention inline theme application.
 - Consolidated all theme styles into single [`styles.css`](../src/styles.css) using CSS `light-dark()` function.
