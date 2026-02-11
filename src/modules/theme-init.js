@@ -31,4 +31,9 @@
     // 'system' or unknown — let the browser's color-scheme preference decide
     body.setAttribute('data-theme', 'system');
   }
+
+  // Restore SFIA category colours preference before first paint
+  if (localStorage.getItem('sfiaColoursEnabled') === 'true') {
+    body.classList.add('sfia-colours-on');
+  }
 })();

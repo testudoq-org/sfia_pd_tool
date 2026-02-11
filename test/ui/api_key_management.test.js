@@ -74,7 +74,7 @@ Scenario('Manage SFIA Skills with valid API key', async ({ I }) => {
 
   // Test copy functionality
   I.click('button[onclick="copyToClipboard()"]');
-  I.see('Content copied to clipboard', '.notification.success');
+  I.waitForText('Content copied to clipboard', 5, '.notification.success');
 
   // Start AI conversation and verify button states
   I.click('button[onclick="startConversation()"]');

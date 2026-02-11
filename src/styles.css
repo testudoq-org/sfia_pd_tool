@@ -61,6 +61,39 @@
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ─── SFIA category colours (light / default, NIWA-matched) ─── */
+  --sfia-strategy:          rgb(216, 48, 80);   /* #D83050 */
+  --sfia-strategy-text:     #fff;
+  --sfia-change:            rgb(188, 81, 141);  /* #BC518D */
+  --sfia-change-text:       #fff;
+  --sfia-development:       rgb(236, 193, 59);  /* #ECC13B */
+  --sfia-development-text:  #222;
+  --sfia-delivery:          rgb(162, 96, 47);   /* #A2602F */
+  --sfia-delivery-text:     #fff;
+  --sfia-people:            rgb(25, 155, 197);  /* #199BC5 */
+  --sfia-people-text:       #fff;
+  --sfia-relationships:     rgb(0, 153, 79);    /* #00994F */
+  --sfia-relationships-text:#fff;
+  --sfia-skills:            rgb(0, 155, 205);   /* #009BCD */
+  --sfia-skills-text:       #fff;
+
+  /* Semi-transparent cell overlays (NIWA pattern) */
+  --sfia-overlay-sub:       rgba(255, 255, 255, 0.25);
+  --sfia-overlay-skill:     rgba(255, 255, 255, 0.80);
+  --sfia-overlay-nosel:     rgba(255, 255, 255, 0.85);
+  --sfia-overlay-text:      #222;
+
+  /* Neutral attribute / keyword pills */
+  --sfia-pill-bg:   #dcddde;
+  --sfia-pill-text:  #000;
+
+  /* Dark-mode base palette (used via light-dark() elsewhere) */
+  --bg-page:     #f5f6f8;
+  --bg-surface:  #fff;
+  --text-primary:#222;
+  --text-muted:  #6b7280;
+  --border-color:#e2e5e9;
 }
 /* Explicit theme classes for manual override */
 body.light-theme {
@@ -68,6 +101,39 @@ body.light-theme {
 }
 body.dark-theme {
   color-scheme: dark;
+
+  /* ─── SFIA category colours (dark) ─── */
+  --sfia-strategy:          #a82038;
+  --sfia-strategy-text:     #fff;
+  --sfia-change:            #8e3d6b;
+  --sfia-change-text:       #fff;
+  --sfia-development:       #c4a030;
+  --sfia-development-text:  #e0e0e0;
+  --sfia-delivery:          #7a4d28;
+  --sfia-delivery-text:     #fff;
+  --sfia-people:            #1a7fa8;
+  --sfia-people-text:       #fff;
+  --sfia-relationships:     #00753c;
+  --sfia-relationships-text:#fff;
+  --sfia-skills:            #007da8;
+  --sfia-skills-text:       #fff;
+
+  /* Semi-transparent cell overlays (dark mode) */
+  --sfia-overlay-sub:       rgba(0, 0, 0, 0.20);
+  --sfia-overlay-skill:     rgba(0, 0, 0, 0.50);
+  --sfia-overlay-nosel:     rgba(0, 0, 0, 0.55);
+  --sfia-overlay-text:      #e0e0e0;
+
+  /* Neutral attribute / keyword pills */
+  --sfia-pill-bg:   #333438;
+  --sfia-pill-text:  #e0e0e0;
+
+  /* Dark-mode base palette */
+  --bg-page:     #121212;
+  --bg-surface:  #1e1e1e;
+  --text-primary:#e0e0e0;
+  --text-muted:  #a0a0a0;
+  --border-color:#333;
 }
 
 /* Base styles using light-dark() for all themeable properties */
@@ -426,6 +492,12 @@ body { margin-bottom: 60px; }
 .save-btn { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
 .save-btn:hover { background: #0056b3; }
 
+/* ─── Display Options in Settings Panel ─── */
+.display-options { margin-top: 16px; padding-top: 16px; border-top: 1px solid light-dark(#e2e5e9, #333); }
+.display-options-heading { margin: 0 0 10px; font-size: 0.85rem; font-weight: 600; color: light-dark(#555, #aaa); text-transform: uppercase; letter-spacing: 0.05em; }
+.display-option { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 6px 0; font-size: 0.9rem; color: light-dark(#333, #ddd); }
+.display-option input[type="checkbox"] { width: 16px; height: 16px; accent-color: #2563eb; cursor: pointer; }
+
 /* Notification Styles */
 .notification-container { position: fixed; top: 20px; right: 20px; z-index: 1050; max-width: 350px; }
 .notification { position: relative; padding: 15px 40px 15px 15px; margin-bottom: 10px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: slideIn 0.5s ease-out; opacity: 1; transition: opacity 0.3s ease-in-out; }
@@ -459,63 +531,86 @@ body { margin-bottom: 60px; }
 
 /* --- Themeable and accessibility rules remain as previously migrated --- */
 
-/* Category Background Colors */
-/* Restore vivid light mode category colors, keep dark mode support */
-.strategy_and_architecture {
-  background-color: light-dark(#00bf7d, #004d40);
-  color: light-dark(#000, #fff);
+/* ─── SFIA Category Colours (NIWA-style, toggle-gated) ────────────────── */
+/* Approach: Full category colour on the <tr>, then white (light) or dark
+   (dark-mode) overlays on individual <td> cells to create graduated tints.
+   Mirrors https://niwa.github.io/sfia-position-description-tool/ exactly.
+   Active only when body.sfia-colours-on is set (via settings toggle). */
+
+/* Override zebra-stripe backgrounds when SFIA colours are active */
+body.sfia-colours-on .sfia-table tbody tr:nth-child(even),
+body.sfia-colours-on .sfia-table tbody tr:nth-child(odd) {
+  background: none;
 }
-body.light-theme .strategy_and_architecture {
-  background-color: #00bf7d;
-  color: #fff;
+
+/* ── Full category colour on the <tr> row ── */
+body.sfia-colours-on .sfia-table tbody tr.strategy_and_architecture      { background-color: var(--sfia-strategy); }
+body.sfia-colours-on .sfia-table tbody tr.change_and_transformation      { background-color: var(--sfia-change); }
+body.sfia-colours-on .sfia-table tbody tr.development_and_implementation { background-color: var(--sfia-development); }
+body.sfia-colours-on .sfia-table tbody tr.delivery_and_operation         { background-color: var(--sfia-delivery); }
+body.sfia-colours-on .sfia-table tbody tr.people_and_skills              { background-color: var(--sfia-people); }
+body.sfia-colours-on .sfia-table tbody tr.relationships_and_engagement   { background-color: var(--sfia-relationships); }
+body.sfia-colours-on .sfia-table tbody tr.skills_and_quality             { background-color: var(--sfia-skills); }
+
+/* ── Category column (td.root_key): no overlay → full colour from <tr> ── */
+body.sfia-colours-on .sfia-table td.root_key { color: #fff; }
+/* Development / yellow needs dark text for contrast */
+body.sfia-colours-on .development_and_implementation td.root_key { color: #222; }
+
+/* ── Subcategory column: 25 % white overlay → lighter tint ── */
+body.sfia-colours-on .sfia-table td.sub_key {
+  background: rgba(255, 255, 255, 0.25);
 }
-body.light-theme .change_and_transformation {
-  background-color: #00b4c5;
-  color: light-dark(#000, #fff);
+
+/* ── Skill column: 80 % white overlay → very light tint ── */
+body.sfia-colours-on .sfia-table td.skill_key {
+  background: rgba(255, 255, 255, 0.80);
 }
-body.light-theme .development_and_implementation {
-  background-color: #0073e6;
-  color: #fff;
+
+/* ── Checkbox columns: 85 % white overlay → near-white ── */
+body.sfia-colours-on .sfia-table td.no_select_col,
+body.sfia-colours-on .sfia-table td.select_col {
+  background: rgba(255, 255, 255, 0.85);
 }
-body.light-theme .delivery_and_operation {
-  background-color: #2546f0;
-  color: light-dark(#000, #fff);
+
+/* Smooth transitions for colour toggle */
+body.sfia-colours-on .sfia-table td {
+  transition: background-color var(--transition-base), color var(--transition-base);
 }
-body.light-theme .skills_and_quality {
-  background-color: #5928ed;
-  color: #fff;
+
+/* ── Dark-mode: darker base colours already via --sfia-* vars in
+   body.dark-theme; overlays use black instead of white ── */
+body.dark-theme.sfia-colours-on .sfia-table td.root_key { color: #fff; }
+body.dark-theme.sfia-colours-on .development_and_implementation td.root_key { color: #e0e0e0; }
+
+body.dark-theme.sfia-colours-on .sfia-table td.sub_key {
+  background: rgba(0, 0, 0, 0.35);
+  color: #e0e0e0;
 }
-body.light-theme .relationships_and_engagement {
-  background-color: #f64d0a;
-  color: light-dark(#000, #fff);
+body.dark-theme.sfia-colours-on .sfia-table td.skill_key {
+  background: rgba(0, 0, 0, 0.65);
+  color: #e0e0e0;
 }
-body.light-theme .people_and_skills {
-  background-color: rgb(0,155,205);
-  color: #fff;
+body.dark-theme.sfia-colours-on .sfia-table td.no_select_col,
+body.dark-theme.sfia-colours-on .sfia-table td.select_col {
+  background: rgba(0, 0, 0, 0.70);
 }
-.change_and_transformation {
-  background-color: light-dark(#00b4c5, #01579b);
-  color: light-dark(#000, #fff);
-}
-.development_and_implementation {
-  background-color: light-dark(#0073e6, #1a237e);
-  color: #fff;
-}
-.delivery_and_operation {
-  background-color: light-dark(#2546f0, #311b92);
-  color: light-dark(#000, #fff);
-}
-.skills_and_quality {
-  background-color: light-dark(#5928ed, #4a148c);
-  color: #fff;
-}
-.relationships_and_engagement {
-  background-color: light-dark(#f64d0a, #b71c1c);
-  color: light-dark(#000, #fff);
-}
-.people_and_skills {
-  background-color: light-dark(rgb(0,155,205), #006064);
-  color: #fff;
+
+/* Empty cell border cleanup */
+.sfia-table td.sub_key:empty { border-top: none; }
+.sfia-table td.root_key:empty { border-top: none; }
+
+/* ─── Neutral attribute / keyword pills ─── */
+.sfia-attribute,
+.sfia-lor-keyword,
+.sfia-tag {
+  background-color: var(--sfia-pill-bg);
+  color: var(--sfia-pill-text);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+  display: inline-block;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 /* Notification Styles */
@@ -592,13 +687,19 @@ body.light-theme .people_and_skills {
 #sfia-content tr > th:last-child {
   border-right: none;
 }
-/* Ensure font and background contrast in light mode for sfia-content tables */
-body.light-theme #sfia-content,
-body.light-theme #sfia-content tr,
-body.light-theme #sfia-content td,
-body.light-theme #sfia-content th {
+/* Ensure font and background contrast in light mode for sfia-content tables
+   (skipped when SFIA category colours are active) */
+body.light-theme:not(.sfia-colours-on) #sfia-content,
+body.light-theme:not(.sfia-colours-on) #sfia-content tr,
+body.light-theme:not(.sfia-colours-on) #sfia-content td,
+body.light-theme:not(.sfia-colours-on) #sfia-content th {
   background: #fff !important;
   color: #222 !important;
+}
+/* When SFIA colours are on, still ensure text readability in light mode */
+body.light-theme.sfia-colours-on #sfia-content td,
+body.light-theme.sfia-colours-on #sfia-content th {
+  color: #222;
 }
 /* Ensure font color is visible in light mode for sfia-content tables */
 body.light-theme #sfia-content tr > td,

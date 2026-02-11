@@ -1,0 +1,524 @@
+npm verbose cli C:\nvm4w\nodejs\node.exe C:\Users\steph\AppData\Roaming\nvm\v22.16.0\node_modules\npm\bin\npm-cli.js
+npm info using npm@11.7.0
+npm info using node@v22.16.0
+npm verbose title npm exec codeceptjs run --config codecept.local.conf.js --steps
+npm verbose argv "exec" "--" "codeceptjs" "run" "--config" "codecept.local.conf.js" "--steps"
+npm verbose logfile logs-max:10 dir:C:\Users\steph\AppData\Local\npm-cache\_logs\2026-02-10T22_47_12_405Z-
+npm verbose logfile C:\Users\steph\AppData\Local\npm-cache\_logs\2026-02-10T22_47_12_405Z-debug-0.log
+Deprecation Warning: 'tryTo' has been moved to the 'codeceptjs/effects' module. Disable tryTo plugin to remove this warning.
+Loading .env file from: D:\Code\GitHub\www\testudo\sfia\.env
+[dotenv@17.2.0] injecting env (1) from .env (tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit)
+[dotenv@17.2.0] injecting env (0) from .env (tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`)
+CodeceptJS v3.7.3 #StandWithUkraine
+Using test root "D:\Code\GitHub\www\testudo\sfia"
+
+Verify Setup --
+D:\Code\GitHub\www\testudo\sfia\test\ui\verify_setup.test.js
+  basic test
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I see "SFIA"
+  ΓêÜ OK in 3857ms
+
+Theme Management --
+D:\Code\GitHub\www\testudo\sfia\test\ui\themeManagement.test.js
+  Verify theme toggle button switches between light and dark mode
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I see element "sfia-theme-toggle"
+    I execute script () => document.body.getAttribute('data-theme')
+    I execute script () => {
+    const el = document.querySelector('sfia-theme-toggle');
+    return el && el.shadowRoot
+      ? el.shadowRoot.querySelector('.icon').textContent.trim()
+      : null;
+  }
+    I execute script () => {
+    document.querySelector('sfia-theme-toggle').shadowRoot.querySelector('button').click();
+  }
+    I wait 0.5
+    I execute script () => document.body.getAttribute('data-theme')
+    I execute script () => {
+    const el = document.querySelector('sfia-theme-toggle');
+    return el && el.shadowRoot
+      ? el.shadowRoot.querySelector('.icon').textContent.trim()
+      : null;
+  }
+    I execute script () => {
+    document.querySelector('sfia-theme-toggle').shadowRoot.querySelector('button').click();
+  }
+    I wait 0.5
+    I execute script () => document.body.getAttribute('data-theme')
+    I execute script () => {
+    const el = document.querySelector('sfia-theme-toggle');
+    return el && el.shadowRoot
+      ? el.shadowRoot.querySelector('.icon').textContent.trim()
+      : null;
+  }
+    I execute script () => {
+    document.querySelector('sfia-theme-toggle').shadowRoot.querySelector('button').click();
+  }
+    I wait 0.5
+    I execute script () => document.body.getAttribute('data-theme')
+    I execute script () => {
+    const el = document.querySelector('sfia-theme-toggle');
+    return el && el.shadowRoot
+      ? el.shadowRoot.querySelector('.icon').textContent.trim()
+      : null;
+  }
+  ΓêÜ OK in 2247ms
+
+Search --
+D:\Code\GitHub\www\testudo\sfia\test\ui\search.switch.local.test.js
+  Filter table content using search input
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I see "SFIA PD Generator", ".navbar-brand"
+    I fill field "#myInput", "SUST"
+    I wait 2
+    I see "SUST", ".sfia-table"
+    I dont see "BPTS", ".sfia-table"
+  ΓêÜ OK in 2916ms
+
+Search Functionality --
+D:\Code\GitHub\www\testudo\sfia\test\ui\search.local.test.js
+  Verify basic search functionality @smoke
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I wait for visible ".sfia-table tbody", 10
+    I see "BPTS"
+    I fill field "#myInput", "SUST"
+    I wait 2
+    I see "SUST"
+    I dont see "BPTS"
+  ΓêÜ OK in 3075ms
+
+Notification Absence --
+D:\Code\GitHub\www\testudo\sfia\test\ui\notification_absence.test.js
+  Notification error message is not displayed on initial load
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I dont see "Application initialization failed. Please refresh the page.", "#notification-container"
+  ΓêÜ OK in 674ms
+
+  Notification error message is not displayed after reload
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I refresh page 
+    I dont see "Application initialization failed. Please refresh the page.", "#notification-container"
+  ΓêÜ OK in 967ms
+
+URL Test with checkbox --
+D:\Code\GitHub\www\testudo\sfia\test\ui\lor_and_sfia_url_address.local.test.js
+  Check opening URL is correct
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I grab current url 
+Current URL: http://localhost:5502/src/sfiapdgen.html
+  ΓêÜ OK in 663ms
+
+  Check opening URL is correct with chechbox added
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I click "#sfia-checkbox-BPTS-2"
+    I wait for url 
+    I grab current url 
+Current URL: http://localhost:5502/src/sfiapdgen.html#BPTS-2
+    I see in current url "/sfiapdgen.html#BPTS-2"
+  ΓêÜ OK in 2233ms
+
+  Check multiple skills are added to URL with correct format SFIA-1+SFIA-2
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I click "#sfia-checkbox-BPTS-2"
+    I click "#sfia-checkbox-BSMO-2"
+    I wait for url 
+    I grab current url 
+Current URL: http://localhost:5502/src/sfiapdgen.html#BPTS-2+BSMO-2
+    I see in current url "/sfiapdgen.html#BPTS-2+BSMO-2"
+  ΓêÜ OK in 3301ms
+
+  Check multiple skills are added to URL with correct format SFIA-1+LOR-2
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I click "#sfia-checkbox-BPTS-2"
+    I click "#sfia-checkbox-BSMO-2"
+    I click "#lor-checkbox-0-Autonomy-1"
+    I wait for url 
+    I grab current url 
+Current URL: http://localhost:5502/src/sfiapdgen.html#BPTS-2+BSMO-2&&AUTO-1
+    I see in current url "/sfiapdgen.html#BPTS-2+BSMO-2&&AUTO-1"
+  ΓêÜ OK in 3067ms
+
+Debug SFIA Table Loading --
+D:\Code\GitHub\www\testudo\sfia\test\ui\debug_sfia_table.test.js
+  Check if SFIA table has content
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+    I wait 3
+    I see element "#sfia-content"
+    I see element "#sfia-content tr"
+    I see element "input[type="checkbox"][id^="sfia-checkbox"]"
+    I grab number of visible elements "input[type="checkbox"][id^="sfia-checkbox"]"
+Found 71 SFIA checkboxes
+    I see element ".skill_key"
+    I grab number of visible elements ".skill_key"
+Found 18 SFIA skills
+    I grab attribute from "input[type="checkbox"][id^="sfia-checkbox"]", "id"
+First checkbox ID: sfia-checkbox-BPTS-2
+    I grab number of visible elements "input[type="checkbox"][sfia-data]"
+Checkboxes with sfia-data attribute: 71
+  ΓêÜ OK in 4502ms
+
+Check Undefined Content Issues --
+D:\Code\GitHub\www\testudo\sfia\test\ui\check_undefined_content.test.js
+  Verify SFIA content in output div
+  Scenario()
+    I am on page "/sfiapdgen.html#BPTS-2"
+    I wait for element "#sfia-output", 10
+    Within "#sfia-output"
+      I see "Acceptance testing - BPTS"
+      I dont see "Acceptance testing - undefined"
+  ΓêÜ OK in 681ms
+
+  Verify SFIA Page Refresh content in output div
+  Scenario()
+    I am on page "/sfiapdgen.html#BPTS-2"
+    I refresh page 
+    I wait for element "#sfia-output", 10
+    Within "#sfia-output"
+      I see "Acceptance testing - BPTS"
+      I dont see "Acceptance testing - undefined"
+  ΓêÜ OK in 942ms
+
+Check Skill Functionality on URL hash # --
+D:\Code\GitHub\www\testudo\sfia\test\ui\check_skills_hash.local.test.js
+  Verify adding skill to formatted output
+  Scenario()
+    I am on page "/sfiapdgen.html#BPTS-2+BPTS-3+BPTS-4"
+    I wait for url 
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+    I wait for element "#sfia-content input[type=checkbox]", 10
+    I wait for element "#sfia-checkbox-BPTS-2", 5
+    I see checkbox is checked "#sfia-checkbox-BPTS-2"
+    I see checkbox is checked "#sfia-checkbox-BPTS-3"
+    I see checkbox is checked "#sfia-checkbox-BPTS-4"
+    I dont see checkbox is checked "#sfia-checkbox-BPTS-5"
+    I dont see checkbox is checked "#sfia-checkbox-BPTS-6"
+  ΓêÜ OK in 787ms
+
+Add Skill Functionality --
+D:\Code\GitHub\www\testudo\sfia\test\ui\check_skills.local.test.js
+  Verify adding skill to formatted output
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+    I fill field "#myInput", "BPTS"
+    I click "//input[@type='checkbox' and contains(@sfia-data, '"skill":"Acceptance testing","level":2')]"
+    I see in current url "/sfiapdgen.html#BPTS-2"
+    I see checkbox is checked "//input[@type='checkbox' and contains(@sfia-data, '"skill":"Acceptance testing","level":2')]"
+    I click "//input[@type='checkbox' and contains(@sfia-data, '"skill":"Acceptance testing","level":2')]"
+    I dont see checkbox is checked "//input[@type='checkbox' and contains(@sfia-data, '"skill":"Acceptance testing","level":2')]"
+    I see in current url "/sfiapdgen.html#"
+  ΓêÜ OK in 1580ms
+
+  Verify Levels of Responsibility display and selection
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+    I see element ".levels-of-responsibility"
+    I see element "//td[contains(text(),'Autonomy')]"
+    I see element "//td[contains(text(),'Influence')]"
+    I see element "//td[contains(text(),'Complexity')]"
+    I see element "//td[contains(text(),'Business skills')]"
+    I see element "//td[contains(text(),'Knowledge')]"
+    I see element ".sfia-lors-table"
+    I see number of visible elements ".sfia-lors-table tbody tr", 5
+    I see element ".sfia-lors-table thead th", "Responsibility, Level 1, Level 2, Level 3, Level 4, Level 5, Level 6, Level 7"
+    I click "//table[@class='sfia-lors-table']/tbody/tr[2]/td/input"
+    I see checkbox is checked "//table[@class='sfia-lors-table']/tbody/tr[2]/td/input"
+    I see element "#lor-output", "Complexity"
+    I see element "#lor-output", "2"
+  ΓêÜ OK in 1267ms
+
+Skillset URL JSON Version Check --
+D:\Code\GitHub\www\testudo\sfia\test\ui\check_level9_urllinks.test.js
+  Click skillset URL and verify JSON version is 9
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I see "SFIA PD Generator", ".navbar-brand"
+    I select option "#jsonVersionSelect", "version 9"
+    I see in field "#jsonVersionSelect", "version 9"
+    I wait for element ".sfia-table", 10
+    I grab number of visible elements ".sfia-table .skill_key a"
+    I wait for element {xpath: (//*[@class and contains(concat(' ', normalize-space(@class), ' '), ' sfia-table ')]//*[@class and contains(concat(' ', normalize-space(@class), ' '), ' skill_key ')]//...
+    I see element {xpath: (//*[@class and contains(concat(' ', normalize-space(@class), ' '), ' sfia-table ')]//*[@class and contains(concat(' ', normalize-space(@class), ' '), ' skill_key ')]//a)[po...
+    I grab attribute from {xpath: (//*[@class and contains(concat(' ', normalize-space(@class), ' '), ' sfia-table ')]//*[@class and contains(concat(' ', normalize-space(@class), ' '), ' skill_key ')...
+    I say "Found skillset URL: https://sfia-online.org/en/skillcode/9/ITSP"
+   Found skillset URL: https://sfia-online.org/en/skillcode/9/ITSP
+    I execute script () => {
+    const links = document.querySelectorAll(".sfia-table .skill_key a");
+    links.forEach((link) => {
+      link.removeAttribute("target");
+      link.removeAttribute("rel");
+    });
+  }
+    I click {xpath: (//*[@class and contains(concat(' ', normalize-space(@class), ' '), ' sfia-table ')]//*[@class and contains(concat(' ', normalize-space(@class), ' '), ' skill_key ')]//a)[position...
+    I wait for navigation 
+waitForNavigation deprecated:
+    * This method is inherently racy, please use 'waitForURL' instead.
+    I grab current url 
+    I say "Navigated to: https://sfia-online.org/en/sfia-9/skills/strategic-planning"
+   Navigated to: https://sfia-online.org/en/sfia-9/skills/strategic-planning
+    I am on page "/sfiapdgen.html"
+    I select option "#jsonVersionSelect", "version 9"
+    I wait for element ".sfia-table", 10
+  ΓêÜ OK in 6483ms
+
+Select Json Version --
+D:\Code\GitHub\www\testudo\sfia\test\ui\check_json_version_selection.local.test.js
+  Check that the Select Json version operates correctly for version 8
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+    I select option "#jsonVersionSelect", "version 8"
+    I see in field "#jsonVersionSelect", "version 8"
+    I see "version 8", "#jsonVersionSelect"
+    I see cookie "selectedVersion", "json_source_v8"
+  ΓêÜ OK in 864ms
+
+  Check that the Select Json version operates correctly for version 7
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+    I select option "#jsonVersionSelect", "version 7"
+    I see in field "#jsonVersionSelect", "version 7"
+    I see "version 7", "#jsonVersionSelect"
+    I see cookie "selectedVersion", "json_source_v7"
+  ΓêÜ OK in 940ms
+
+  Check that the Select Json version operates correctly for version 9
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+    I select option "#jsonVersionSelect", "version 9"
+    I see in field "#jsonVersionSelect", "version 9"
+    I see "version 9", "#jsonVersionSelect"
+    I see cookie "selectedVersion", "json_source_v9"
+  ΓêÜ OK in 1271ms
+
+Instructions Functionality --
+D:\Code\GitHub\www\testudo\sfia\test\ui\check_instructions.local.test.js
+  Verify instructions toggle behavior
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+    I wait for element "button[data-bs-toggle="collapse"][data-bs-target="#instructions"]", 10
+    I dont see element ".card-body.collapsed.collapse.show#instructions"
+    I click "button[data-bs-toggle="collapse"][data-bs-target="#instructions"]"
+    I wait for element ".card-body.collapsed.collapse.show#instructions", 10
+    I see element ".card-body.collapsed.collapse.show#instructions"
+    I click "button[data-bs-toggle="collapse"][data-bs-target="#instructions"]"
+    I wait for element ".card-body.collapsed.collapse", 10
+    I dont see element ".card-body.collapsed.collapse.show#instructions"
+  ΓêÜ OK in 2249ms
+
+Export to HTML Functionality --
+D:\Code\GitHub\www\testudo\sfia\test\ui\check_export_html.local.test.js
+  Verify export to HTML functionality
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+    I fill field "#myInput", "BPTS"
+    I click "//input[@type='checkbox' and contains(@sfia-data, '"skill":"Acceptance testing","level":2')]"
+    I click "#exportHTML"
+  ΓêÜ OK in 1221ms
+
+Export Functionality --
+D:\Code\GitHub\www\testudo\sfia\test\ui\check_export_csv.local.test.js
+  Should export CSV file
+  Scenario()
+    I am on page "/sfiapdgen.html"
+    I see "SFIA PD Generator", ".navbar-brand"
+    I wait for element "body[data-sfia-loaded="true"]", 10
+    I wait for element "//input[@type="checkbox" and contains(@sfia-data, '"skill":"Acceptance testing","level":2')]", 5
+    I click "//input[@type="checkbox" and contains(@sfia-data, '"skill":"Acceptance testing","level":2')]"
+    I wait for element "#exportCSV"
+    I click "#exportCSV"
+    I wait 2
+  ΓêÜ OK in 4553ms
+
+Check Combined SFIA and LoR URL Hash Functionality --
+D:\Code\GitHub\www\testudo\sfia\test\ui\check_combined_hash.local.test.js
+  Verify SFIA skills with LoR in URL hash
+  Scenario()
+    I am on page "/sfiapdgen.html#BPTS-4+BSMO-4&&AUTO-4+INFL-4"
+    I wait for url 
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+    I see checkbox is checked "#sfia-checkbox-BPTS-4"
+    I see checkbox is checked "#sfia-checkbox-BSMO-4"
+    I dont see "Acceptance testing - undefined", "#sfia-output"
+    I see "Acceptance testing - BPTS"
+    I dont see "Business modelling - undefined", "#sfia-output"
+    I see "Business modelling - BSMO"
+    I see checkbox is checked "#lor-checkbox-0-Autonomy-4"
+    I see checkbox is checked "#lor-checkbox-1-Influence-4"
+    I see "Works under general direction", ".lor-description"
+    I see "Makes decisions which influence the success of projects and team objectives.", ".lor-description"
+  ΓêÜ OK in 998ms
+
+  Verify only SFIA skills in URL hash
+  Scenario()
+    I am on page "/sfiapdgen.html#BPTS-4+BSMO-4"
+    I wait for url 
+    I see checkbox is checked "#sfia-checkbox-BPTS-4"
+    I see checkbox is checked "#sfia-checkbox-BSMO-4"
+    I dont see "Acceptance testing - undefined", "#sfia-output"
+    I dont see "Business modelling - undefined", "#sfia-output"
+    I see "Acceptance testing - BPTS"
+  ΓêÜ OK in 784ms
+
+  Verify only LoR in URL hash
+  Scenario()
+    I am on page "/sfiapdgen.html#&&AUTO-4+INFL-4"
+    I wait for url 
+    I see checkbox is checked "#lor-checkbox-0-Autonomy-4"
+    I see checkbox is checked "#lor-checkbox-1-Influence-4"
+    I see "Works under general direction", ".lor-description"
+    I see "Makes decisions which influence the success of projects and team objectives.", ".lor-description"
+  ΓêÜ OK in 693ms
+
+behavioural --
+D:\Code\GitHub\www\testudo\sfia\test\ui\behavioural.local.test.js
+  test something
+  Scenario()
+  ΓêÜ OK in 1ms
+
+SFIA Profile Generator --
+D:\Code\GitHub\www\testudo\sfia\test\ui\api_key_management.test.js
+  Validate Cohere API key management @apikey
+  Before()
+    I am on page "/sfiapdgen.html"
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+
+  Scenario()
+    I click "#toggle-menu"
+    I wait for element "#cohere-api"
+    I fill field "#cohere-api", "vnjEEAuIDziGugme4bZdvRZtk4vTAUwfRwZbxQNF"
+    I click "#save-keys-btn"
+    I wait for text "API settings saved successfully", 5, ".notification.success"
+    I refresh page 
+    I click "#toggle-menu"
+    I wait for element "#cohere-api"
+    I see in field "#cohere-api", "vnjEEAuIDziGugme4bZdvRZtk4vTAUwfRwZbxQNF"
+  ΓêÜ OK in 1511ms
+
+  Manage SFIA Skills with valid API key @skills
+  Before()
+    I am on page "/sfiapdgen.html"
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+
+  Scenario()
+    I fill field "#myInput", "BPTS"
+    I wait for element "//input[@type='checkbox' and contains(@sfia-data, '"skill":"Acceptance testing","level":2')]"
+    I click "//input[@type='checkbox' and contains(@sfia-data, '"skill":"Acceptance testing","level":2')]"
+    I see checkbox is checked "//input[@type='checkbox' and contains(@sfia-data, '"skill":"Acceptance testing","level":2')]"
+    I see in current url "#BPTS-2"
+    I click "button[onclick="updateEditorContent()"]"
+    I wait for element "#ace-editor"
+    I see "Acceptance testing", "#ace-editor"
+    I see "BPTS"
+    I see "Acceptance testing"
+    I click "button[onclick="copyToClipboard()"]"
+    I see "Content copied to clipboard", ".notification.success"
+  ├ù FAILED in 1983ms
+
+AI Conversation Flow --
+D:\Code\GitHub\www\testudo\sfia\test\ui\ai_conversation.test.js
+  AI conversation returns SFIA Ideas for ITSP-4 on version 9 @ai @conversation
+  Before()
+    I am on page "/sfiapdgen.html"
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+
+  Scenario()
+    I click "#toggle-menu"
+    I wait for element "#cohere-api"
+    I fill field "#cohere-api", "vnjEEAuIDziGugme4bZdvRZtk4vTAUwfRwZbxQNF"
+    I click "#save-keys-btn"
+    I wait for text "API settings saved successfully", 5, ".notification.success"
+    I select option "#jsonVersionSelect", "version 9"
+    I wait for element "#sfia-content tr", 10
+    I wait for element "#sfia-checkbox-ITSP-4", 10
+    I check option "#sfia-checkbox-ITSP-4"
+    I see checkbox is checked "#sfia-checkbox-ITSP-4"
+    I click "button[onclick="updateEditorContent()"]"
+    I wait for element "#ace-editor", 5
+    I see "Strategic planning", "#ace-editor"
+    I click "button[onclick="startConversation()"]"
+    I see "Communicating...", "button[onclick="startConversation()"]"
+    I wait for text "SFIA Ideas:", 60, "#ace-editor"
+    I wait for text "Start AI Conversation", 60, "button[onclick="startConversation()"]"
+  ΓêÜ OK in 8942ms
+
+  AI conversation shows error when no API key is set @ai @error
+  Before()
+    I am on page "/sfiapdgen.html"
+    I see in title "SFIA POSITION DESCRIPTION Generator"
+
+  Scenario()
+    I execute script () => {
+    localStorage.removeItem('cohereApiKey');
+    localStorage.removeItem('huggingfaceApiKey');
+    localStorage.removeItem('selectedApi');
+  }
+    I refresh page 
+    I select option "#jsonVersionSelect", "version 9"
+    I wait for element "#sfia-content tr", 10
+    I wait for element "#sfia-checkbox-ITSP-4", 10
+    I check option "#sfia-checkbox-ITSP-4"
+    I click "button[onclick="updateEditorContent()"]"
+    I wait for element "#ace-editor", 5
+    I click "button[onclick="startConversation()"]"
+    I accept popup 
+  ΓêÜ OK in 1569ms
+
+
+-- FAILURES:
+
+  1) SFIA Profile Generator
+       Manage SFIA Skills with valid API key @skills:
+     
+  Element ".notification.success" was not found by text|CSS|XPath
+      at new ElementNotFound (node_modules\codeceptjs\lib\helper\errors\ElementNotFound.js:15:11)
+      at assertElementExists (node_modules\codeceptjs\lib\helper\Playwright.js:3695:11)
+      at Playwright.proceedSee (node_modules\codeceptjs\lib\helper\Playwright.js:3514:5)
+  
+  
+  ( ) File: D:\Code\GitHub\www\testudo\sfia\test\ui\api_key_management.test.js
+  
+  ( ) Scenario Steps:
+  ├ù I.see("Content copied to clipboard", ".notification.success") at Test.<anonymous> (.\test\ui\api_key_management.test.js:77:5)
+  ΓêÜ I.click("button[onclick="copyToClipboard()"]") at Test.<anonymous> (.\test\ui\api_key_management.test.js:76:5)
+  ΓêÜ I.see("Acceptance testing") at Test.<anonymous> (.\test\ui\api_key_management.test.js:73:5)
+  ΓêÜ I.see("BPTS") at Test.<anonymous> (.\test\ui\api_key_management.test.js:72:5)
+  ΓêÜ I.see("Acceptance testing", "#ace-editor") at Test.<anonymous> (.\test\ui\api_key_management.test.js:69:5)
+  ΓêÜ I.waitForElement("#ace-editor") at Test.<anonymous> (.\test\ui\api_key_management.test.js:68:5)
+  ΓêÜ I.click("button[onclick="updateEditorContent()"]") at Test.<anonymous> (.\test\ui\api_key_management.test.js:67:5)
+  ΓêÜ I.seeInCurrentUrl("#BPTS-2") at Test.<anonymous> (.\test\ui\api_key_management.test.js:64:5)
+  ΓêÜ I.seeCheckboxIsChecked("//input[@type='checkbox' and contains(@sfia-data, '"skill":"Acceptance testing","level":2')]") at Test.<anonymous> (.\test\ui\api_key_management.test.js:61:5)
+  ΓêÜ I.click("//input[@type='checkbox' and contains(@sfia-data, '"skill":"Acceptance testing","level":2')]") at Test.<anonymous> (.\test\ui\api_key_management.test.js:60:5)
+  
+  ( ) Artifacts:
+  - screenshot: D:\Code\GitHub\www\testudo\sfia\output\Manage_SFIA_Skills_with_valid_API_key_@skills.failed.png
+  - video: D:\Code\GitHub\www\testudo\sfia\output\videos\e8075d3c-526a-49c5-84de-616c11ff7d00_Manage_SFIA_Skills_with_valid_API_key_@skills.failed.webm
+  - trace: D:\Code\GitHub\www\testudo\sfia\output\trace\9e1ea951-2ba9-4636-a350-b2305e8b5e1c_Manage_SFIA_Skills_with_valid_API_key_@skills.failed.zip
+  
+  ( ) Metadata:
+  - browser: chromium
+  - browserVersion: 139.0.7258.5
+  - windowSize: 1280x720
+
+
+  FAIL  | 30 passed, 1 failed   // 1m
+Run with --verbose flag to see complete NodeJS stacktrace

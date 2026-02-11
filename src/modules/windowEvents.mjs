@@ -331,6 +331,27 @@ const setupMenuHandlers = () => {
         toggleMenu.setAttribute('aria-expanded', 'false');
         menuContent.setAttribute('aria-hidden', 'true');
     }
+
+    // ─── SFIA Colours Toggle ───
+    const sfiaColoursToggle = document.getElementById('sfia-colours-toggle');
+    if (sfiaColoursToggle) {
+        // Restore saved preference
+        const saved = localStorage.getItem('sfiaColoursEnabled');
+        if (saved === 'true') {
+            document.body.classList.add('sfia-colours-on');
+            sfiaColoursToggle.checked = true;
+        }
+
+        sfiaColoursToggle.addEventListener('change', () => {
+            if (sfiaColoursToggle.checked) {
+                document.body.classList.add('sfia-colours-on');
+                localStorage.setItem('sfiaColoursEnabled', 'true');
+            } else {
+                document.body.classList.remove('sfia-colours-on');
+                localStorage.setItem('sfiaColoursEnabled', 'false');
+            }
+        });
+    }
 };
 
 // Removed duplicate setupApiMenuHandlers function - conflicts with setupMenuHandlers
@@ -396,13 +417,22 @@ export const removeNotification = (notification) => {
 
 // Replace clipboard alert with notification
 export const copyToClipboard = () => {
-    const content = editor.getValue();
-    navigator.clipboard.writeText(content).then(() => {
-        showNotification('Content copied to clipboard!', 'success');
-    }).catch(err => {
-        console.error('Failed to copy content: ', err);
+    try {
+        const content = (editor || window.editor)?.getValue?.();
+        if (!content && content !== '') {
+            showNotification('Editor is not ready – please try again', 'error');
+            return;
+        }
+        navigator.clipboard.writeText(content).then(() => {
+            showNotification('Content copied to clipboard!', 'success');
+        }).catch(err => {
+            console.error('Failed to copy content: ', err);
+            showNotification('Failed to copy content to clipboard', 'error');
+        });
+    } catch (err) {
+        console.error('Copy to clipboard error: ', err);
         showNotification('Failed to copy content to clipboard', 'error');
-    });
+    }
 };
 
 // Consolidate all menu-related initialization into a single function

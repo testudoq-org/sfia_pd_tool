@@ -1,21 +1,23 @@
 # Current Active Context - SFIA Position Description Generator
 
-**Last Updated:** February 10, 2026
-**Current Status:** Production Ready — All architectural enhancements (4a–4d) merged to main via PR #52
+**Last Updated:** February 11, 2026
+**Current Status:** Active development — NIWA colour integration and E2E fix on feature branch
 
 ## 🎯 Current Project State
 
 ### Active Branch
-- **Branch:** `main`
-- **Latest Merge:** PR #52 — "feat: Architectural enhancements 4a–4d" (17 files changed, 1884 insertions, 288 deletions)
-- **Status:** All enhancements merged, production-ready
+- **Branch:** `feature-improve-table-and-skill-colors`
+- **Scope:** CSS category colour refactoring to match NIWA reference site, overlay pattern adoption, E2E clipboard test fix
+- **Status:** Implementation complete, unit tests passing (138/138), E2E fix applied pending verification
+- **Parent:** `main` (PR #52 merged)
 
 ### System Architecture Status ✅
 - **Build System**: Vite v7.0.6 operational with complete ES6 module integration
 - **Module System**: **19 ES6 modules** + **3 Web Components** fully implemented and operational
 - **Development Environment**: Vite dev server on port 5502 (local) / 5503 (dev)
-- **Testing Infrastructure**: **138 unit tests** (8 suites, Jest v30.0.5) + **31 E2E tests** (CodeceptJS v3.7.3 + Playwright v1.54.1) — all passing
+- **Testing Infrastructure**: **138 unit tests** (8 suites, Jest v30.0.5) + **31 E2E tests** (CodeceptJS v3.7.3 + Playwright v1.54.1) — 30 passing, 1 fix applied pending verification
 - **Runtime**: Node v22.16.0, npm v11.7.0, Windows 10
+- **CSS Colour System**: NIWA-matched category colours with overlay pattern, dark mode support via CSS custom properties
 
 ### Active Code Implementation
 
@@ -63,6 +65,8 @@ The project implements a **19-module ES6 system** with **3 Web Components** and 
 - **URL Hash Management**: Complete SFIA + LoR hash processing
 - **Export Features**: HTML and CSV export fully operational
 - **Theme System**: 3-way toggle (light/system/dark) with `theme-mode` localStorage key, FOUC-prevention inline script, consolidated `theme.mjs` module
+- **Category Colours**: NIWA-matched via CSS custom properties (`--sfia-strategy` through `--sfia-skills`), with semi-transparent overlay pattern on `td.sub_key`, `td.skill_key`, `td.no_select_col`
+- **Dark Mode**: Full dark variants for all 7 categories + inverted overlays (`rgba(0,0,0,...)`) + dark mode hover states
 - **Search Functionality**: Real-time skill search with results counter ("Showing X of Y skills")
 - **AI Integration**: Cohere and Hugging Face API integration active
 - **Keyboard Shortcuts**: Ctrl+Shift+E (export HTML), Ctrl+K (focus search)

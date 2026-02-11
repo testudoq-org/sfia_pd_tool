@@ -1,5 +1,83 @@
 # Technical Context and Implementation Details
 
+## Update: February 2026 — SFIA Category Colours Toggle (Visual Fix)
+
+### Overview
+Branch: `feature-improve-table-and-skill-colors`
+
+**Fixed SFIA category colours not rendering in the table despite correct CSS rules and body class. Added user-facing toggle.**
+
+### Root Cause Analysis
+Three CSS issues prevented colours from displaying:
+
+1. **`!important` override** (primary blocker): Rule `body.light-theme #sfia-content tr { background: #fff !important; }` forced white backgrounds on ALL table rows in light mode, overriding everything.
+   - **Fix:** Changed selector to `body.light-theme:not(.sfia-colours-on)` so it only applies when SFIA colours are off.
+
+2. **Specificity mismatch**: The zebra-stripe override `body.sfia-colours-on .sfia-table tbody tr:nth-child(even)` (specificity 0,3,3) beat the category rules `body.sfia-colours-on .delivery_and_operation` (specificity 0,2,1). The `background: none` shorthand reset `background-color` to transparent.
+   - **Fix:** Increased category selectors to `body.sfia-colours-on .sfia-table tbody tr.delivery_and_operation` (specificity 0,3,3), which wins by cascade order since it appears later.
+
+3. **Shorthand vs longhand**: `background: none` (from zebra-stripe reset) implicitly sets `background-color: transparent`, overriding the explicit `background-color: var(--sfia-delivery)`.
+
+### Settings Toggle Implementation
+- **HTML:** Checkbox `#sfia-colours-toggle` in settings menu under "Display Options" heading.
+- **JS (`windowEvents.mjs`):** Toggle handler adds/removes `body.sfia-colours-on`, persists to `localStorage('sfiaColoursEnabled')`.
+- **JS (`theme-init.js`):** Blocking script restores `sfia-colours-on` class on page load before modules execute (FOUC prevention).
+
+### CSS Architecture (NIWA-style)
+```css
+/* Category colour on <tr> */
+body.sfia-colours-on .sfia-table tbody tr.delivery_and_operation {
+  background-color: var(--sfia-delivery);
+}
+/* White overlays on <td> for graduated tints */
+body.sfia-colours-on .sfia-table td.sub_key   { background: rgba(255,255,255,0.25); }
+body.sfia-colours-on .sfia-table td.skill_key  { background: rgba(255,255,255,0.80); }
+body.sfia-colours-on .sfia-table td.select_col { background: rgba(255,255,255,0.85); }
+/* Dark mode: black overlays */
+body.dark-theme.sfia-colours-on .sfia-table td.sub_key { background: rgba(0,0,0,0.35); }
+```
+
+---
+
+## Update: February 11, 2026 — NIWA Colour Integration & E2E Fix
+
+### Overview
+Branch: `feature-improve-table-and-skill-colors`
+
+**SFIA category colours aligned with NIWA reference site, overlay pattern adopted, and E2E clipboard test fixed.**
+
+### CSS Category Colour System
+- All 7 SFIA category classes now use CSS custom properties defined in `:root` (light) and `body.dark-theme` (dark).
+- Colour values match the **NIWA reference site** at `https://niwa.github.io/sfia-position-description-tool`:
+  | Category | Light | Dark | Variable |
+  |---|---|---|---|
+  | Strategy & Architecture | `rgb(216,48,80)` | `#a82038` | `--sfia-strategy` |
+  | Change & Transformation | `rgb(188,81,141)` | `#8e3d6b` | `--sfia-change` |
+  | Development & Implementation | `rgb(236,193,59)` | `#c4a030` | `--sfia-development` |
+  | Delivery & Operation | `rgb(162,96,47)` | `#7a4d28` | `--sfia-delivery` |
+  | People & Skills | `rgb(25,155,197)` | `#1a7fa8` | `--sfia-people` |
+  | Relationships & Engagement | `rgb(0,153,79)` | `#00753c` | `--sfia-relationships` |
+  | Skills & Quality | `rgb(0,155,205)` | `#007da8` | `--sfia-skills` |
+- `.skills_and_quality` now correctly uses `--sfia-skills` (was incorrectly mapped to `--sfia-people`).
+- Each category variable has a corresponding `--sfia-*-text` variable for accessible text contrast.
+
+### NIWA Overlay Pattern
+- NIWA uses **generic semi-transparent overlays** (not per-category subcategory colours) to lighten cells within a category row:
+  - `td.sub_key`: `rgba(255,255,255,0.25)` — subcategory column
+  - `td.skill_key`: `rgba(255,255,255,0.80)` — skill name column
+  - `td.no_select_col`: `rgba(255,255,255,0.85)` — disabled checkbox column
+- These are controlled via CSS custom properties (`--sfia-overlay-sub/skill/nosel`).
+- In dark mode, overlays invert direction: `rgba(0,0,0,0.20/0.50/0.55)`.
+- This replaced 7 broken per-category subcategory rules that referenced undefined `--sfia-strategy-sub`, `--sfia-change-sub`, etc.
+
+### `copyToClipboard()` Resilience Fix
+- **File:** [`windowEvents.mjs`](../src/modules/windowEvents.mjs)
+- **Problem:** Function called `editor.getValue()` without null-checking. When the Ace editor wasn't yet initialized, it threw a TypeError before reaching the clipboard API, preventing any notification from being shown.
+- **Fix:** Added try-catch wrapper and optional chaining: `(editor || window.editor)?.getValue?.()`. The function now always shows a notification (success or error) regardless of editor state.
+- This fixes the E2E test `api_key_management.test.js` @skills scenario which expected `.notification.success` after copy.
+
+---
+
 ## Update: February 2026 — Architectural Enhancements 4a–4d (PR #52)
 
 ### Overview
